@@ -46,7 +46,7 @@
                     <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
                     <p>
                         <small>
-                            <a href="http://www.yiiframework.com/">Yii core team</a>
+                            <a href="http://www.yiiframework.com/">Yii core team</a>, <a href="http://hiqdev.com/">HiQDev</a>
                         </small>
                     </p>
                 </section>
@@ -54,10 +54,10 @@
                 <section>
                     <h3>Сегодня поговорим о том:</h3>
                     <ul>
-                        <li>Что такое профилирование и зачем с ним заморачиваться</li>
+                        <li>Что такое профилирование и зачем им заниматься</li>
                         <li>Как и чем собирать профайлы</li>
                         <li>Как их смотреть и анализировать</li>
-                        <li>Популярные медленные места в коде</li>
+                        <li>Распространённые медленные места в коде</li>
                         <li>Как поддерживать производительность</li>
                     </ul>
                 </section>
@@ -133,7 +133,7 @@
 
                     <ul>
                         <li>Профайлер - это программа на C, подключаемая как расширение к PHP</li>
-                        <li>Запускается на каждый запрос к PHP и всё считает</li>
+                        <li>Запускается на каждый (или по требованию) запрос к PHP и всё считает</li>
                         <li>Сохраняет подсчитанное в специальной лог профилирования</li>
                     </ul>
                 </section>
@@ -145,6 +145,7 @@
                         <li>XDebug</li>
                         <li>XHprof</li>
                         <li>Blackfire</li>
+                        <li class="fragment" data-fragment-index="2">Самим PHP</li>
                     </ul>
                 </section>
 
@@ -539,7 +540,7 @@
                 </section>
 
                 <section>
-                    <h4>Для подтсветки категорий, нужно обернуть код:</h4>
+                    <h4>Для подсветки категорий, нужно обернуть код:</h4>
                     <pre><code class="php">
     &lt;?php
 
@@ -573,7 +574,7 @@
                 <section>
                     <ul>
                         <li>Начинался как форк XHprof, но был серьезно переделан</li>
-                        <li>Занимаются ребята из Symfony</li>
+                        <li>Занимаются ребята из Sensio Labs</li>
                         <li>Нет оверхеда</li>
                         <li>Можно включать на проде</li>
                         <li>Поддерживатеся Linux, FreeBSD, Windows, MacOS</li>
@@ -636,7 +637,7 @@
 
                     <ul>
                         <li>
-                            <a href="https://blackfire.io/docs/reference-guide/uploading-profiles">загрузка профайлов XHprof в ручком режиме</a>
+                            <a href="https://blackfire.io/docs/reference-guide/uploading-profiles">загрузка профайлов XHprof в ручном режиме</a>
                         </li>
                         <li>
                             <a href="https://blackfire.io/docs/integrations/phpunit">метрики и их тестирование в PHPUnit</a>
@@ -672,6 +673,7 @@
 
                     <ul>
                         <li>Плохие/сложные алгоритмы</li>
+                        <li>Вложенные циклы</li>
                         <li>Дисковые операции</li>
                         <li>Плохие SQL</li>
                         <li>Взаимодействие с внешним миром</li>
@@ -700,7 +702,7 @@
                     <ul>
                         <li>Отложенная загрузка (lazy loading)</li>
                         <li>SSD</li>
-                        <li>OpCache <span class="comment">Саша, можно же говорить, что OpCache помогает снизить IO?</span></li>
+                        <li>OpCache</li>
                         <li>Memcache, Redis</li>
                     </ul>
                 </section>
@@ -709,7 +711,7 @@
                     <h3>Плохие SQL</h3>
 
                     <ul>
-                        <li>Оптимизировать запросы <span class="comment">что почитать можно? Я сам как-то научился</span></li>
+                        <li>Оптимизировать запросы (смотреть EXPLAIN)</li>
                         <li>Индексы</li>
                         <li>Тюнить СУБД</li>
                         <li>Не делать сложных запросов</li>
@@ -751,7 +753,8 @@
                     <ul>
                         <li>избегать божественных методов и классов</li>
                         <li>помнить о сложности алгоритмов и операций</li>
-                        <li><span class="comment">что еще нужно стараться? :)</span></li>
+                        <li>не забывать об архитектуре и чистоте кода</li>
+                        <li class="fragment" data-fragment-index="1">не заниматься преждевременной оптимизацией</li>
                     </ul>
                 </section>
 
@@ -817,8 +820,8 @@
                     <h2>А еще можно:</h2>
 
                     <ul>
-                        <li>Обновится до PHP 7 (+40%)</li>
-                        <li>Потюнить OpCache (не должно быть misses)</li>
+                        <li>Обновится до PHP 7 (до +40%)</li>
+                        <li><a href="https://github.com/samdark/realpath_cache_tuner">Потюнить OpCache</a> (не должно быть misses)</li>
                         <li>Настроить кеш (Memcache, Redis)</li>
                         <li>Apache → nginx + php-fpm</li>
                     </ul>
