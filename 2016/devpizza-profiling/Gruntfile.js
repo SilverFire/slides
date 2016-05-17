@@ -35,6 +35,24 @@ module.exports = function (grunt) {
                 src: ['*.eot', '*.svg', '*.woff', '*.css'],
                 dest: 'fonts/',
                 filter: 'isFile'
+            },
+            revealNotes: {
+                expand: true,
+                cwd: 'node_modules/reveal.js/plugin/notes/',
+                src: ['**'],
+                dest: 'js/reveal/notes'
+            },
+            revealHighlight: {
+                expand: true,
+                cwd: 'node_modules/reveal.js/plugin/highlight/',
+                src: ['**'],
+                dest: 'js/reveal/highlight'
+            },
+            revealClasslist: {
+                expand: true,
+                cwd: 'node_modules/reveal.js/lib/js',
+                src: ['**'],
+                dest: 'js/reveal/highlight'
             }
         },
 
@@ -54,6 +72,7 @@ module.exports = function (grunt) {
                     'node_modules/reveal.js/lib/js/html5shiv.js',
                     'node_modules/reveal.js/lib/js/head.min.js',
                     'node_modules/reveal.js/js/reveal.js',
+                    'node_modules/reveal.js/lib/js/classList.js',
                     'node_modules/reveal.js/lib/js/head.min.js'
                 ],
                 dest: 'js/all.js'

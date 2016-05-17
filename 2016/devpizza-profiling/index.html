@@ -886,9 +886,8 @@
 
                 // Optional libraries used to extend on reveal.js
                 dependencies: [
-                    { src: 'node_modules/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-                    { src: 'node_modules/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-                    { src: 'node_modules/reveal.js/plugin/notes/notes.js', async: true}
+                    { src: 'js/reveal/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'js/reveal/notes/notes.js', async: true}
                 ]
             });
 
