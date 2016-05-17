@@ -46,7 +46,7 @@
                     <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
                     <p>
                         <small>
-                            <a href="http://www.yiiframework.com/">Yii core team</a>, <a href="http://hiqdev.com/">HiQDev</a>
+                            <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
                         </small>
                     </p>
                 </section>
@@ -81,38 +81,41 @@
                 </section>
 
                 <section>
-                    <h2>Что такое профилирование?</h2>
-                </section>
-
-                <section>
-                    <span>
-                        <strong>Профилирование</strong> &ndash; это сбор характеристик работы программы, используемый
-                        для анализа ее быстродействия и потребления ресурсов с целью дальнейшей оптимизации
-                    </span>
-                </section>
-
-                <section>
                     <h3>Зачем пытаться оптимизировать?</h3>
 
                     <ul>
                         <li class="fragment" data-fragment-index="1">более быстрый отклик</li>
-                        <li class="fragment" data-fragment-index="2">экономия ресурсов</li>
+                        <li class="fragment" data-fragment-index="2">экономия ресурсов → денег</li>
                         <li class="fragment" data-fragment-index="3">больше RPS</li>
                     </ul>
                 </section>
 
                 <section>
-                    <p>Профайлеры дают возможность оценить, на что, где и в каких объёмах тратятся ресурсы при выполнении программы.</p>
+                    <h2>Профилирование</h2>
+                    <p>
+                        &mdash; это сбор характеристик работы программы, используемый
+                        для анализа ее быстродействия и потребления ресурсов с целью дальнейшей оптимизации
+                    </p>
                 </section>
 
                 <section>
-                    <h4>Я и так знаю, где у меня код тупит.</h4>
+                    <p>Профайлеры дают возможность оценить:</p>
+                    <ul>
+                        <li>где именно</li>
+                        <li>на какие операции</li>
+                        <li>в каких объемах</li>
+                    </ul>
+                    <p>тратятся ресурсы при выполнении программы</p>
+                </section>
+
+                <section>
+                    <h4>Я и так догадываюсь, от чего тупняки.</h4>
                     <h4>Ща поправим.</h4>
 
-                    <span class="fragment" data-fragment-index="1">
-                        Не-а. Оптимизация цельного приложения без
+                    <p class="fragment" data-fragment-index="1">
+                        Вряд ли. Оптимизация цельного приложения без
                         профилирования &ndash; это догадки и тыканье пальцем в небо.
-                    </span>
+                    </p>
                 </section>
 
                 <section>
@@ -132,9 +135,9 @@
                     <h3>А как оно работает?</h3>
 
                     <ul>
-                        <li>Профайлер - это программа на C, подключаемая как расширение к PHP</li>
-                        <li>Запускается на каждый (или по требованию) запрос к PHP и всё считает</li>
-                        <li>Сохраняет подсчитанное в специальной лог профилирования</li>
+                        <li>Профайлер &mdash; это программа на C, подключаемая как расширение к PHP</li>
+                        <li>Запускается по требованию или на каждый запрос, и всё считает</li>
+                        <li>Записывает подсчитанное в специальной лог профилирования</li>
                     </ul>
                 </section>
 
@@ -165,10 +168,14 @@
                 <section>
                     <h2>Почему нет?</h2>
                     <ul>
-                        <li class="fragment" data-fragment-index="1">время выполнения программы умножается минимум на 2</li>
+                        <li class="fragment" data-fragment-index="1">огромный overhead (время выполнения программы умножается на 2+)</li>
                         <li class="fragment" data-fragment-index="2">оптимизация под XDebug на 90% безрезультатна после его отключения</li>
                         <li class="fragment" data-fragment-index="3">нельзя включать на проде</li>
                     </ul>
+                </section>
+
+                <section>
+                    <h2>Вы всё еще дебажите принтами?</h2>
                 </section>
 
                 <section>
@@ -186,18 +193,24 @@
                 </section>
 
                 <section>
-                    <h2>Есть stacktrace</h2>
+                    <h3>Пошаговая отладка</h3>
+
+                    <img src="xdebug_breakpoint.png" />
+                </section>
+
+                <section>
+                    <h2>Stacktrace</h2>
                     <img src="xdebug_stacktrace.png" />
                 </section>
 
                 <section>
-                    <h4>Есть переменные, доступные в текущей области видимости</h4>
+                    <h4>Просмотр переменных, доступные в текущей области видимости</h4>
                     <img src="xdebug.png" />
-                    <h4>Можно изменять значения "на лету"</h4>
+                    <h4>Значения можно изменять "на лету"</h4>
                 </section>
 
                 <section>
-                    <h2>Linux: ставится из пакетов</h2>
+                    <h3>Linux: ставится из пакетов</h3>
                     <pre><code>apt-get install php-xdebug</code></pre>
                 </section>
 
@@ -216,7 +229,7 @@
                     <h1>XHprof</h1>
                     <ul>
                         <li><a href="https://pecl.php.net/package/xhprof">XHprof на PECL</a></li>
-                        <li><a href="http://php.net/xhprof">Документация</a></li>
+                        <li><a href="http://php.net/xhprof">Документация на PHP.net</a></li>
                     </ul>
                 </section>
 
@@ -233,8 +246,8 @@
                     <h3>Недостатки:</h3>
 
                     <ul>
-                        <li>умеет считать только общее время, процессорное время и память<span class="fragment" data-fragment-index="1">, хотя этого обычно достаточно</span></li>
-                        <li>официально не поддерживат PHP 7<span class="fragment" data-fragment-index="2">, но есть форки с поддержкой</span></li>
+                        <li>официально не поддерживат PHP 7<span class="fragment" data-fragment-index="1">, но есть форки с поддержкой</span></li>
+                        <li>умеет считать только общее время, процессорное время и память<span class="fragment" data-fragment-index="2">, хотя этого обычно достаточно</span></li>
                     </ul>
                 </section>
 
@@ -250,7 +263,7 @@
 
                 <section>
                     <h4>Всё остальное: собрать из исходников</h4>
-                    <pre><code class="nohighlight">
+                    <pre><code class="bash">
     wget http://pecl.php.net/get/xhprof-0.9.4.tgz
     tar xvf xhprof-0.9.4.tgz
     cd xhprof-0.9.4/extension
@@ -274,8 +287,9 @@
                     <p>Включить в коде</p>
                     <pre><code class="php">
     &lt;?php
+
     xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
-    Application::run();
+    (new Application())->run();
     $xhprof_data = xhprof_disable();
                     </code></pre>
                 </section>
@@ -293,15 +307,13 @@
             ["pmu"] => int(672904)
         }
                     </code></pre>
-                </section>
-
-                <section>
-                    <ul>
+                    <hr class="fragment" data-fragment-index="1" />
+                    <ul class="fragment" data-fragment-index="1">
                         <li><code>ct</code> &ndash; количество вызовов функции</li>
                         <li><code>wt</code> &ndash; реальное время выполнения, микросекунд</li>
                         <li><code>cpu</code> &ndash; процессорное время, микросекунд</li>
                         <li><code>mu</code> &ndash; потребление памяти, байт</li>
-                        <li><code>ct</code> &ndash; пиковое потребление памяти, байт</li>
+                        <li><code>pmu</code> &ndash; пиковое потребление памяти, байт</li>
                     </ul>
                 </section>
 
@@ -312,7 +324,7 @@
                     <pre class="fragment" data-fragment-index="2"><code class="php">
     &lt;?php
     xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
-    Application::run();
+    (new Application())->run();
     $xhprof_data = xhprof_disable();
 
     $XHPROF_LIB_ROOT = "/opt/xhprof/xhprof_lib";
@@ -326,7 +338,7 @@
                     <p class="fragment small" data-fragment-index="3">
                         Эти PHP файлики можно выкачать из
                         <a href="https://github.com/phacility/xhprof/tree/master/xhprof_lib/utils">репозитория XHprof</a>
-                        и положить в проект, чтобы не зависить от окружения
+                        и положить в проект, чтобы не зависить от окружения. А еще их можно модифицировать*
                     </p>
                 </section>
 
@@ -367,6 +379,8 @@
                     </p>
                 </section>
 
+                <section data-background="xhprof_default_ui.png"></section>
+
                 <section data-background="xhprof_default_ui_graph_all.png"></section>
 
                 <section data-background="xhprof_cat.jpg"></section>
@@ -381,6 +395,8 @@
                         <li>Колчество обращений к данному методу</li>
                     </ul>
                 </section>
+
+                <section data-background="xhprof_default_ui_graph_all.png"></section>
 
                 <section>
                     <h3>Окей, а можно еще информативнее?</h3>
@@ -441,15 +457,15 @@
                     <pre><code class="apache">
     [tideways]
     extension=tideways.so
-    ; Раскомментировать строку ниже, если хотите сливать профайлы на сервера tideways
-    ;tideways.auto_prepend_library=0
+    tideways.auto_prepend_library=0
+    ;Закомментировать строку выше, если хотите сливать профайлы на Tideways
                     </code></pre>
 
                     <p>Включить в коде</p>
                     <pre><code class="php">
     &lt;?php
-    tideways_enable(TIDEWAYS_FLAGS_NO_SPANS | TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY);
-    Application::run();
+    tideways_enable(TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY | TIDEWAYS_FLAGS_NO_SPANS);
+    (new Application())->run();
     $xhprof_data = tideways_disable();
                     </code></pre>
                 </section>
@@ -485,8 +501,8 @@
                     <h4>Можно локально, форк XHprof же</h4>
                      <pre><code class="php">
     &lt;?php
-    tideways_enable(TIDEWAYS_FLAGS_NO_SPANS | TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY);
-    Application::run();
+    tideways_enable(TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY | TIDEWAYS_FLAGS_NO_SPANS);
+    (new Application())->run();
     $xhprof_data = tideways_disable();
 
     include_once '../xhprof/xhprof_lib.php';
@@ -506,13 +522,13 @@
                 <section>
                     <h3>Или выгружать на Tideways</h3>
 
-	                <pre><code>  composer require tideways/profiler:*</code></pre>
+	                <pre><code>    composer require tideways/profiler:*</code></pre>
                     <pre><code class="php">
     &lt;?php
     \Tideways\Profiler::start(array(
         'api_key' => 'YOUR API KEY',
     ));
-    Application::run();
+    (new Application())->run();
                     </code></pre>
 
                     <p class="small">Либо настроить автовыгрузку в конфиге PHP или конфиге Apache/Nginx/FPM.
@@ -525,8 +541,8 @@
                     <img src="tideways_ui.png" />
                 </section>
 
-	            <section>
-                    <img src="tideways_trace.png" />
+	            <section data-background="tideways_trace.png">
+                    <!--<img src="tideways_trace.png" />-->
 	            </section>
 
 	            <section>
@@ -543,12 +559,16 @@
                     <h4>Для подсветки категорий, нужно обернуть код:</h4>
                     <pre><code class="php">
     &lt;?php
+    public function foo()
+    {
+        $span = \Tideways\Profiler::createSpan('sql');
+        $span->startTimer();
+        $span->annotate(array('title' => 'insert users'));
 
-    $span = \Tideways\Profiler::createSpan('sql');
-    $span->startTimer();
-    $span->annotate(array('title' => 'insert users'));
-    $pdo->query('INSERT INTO users (id, name) values (1, "foo")');
-    $span->stopTimer();
+        $this->pdo->query('INSERT INTO users (id, name) values (1, "foo")');
+
+        $span->stopTimer();
+    }
                     </code></pre>
                 </section>
 
@@ -556,9 +576,9 @@
                     <h3>Пару слов про UI</h3>
                     <ul>
                         <li>Пока не рисует ни память, ни CPU</li>
-                        <li>Умеет рисовать сравнения, как и XHprof</li>
-                        <li>Платный, от 49€/мес. Испытательный период &ndash; 30 дней. Тарификация по количеству запросов</li>
+                        <li>Умеет строить сравнения, как и XHprof</li>
                         <li>Есть приложение для Chrome, можно включать профилирование по запросу</li>
+                        <li>Платный, от 49€/мес. Испытательный период &ndash; 30 дней. Тарификация по количеству профайлов</li>
                     </ul>
                 </section>
 
@@ -575,11 +595,11 @@
                     <ul>
                         <li>Начинался как форк XHprof, но был серьезно переделан</li>
                         <li>Занимаются ребята из Sensio Labs</li>
-                        <li>Нет оверхеда</li>
+                        <li>Нет overhead'a</li>
                         <li>Можно включать на проде</li>
                         <li>Поддерживатеся Linux, FreeBSD, Windows, MacOS</li>
                         <li>Работает на PHP 7</li>
-                        <li>Условно бесплатный. Бесплатно можно профилиловать одно приложение, нельзя считать сеть и SQL. Снятие ограничений стоит от 82,50$/месяц</li>
+                        <li>Условно бесплатный. Бесплатно: одно приложение, без сети и SQL. Все возможности стоят от 82,50$/месяц</li>
                         <li>Очень толковая документация</li>
                     </ul>
                 </section>
@@ -592,13 +612,13 @@
                 </section>
 
                 <section>
-                    <h4>Blackfire &mdash; это</h4>
+                    <h4>Blackfire состояит из</h4>
                     <ul>
-                        <li>Расширение PHP</li>
-                        <li>Агент</li>
-                        <li>Инструменты командной сторки</li>
-                        <li>Расширение для Chrome</li>
-                        <li>Сайт для просмотра и анализа графиков</li>
+                        <li>Сайта для просмотра графиков</li>
+                        <li>Расширения PHP</li>
+                        <li>Агента для отправки данных</li>
+                        <li>Расширения для Chrome</li>
+                        <li>Инструментов командной сторки</li>
                     </ul>
                 </section>
 
@@ -628,7 +648,7 @@
                 </section>
 
                 <section>
-                    <h4>Как я добился ускорения на 75мс?</h4>
+                    <h4>Как я добился ускорения в 10 раз?</h4>
                     <p class="fragment" data-fragment-index="2" style="text-align: left; -webkit-transform: rotate(180deg);-moz-transform: rotate(180deg);-ms-transform: rotate(180deg);-o-transform: rotate(180deg);transform: rotate(180deg);;">Выключил XDebug</p>
                 </section>
 
@@ -683,7 +703,8 @@
                 </section>
 
                 <section>
-                    <h2>Всё можно побороть!</h2>
+                    <h2>Код может взлететь!</h2>
+                    <img src="flying_cat.jpg" />
                 </section>
 
                 <section>
@@ -691,8 +712,8 @@
 
                     <ul>
                         <li>профилировать и улучшать</li>
-                        <li>кешировать (Memcache, Redis)</li>
                         <li>искать алтернативные подходы</li>
+                        <li>кешировать (Memcache, Redis)</li>
                     </ul>
                 </section>
 
@@ -759,7 +780,7 @@
                 </section>
 
                 <section>
-                    <h3>Помощь хороших фреймворков</h3>
+                    <h4>Помощь хороших фреймворков</h4>
 
                     <ul>
                         <li>Архитектура</li>
@@ -798,7 +819,7 @@
                 <section>
                     <h4>Быстрое профилирование по месту</h4>
 
-                    <pre><code>
+                    <pre><code class="php">
     Yii::beginProfile('Checking my new algo');
     $system->compute();
     Yii::endProfile('Checking my new algo');
