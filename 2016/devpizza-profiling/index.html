@@ -13,21 +13,11 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-        <link rel="stylesheet" href="../../bower_components/reveal.js/css/reveal.min.css">
-        <link rel="stylesheet" href="../../css/samdark.css" id="theme">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="css/all.css">
 
-        <!-- For syntax highlighting -->
-        <link rel="stylesheet" href="../../bower_components/reveal.js/lib/css/zenburn.css">
-
-        <!-- If the query includes 'print-pdf', use the PDF print sheet -->
         <script>
-            document.write( '<link rel="stylesheet" href="../../bower_components/reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+            document.write( '<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
         </script>
-
-        <!--[if lt IE 9]>
-        <script src="../../bower_components/reveal.js/lib/js/html5shiv.js"></script>
-        <![endif]-->
     </head>
 
     <body>
@@ -78,6 +68,11 @@
                 <section>
                     <h2>«Все в мире относительно»</h2>
                     <h4 style="text-align: right; color: #8F8F8F">Альберт Эйнштейн</h4>
+
+                    <aside class="notes">
+                        Тренды, ожидания, требования.<br />
+                        Каждый решает сам
+                    </aside>
                 </section>
 
                 <section>
@@ -873,8 +868,7 @@
 
         </div>
 
-        <script src="../../bower_components/reveal.js/lib/js/head.min.js"></script>
-        <script src="../../bower_components/reveal.js/js/reveal.min.js"></script>
+        <script src="js/all.js"></script>
 
         <script>
 
@@ -892,9 +886,9 @@
 
                 // Optional libraries used to extend on reveal.js
                 dependencies: [
-                    { src: '../../bower_components/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-                    { src: '../../bower_components/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-//                    { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+                    { src: 'node_modules/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'node_modules/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'node_modules/reveal.js/plugin/notes/notes.js', async: true}
                 ]
             });
 
