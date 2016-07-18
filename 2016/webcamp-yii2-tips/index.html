@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Профилирование в PHP с XDebug, XHprof, Blackfire</title>
+
+    <meta name="description" content="Профилирование в PHP с XDebug, XHprof, Blackfire">
+    <meta name="author" content="Дмитрий Науменко">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/all.css">
+
+    <script>
+        document.write( '<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+</head>
+
+<body>
+<!--
+HOTKEYS:
+  - s
+  - ESC
+  - b
+-->
+<div class="reveal">
+    <div class="slides">
+        <section class="title-slide">
+            <h1>Профилирование в PHP</h1>
+            <h2>XDebug, XHprof, Blackfire</h2>
+
+            <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
+            <p>
+                <small>
+                    <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
+                </small>
+            </p>
+        </section>
+
+        <section>
+            <h3>Сегодня узнаем:</h3>
+            <ul>
+                <li>Чего ждать от хорошего фреймворка?</li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Вопросы?</h2>
+
+            <ul>
+                <li><a href="http://slides.silverfire.me/2016/webcamp-yii2-tips/">slides.silverfire.me/2016/webcamp-yii2-tips/</a></li>
+            </ul>
+        </section>
+
+    </div>
+
+</div>
+
+<script src="js/all.js"></script>
+
+<script>
+
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: false,
+        progress: true,
+        history: true,
+        center: true,
+        margin: 0.3,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            { src: 'js/reveal/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+            { src: 'js/reveal/notes/notes.js', async: true}
+        ]
+    });
+
+
+
+</script>
+<!-- Yandex.Metrika counter --> <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
