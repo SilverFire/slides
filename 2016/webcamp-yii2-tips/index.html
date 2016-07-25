@@ -1,23 +1,23 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+	<meta charset="utf-8">
 
-    <title>Профилирование в PHP с XDebug, XHprof, Blackfire</title>
+	<title>Профилирование в PHP с XDebug, XHprof, Blackfire</title>
 
-    <meta name="description" content="Профилирование в PHP с XDebug, XHprof, Blackfire">
-    <meta name="author" content="Дмитрий Науменко">
+	<meta name="description" content="Профилирование в PHP с XDebug, XHprof, Blackfire">
+	<meta name="author" content="Дмитрий Науменко">
 
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <link rel="stylesheet" href="css/all.css">
+	<link rel="stylesheet" href="css/all.css">
 
-    <script>
-        document.write( '<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
-    </script>
+	<script>
+		document.write('<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+	</script>
 </head>
 
 <body>
@@ -27,41 +27,287 @@ HOTKEYS:
   - ESC
   - b
 -->
+
+<!--
+ ---- Мысли -----
+
+ - интернационализация
+ - компоненты
+ - виджеты
+ - поведение
+ - документация
+ - читать исходники
+
+http://slides.rmcreative.ru/2013/cooking-yii-the-right-way/#/2
+
+
+-->
+
 <div class="reveal">
-    <div class="slides">
-        <section class="title-slide">
-            <h1>Профилирование в PHP</h1>
-            <h2>XDebug, XHprof, Blackfire</h2>
+	<div class="slides">
+		<section class="title-slide" data-background-image="title.png"></section>
 
-            <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
-            <p>
-                <small>
-                    <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
-                </small>
-            </p>
-        </section>
+		<section>
+			<h3>О PHP в целом</h3>
+		</section>
 
-        <section>
-            <h3>Сегодня узнаем:</h3>
-            <ul>
-                <li>Чего ждать от хорошего фреймворка?</li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
-            </ul>
-        </section>
+		<section>
+			<h3>PHP развивается</h3>
+			<ul>
+				<li>новый синтаксис (??, <=>, group use)</li>
+				<li>новые возможности (anonymous classes, return type declaration)</li>
+				<li>крутое ускорение</li>
+				<li>рост сообщества → количества кода</li>
+			</ul>
+		</section>
 
-        <section>
-            <h2>Вопросы?</h2>
+		<section>
+			<h3>... а проблемы остаются:</h3>
+			<ul>
+				<li>рост количества кода ≠ росту качества кода</li>
+				<li>код меняется</li>
+				<li>переусложнение кода</li>
+				<li>обратная совместимость</li>
+				<li>серебренная пуля так и не найдена</li>
+			</ul>
 
-            <ul>
-                <li><a href="http://slides.silverfire.me/2016/webcamp-yii2-tips/">slides.silverfire.me/2016/webcamp-yii2-tips/</a></li>
-            </ul>
-        </section>
+			<aside class="notes">
+				код может стать плохим<br/><br/>
+				"Все проблемы программирования можно решить дополнительным слоем абстракции… кроме проблемы избыточной
+				абстракции" David Wheeler<br/>
+			</aside>
+		</section>
 
-    </div>
+		<!--<section>-->
+		<!--<h3>Переусложнение кода?</h3>-->
+		<!--<p>В стремление к гибкости мы добавляем новые слои абстрации и создаём сложность.</p>-->
+		<!--</section>-->
+
+		<!--<section>-->
+		<!--<h2>Accidental complexity</h2>-->
+		<!--<p>Случайно порождённая сложность, которой можно было избежать</p>-->
+		<!--</section>-->
+
+		<section>
+			<h3>Мы все стремимся</h3>
+			<ul>
+				<li>писать хорошо читабельный и легко поддерживаемый код</li>
+				<li>использовать актуальные технологии</li>
+				<li>получать удовольствие от работы</li>
+			</ul>
+		</section>
+
+		<section>
+			<h4>Хорошим инструментом приятно работать!</h4>
+			<img src="microscope.jpg"/>
+		</section>
+
+		<section data-background="microscope_nails.jpg">
+			<h4>Но нужно уметь.</h4>
+			<div style="height: 300px;"></div>
+		</section>
+
+		<section>
+			<img src="yii.png"/>
+		</section>
+
+		<section>
+			<h3>Yii 2 - MVC фреймворк</h3>
+
+			<table>
+				<tr>
+					<td><img src="mvc-not-ok.png"/></td>
+					<td style="vertical-align: middle;">
+						<ul>
+							<li>модели</li>
+							<li>представления</li>
+							<li>контроллеры</li>
+						</ul>
+					</td>
+				</tr>
+			</table>
+		</section>
+
+		<section>
+			<h4>На одном MVC далеко не уедешь</h4>
+
+			<ul>
+				<li>Раздутые модели и контроллеры</li>
+				<li>Бизнес-логика размазана</li>
+				<li>Копи-паста</li>
+				<li>Тестировать сложно</li>
+				<li class="fragment" data-fragment-index="1">Трогать опасно</li>
+				<li class="fragment" data-fragment-index="2">Жить больно</li>
+			</ul>
+		</section>
+
+		<section>
+			<table>
+				<tr>
+					<td><img src="yii_structure.png"/></td>
+					<td style="vertical-align: middle;">
+						<ul style="font-size: 75%;">
+							<li>MVC</li>
+							<li class="fragment" data-fragment-index="1">DI</li>
+							<li class="fragment" data-fragment-index="2">сервис-локатор</li>
+							<li class="fragment" data-fragment-index="3">компоненты</li>
+							<li class="fragment" data-fragment-index="4">модули</li>
+							<li class="fragment" data-fragment-index="5">фильтры</li>
+							<li class="fragment" data-fragment-index="6">виджеты</li>
+							<li class="fragment" data-fragment-index="7">хелперы</li>
+							<li class="fragment" data-fragment-index="8">Active Record</li>
+							<li class="fragment" data-fragment-index="9">...</li>
+						</ul>
+					</td>
+				</tr>
+			</table>
+		</section>
+
+		<section>
+			<h3>Представление (View)</h3>
+
+			<ul>
+				<li>HTML</li>
+				<li>Не трогать $_GET, $_POST</li>
+				<li>Не делать запросов в БД</li>
+				<li>Получать данные от контролера или модели</li>
+				<li>Использовать виджеты</li>
+			</ul>
+		</section>
+
+		<section>
+			<h3>Куда приткнуть бизнес-логику?</h3>
+
+			<ul>
+				<li>В модели</li>
+				<li>В контроллеры</li>
+				<li>Размазать тонким слоем по всему коду</li>
+				<li>В отдельные классы со статическими методами</li>
+				<li>В отдельные классы (и добавить в сервис-локатор)</li>
+			</ul>
+		</section>
+
+		<section>
+			<h4>Классы с регистрацией в сервис-локаторе - это:</h4>
+
+			<ul>
+				<li>Единое место для всей логики</li>
+				<li>Строгая зона ответственности</li>
+				<li>Связи с другими классами через DI</li>
+				<li>Взаимодействие по интерфейсам</li>
+				<li>Повторное использование</li>
+				<li>Тестируемость</li>
+				<li>Переносимость</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>Компоненты</h2>
+
+			<ul>
+				<li>Регистрация в конфигурации приложения</li>
+				<li>Один класс &ndash; много компонентов</li>
+				<li>Доступ через <code>Yii::$app->componentName</code></li>
+				<li>Никаких синглтонов</li>
+				<li>Много встроенных компонентов</li>
+				<li>Большой выбор компонентов в Open-Source</li>
+				<li>Можно переопределять и дополнять</li>
+				<li>Легко писать свои</li>
+			</ul>
+		</section>
+
+		<section>
+			<h4>Встроенные компоненты</h4>
+
+			<ul>
+				<li>request &ndash; представление запроса от клиента</li>
+				<li>response &ndash; представление ответа</li>
+				<li>session &ndash; данные сессии</li>
+				<li>urlManager &ndash; парсинг и генерация URL</li>
+				<li>db &ndash; работа с БД</li>
+				<li>formatter &ndash; форматирование дат, времени, др. величин</li>
+				<li>i18n &ndash; интернационализация</li>
+				<li>log &ndash; цели логирования</li>
+				<li>
+					<a href="http://www.yiiframework.com/doc-2.0/guide-structure-application-components.html#core-application-components">и
+						другие ...</a>
+				</li>
+			</ul>
+		</section>
+
+		<section>
+			<h3>Пишите компонент, когда:</h3>
+
+			<ul>
+				<li>Есть зона ответственности</li>
+				<li>Хочется написать синглтон</li>
+				<li>Конфигурация на уровне приложения</li>
+				<li>Работа с внешними ресурсами</li>
+				<li>Общее поведение</li>
+			</ul>
+
+			<aside class="notes">
+				Так что, пилить по компоненту под каждую мелочь?
+			</aside>
+		</section>
+
+		<section>
+			<h2>Helpers</h2>
+
+			<ul>
+				<li>Класс со статическими методами</li>
+				<li>Нет конфигурации на уровне приложения</li>
+				<li>Преобразование данных</li>
+				<li>Когда компонент &ndash; лишний</li>
+				<li>Переопределение наследованием</li>
+			</ul>
+		</section>
+
+		<section>
+			<h3>Встроенные хэлперы:</h3>
+
+			<ul>
+				<li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basestringhelper.html">StringHelper</a> &ndash; манипуляции со строками</li>
+				<li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basearrayhelper.html">ArrayHelper</a> &ndash; манипуляции с массивами</li>
+				<li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basehtml.html">Html</a> &ndash; генерация HTML</li>
+				<li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basejson.html">Json</a> &ndash; работа с JSON</li>
+				<li><a href="https://github.com/yiisoft/yii2/tree/master/framework/helpers">и другие...</a></li>
+			</ul>
+		</section>
+
+		<section>
+			<h3>Виджеты</h3>
+
+			<ul>
+				<li>Представление в ООП</li>
+				<li>Борьба с копи-пастой во вьюхах</li>
+				<li></li>
+				<li></li>
+				<li></li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>Модули</h2>
+
+			<ul>
+				<li>Группировка похожих функций приложения</li>
+				<li>Изоляция функций для их последующего использования в других проектах.</li>
+			</ul>
+
+			<p>Могут объединять всё: контроллеры, модели, вьюхи, компоненты, виджеты, etc.</p>
+		</section>
+
+		<section>
+			<h2>Вопросы?</h2>
+
+			<ul>
+				<li><a href="http://slides.silverfire.me/2016/webcamp-yii2-tips/">slides.silverfire.me/2016/webcamp-yii2-tips/</a>
+				</li>
+			</ul>
+		</section>
+
+	</div>
 
 </div>
 
@@ -69,28 +315,30 @@ HOTKEYS:
 
 <script>
 
-    // Full list of configuration options available here:
-    // https://github.com/hakimel/reveal.js#configuration
-    Reveal.initialize({
-        controls: false,
-        progress: true,
-        history: true,
-        center: true,
-        margin: 0.3,
+	// Full list of configuration options available here:
+	// https://github.com/hakimel/reveal.js#configuration
+	Reveal.initialize({
+		progress: true,
+		history: true,
+		center: true,
+		margin: 0.1,
 
-        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-        transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+		theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+		transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
 
-        // Optional libraries used to extend on reveal.js
-        dependencies: [
-            { src: 'js/reveal/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-            { src: 'js/reveal/notes/notes.js', async: true}
-        ]
-    });
-
+		// Optional libraries used to extend on reveal.js
+		dependencies: [
+			{
+				src: 'js/reveal/highlight/highlight.js', async: true, callback: function () {
+				hljs.initHighlightingOnLoad();
+			}
+			},
+			{src: 'js/reveal/notes/notes.js', async: true}
+		]
+	});
 
 
 </script>
-<!-- Yandex.Metrika counter --> <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
+<!--Yandex.Metrika counter  <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>  /Yandex.Metrika counter -->
 </body>
 </html>

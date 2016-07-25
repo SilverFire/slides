@@ -63,7 +63,7 @@ module.exports = function (grunt) {
                     'node_modules/reveal.js/css/theme/simple.css',
                     'css/samdark/samdark.css',
                     'css/style.css',
-                    'node_modules/reveal.js/lib/css/zenburn.css'
+                    'node_modules/highlight.js/styles/idea.css'
                 ],
                 dest: 'css/all.css'
             },

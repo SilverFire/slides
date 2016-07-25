@@ -1,5 +1,5 @@
 {
-  "name": "WebCamp 2016 - Yii2 recipes",
+  "name": "WebCamp_2016-Yii2_recipes",
   "private": true,
   "author": {
     "name": "Dmitry Naumenko",
@@ -20,7 +20,8 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-compass": "*",
     "grunt-zip": "*",
-    "grunt": "*"
+    "grunt": "*",
+    "highlight.js": "*"
   },
   "licenses": [
     {"type": "MIT"}

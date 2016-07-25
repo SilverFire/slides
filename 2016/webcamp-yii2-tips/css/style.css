@@ -2,24 +2,27 @@
     font-family: "Bandera Pro Medium";
 }
 
-.title-slide h1 {
-    font-size: 160% !important;
-}
+/*.reveal .slide-background {*/
+    /*background-position: right center;*/
+    /*background-image: url(Junior-2.jpg);*/
+    /*background-size: auto 100%;*/
+/*}*/
 
-.title-slide h2 {
-    font-size: 140% !important;
+.title-slide {
+    background: transparent;
 }
-
 .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
     font-family: "Bandera Pro Heavy";
+    line-height: 1.2em;
 }
 
-.title-slide a {
-    padding: 8px 16px;
+.accent {
+    text-decoration: underline;
 }
 
-section.title-slide {
-    background: #fff;
+.shadow {
+    font-weight: 100;
+    color: grey;
 }
 
 p.small {
