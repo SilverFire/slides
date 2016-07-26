@@ -1,23 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
-	<meta charset="utf-8">
+    <meta charset="utf-8">
 
-	<title>Профилирование в PHP с XDebug, XHprof, Blackfire</title>
+    <title>Рецепты для Yii 2</title>
 
-	<meta name="description" content="Профилирование в PHP с XDebug, XHprof, Blackfire">
-	<meta name="author" content="Дмитрий Науменко">
+    <meta name="description" content="Рецепты для Yii 2">
+    <meta name="author" content="Дмитрий Науменко">
 
-	<meta name="apple-mobile-web-app-capable" content="yes"/>
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-	<link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="css/all.css">
 
-	<script>
-		document.write('<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
-	</script>
+    <script>
+        document.write('<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+    </script>
 </head>
 
 <body>
@@ -44,270 +44,406 @@ http://slides.rmcreative.ru/2013/cooking-yii-the-right-way/#/2
 -->
 
 <div class="reveal">
-	<div class="slides">
-		<section class="title-slide" data-background-image="title.png"></section>
+    <div class="slides">
+        <section class="title-slide" data-background-image="title.png"></section>
 
-		<section>
-			<h3>О PHP в целом</h3>
-		</section>
+        <section>
+            <h3>О PHP в целом</h3>
+        </section>
 
-		<section>
-			<h3>PHP развивается</h3>
-			<ul>
-				<li>новый синтаксис (??, <=>, group use)</li>
-				<li>новые возможности (anonymous classes, return type declaration)</li>
-				<li>крутое ускорение</li>
-				<li>рост сообщества → количества кода</li>
-			</ul>
-		</section>
+        <section>
+            <h3>PHP развивается</h3>
+            <ul>
+                <li>новый синтаксис (??, <=>, group use)</li>
+                <li>новые возможности (anonymous classes, return type declaration)</li>
+                <li>крутое ускорение</li>
+                <li>рост сообщества → количества кода</li>
+            </ul>
+        </section>
 
-		<section>
-			<h3>... а проблемы остаются:</h3>
-			<ul>
-				<li>рост количества кода ≠ росту качества кода</li>
-				<li>код меняется</li>
-				<li>переусложнение кода</li>
-				<li>обратная совместимость</li>
-				<li>серебренная пуля так и не найдена</li>
-			</ul>
+        <section>
+            <h3>... а проблемы остаются:</h3>
+            <ul>
+                <li>рост количества кода ≠ росту качества кода</li>
+                <li>код меняется</li>
+                <li>переусложнение кода</li>
+                <li>обратная совместимость</li>
+                <li>серебренная пуля так и не найдена</li>
+            </ul>
 
-			<aside class="notes">
-				код может стать плохим<br/><br/>
-				"Все проблемы программирования можно решить дополнительным слоем абстракции… кроме проблемы избыточной
-				абстракции" David Wheeler<br/>
-			</aside>
-		</section>
+            <aside class="notes">
+                код может стать плохим<br/><br/>
+                "Все проблемы программирования можно решить дополнительным слоем абстракции… кроме проблемы избыточной
+                абстракции" David Wheeler<br/>
+            </aside>
+        </section>
 
-		<!--<section>-->
-		<!--<h3>Переусложнение кода?</h3>-->
-		<!--<p>В стремление к гибкости мы добавляем новые слои абстрации и создаём сложность.</p>-->
-		<!--</section>-->
+        <!--<section>-->
+        <!--<h3>Переусложнение кода?</h3>-->
+        <!--<p>В стремление к гибкости мы добавляем новые слои абстрации и создаём сложность.</p>-->
+        <!--</section>-->
 
-		<!--<section>-->
-		<!--<h2>Accidental complexity</h2>-->
-		<!--<p>Случайно порождённая сложность, которой можно было избежать</p>-->
-		<!--</section>-->
+        <!--<section>-->
+        <!--<h2>Accidental complexity</h2>-->
+        <!--<p>Случайно порождённая сложность, которой можно было избежать</p>-->
+        <!--</section>-->
 
-		<section>
-			<h3>Мы все стремимся</h3>
-			<ul>
-				<li>писать хорошо читабельный и легко поддерживаемый код</li>
-				<li>использовать актуальные технологии</li>
-				<li>получать удовольствие от работы</li>
-			</ul>
-		</section>
+        <section>
+            <h3>Мы все стремимся</h3>
+            <ul>
+                <li>писать хорошо читабельный и легко поддерживаемый код</li>
+                <li>использовать актуальные технологии</li>
+                <li>получать удовольствие от работы</li>
+            </ul>
+        </section>
 
-		<section>
-			<h4>Хорошим инструментом приятно работать!</h4>
-			<img src="microscope.jpg"/>
-		</section>
+        <section>
+            <h4>Хорошим инструментом приятно работать!</h4>
+            <img src="microscope.jpg"/>
+        </section>
 
-		<section data-background="microscope_nails.jpg">
-			<h4>Но нужно уметь.</h4>
-			<div style="height: 300px;"></div>
-		</section>
+        <section data-background="microscope_nails.jpg">
+            <h4>Но нужно уметь.</h4>
+            <div style="height: 300px;"></div>
+        </section>
 
-		<section>
-			<img src="yii.png"/>
-		</section>
+        <section>
+            <img src="yii.png"/>
+        </section>
 
-		<section>
-			<h3>Yii 2 - MVC фреймворк</h3>
+        <section>
+            <h3>Yii 2 - MVC фреймворк</h3>
 
-			<table>
-				<tr>
-					<td><img src="mvc-not-ok.png"/></td>
-					<td style="vertical-align: middle;">
-						<ul>
-							<li>модели</li>
-							<li>представления</li>
-							<li>контроллеры</li>
-						</ul>
-					</td>
-				</tr>
-			</table>
-		</section>
+            <table>
+                <tr>
+                    <td><img src="mvc-not-ok.png"/></td>
+                    <td style="vertical-align: middle;">
+                        <ul>
+                            <li>модели</li>
+                            <li>представления</li>
+                            <li>контроллеры</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </section>
 
-		<section>
-			<h4>На одном MVC далеко не уедешь</h4>
+        <section>
+            <h4>На одном MVC далеко не уедешь</h4>
 
-			<ul>
-				<li>Раздутые модели и контроллеры</li>
-				<li>Бизнес-логика размазана</li>
-				<li>Копи-паста</li>
-				<li>Тестировать сложно</li>
-				<li class="fragment" data-fragment-index="1">Трогать опасно</li>
-				<li class="fragment" data-fragment-index="2">Жить больно</li>
-			</ul>
-		</section>
+            <ul>
+                <li>Раздутые модели и контроллеры</li>
+                <li>Бизнес-логика размазана</li>
+                <li>Копи-паста</li>
+                <li>Тестировать сложно</li>
+                <li class="fragment" data-fragment-index="1">Трогать опасно</li>
+                <li class="fragment" data-fragment-index="2">Жить больно</li>
+            </ul>
+        </section>
 
-		<section>
-			<table>
-				<tr>
-					<td><img src="yii_structure.png"/></td>
-					<td style="vertical-align: middle;">
-						<ul style="font-size: 75%;">
-							<li>MVC</li>
-							<li class="fragment" data-fragment-index="1">DI</li>
-							<li class="fragment" data-fragment-index="2">сервис-локатор</li>
-							<li class="fragment" data-fragment-index="3">компоненты</li>
-							<li class="fragment" data-fragment-index="4">модули</li>
-							<li class="fragment" data-fragment-index="5">фильтры</li>
-							<li class="fragment" data-fragment-index="6">виджеты</li>
-							<li class="fragment" data-fragment-index="7">хелперы</li>
-							<li class="fragment" data-fragment-index="8">Active Record</li>
-							<li class="fragment" data-fragment-index="9">...</li>
-						</ul>
-					</td>
-				</tr>
-			</table>
-		</section>
+        <section>
+            <table>
+                <tr>
+                    <td><img src="yii_structure.png"/></td>
+                    <td style="vertical-align: middle;">
+                        <ul style="font-size: 75%;">
+                            <li>MVC</li>
+                            <li class="fragment" data-fragment-index="1">DI</li>
+                            <li class="fragment" data-fragment-index="2">сервис-локатор</li>
+                            <li class="fragment" data-fragment-index="3">компоненты</li>
+                            <li class="fragment" data-fragment-index="4">модули</li>
+                            <li class="fragment" data-fragment-index="5">фильтры</li>
+                            <li class="fragment" data-fragment-index="6">виджеты</li>
+                            <li class="fragment" data-fragment-index="7">хелперы</li>
+                            <li class="fragment" data-fragment-index="8">...</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </section>
 
-		<section>
-			<h3>Представление (View)</h3>
+        <section>
+            <h3>View</h3>
 
-			<ul>
-				<li>HTML</li>
-				<li>Не трогать $_GET, $_POST</li>
-				<li>Не делать запросов в БД</li>
-				<li>Получать данные от контролера или модели</li>
-				<li>Использовать виджеты</li>
-			</ul>
-		</section>
+            <ul>
+                <li>HTML</li>
+                <li>Минимум логики</li>
+                <li>Не трогать $_GET, $_POST</li>
+                <li>Не делать запросов в БД</li>
+                <li>Получать данные от контролера или модели</li>
+                <li>Повторяющийся HTML оформляем в виджеты</li>
+                <li>Разделять большие вьюхи на части</li>
+            </ul>
+        </section>
 
-		<section>
-			<h3>Куда приткнуть бизнес-логику?</h3>
+        <section>
+            <h3>Controllers & Actions</h3>
 
-			<ul>
-				<li>В модели</li>
-				<li>В контроллеры</li>
-				<li>Размазать тонким слоем по всему коду</li>
-				<li>В отдельные классы со статическими методами</li>
-				<li>В отдельные классы (и добавить в сервис-локатор)</li>
-			</ul>
-		</section>
+            <ul>
+                <li>Обрабатывают действия</li>
+                <li>Создают и наполняют модели</li>
+                <li>Не генерируют HTML (рендерят вьюхи)</li>
+                <li>Не содержат голый SQL</li>
+                <li>Не содержат бизнес-логику (вызывают её)</li>
+            </ul>
+        </section>
 
-		<section>
-			<h4>Классы с регистрацией в сервис-локаторе - это:</h4>
+        <section>
+            <h3>Переиспользуемые экшены</h3>
 
-			<ul>
-				<li>Единое место для всей логики</li>
-				<li>Строгая зона ответственности</li>
-				<li>Связи с другими классами через DI</li>
-				<li>Взаимодействие по интерфейсам</li>
-				<li>Повторное использование</li>
-				<li>Тестируемость</li>
-				<li>Переносимость</li>
-			</ul>
-		</section>
+            <table style="width: 100%">
+                <tr>
+                    <td>
+<pre><code class="php" data-trim data-noescape>
+public function actions()
+{
+  return [
+    'error' => [
+      'class' => 'yii\web\ErrorAction',
+    ]
+  ];
+}
+                        </code></pre>
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <ul>
+                            <li>Отдельностоящие классы</li>
+                            <li>Унификации стандартных действий</li>
+                            <li>Сложность локального изменения поведения</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </section>
 
-		<section>
-			<h2>Компоненты</h2>
+        <section>
+            <h3>Модели</h3>
 
-			<ul>
-				<li>Регистрация в конфигурации приложения</li>
-				<li>Один класс &ndash; много компонентов</li>
-				<li>Доступ через <code>Yii::$app->componentName</code></li>
-				<li>Никаких синглтонов</li>
-				<li>Много встроенных компонентов</li>
-				<li>Большой выбор компонентов в Open-Source</li>
-				<li>Можно переопределять и дополнять</li>
-				<li>Легко писать свои</li>
-			</ul>
-		</section>
+            <ul>
+                <li>Представляют структуры данных (таблицы)</li>
+                <li>Описывают связи</li>
+                <li>Содержат сценарии и правила валидации</li>
+                <li>Не трогают $_GET, $_POST</li>
+                <li>Не генерируют HTML</li>
+                <li>Не нужно раздувать</li>
+                <li>Не содержат бизнес-логику</li>
+                <li>Могут представлять формы, запрос к API</li>
+            </ul>
 
-		<section>
-			<h4>Встроенные компоненты</h4>
+            <aside class="notes">Подвести к бизнес-логике</aside>
+        </section>
 
-			<ul>
-				<li>request &ndash; представление запроса от клиента</li>
-				<li>response &ndash; представление ответа</li>
-				<li>session &ndash; данные сессии</li>
-				<li>urlManager &ndash; парсинг и генерация URL</li>
-				<li>db &ndash; работа с БД</li>
-				<li>formatter &ndash; форматирование дат, времени, др. величин</li>
-				<li>i18n &ndash; интернационализация</li>
-				<li>log &ndash; цели логирования</li>
-				<li>
-					<a href="http://www.yiiframework.com/doc-2.0/guide-structure-application-components.html#core-application-components">и
-						другие ...</a>
-				</li>
-			</ul>
-		</section>
+        <section>
+            <h3>Куда приткнуть бизнес-логику?</h3>
 
-		<section>
-			<h3>Пишите компонент, когда:</h3>
+            <ul>
+                <li class="fragment strike" data-fragment-index="1">В модели</li>
+                <li class="fragment strike" data-fragment-index="1">В контроллеры</li>
+                <li class="fragment strike" data-fragment-index="2">Размазать тонким слоем по всему коду</li>
+                <li class="fragment strike" data-fragment-index="3">В отдельные классы со статическими методами</li>
+                <li class="fragment highlight-green" data-fragment-index="4">В отдельные классы (и добавить в
+                    сервис-локатор)
+                </li>
+            </ul>
+        </section>
 
-			<ul>
-				<li>Есть зона ответственности</li>
-				<li>Хочется написать синглтон</li>
-				<li>Конфигурация на уровне приложения</li>
-				<li>Работа с внешними ресурсами</li>
-				<li>Общее поведение</li>
-			</ul>
+        <section>
+            <h4>Классы с регистрацией в сервис-локаторе - это:</h4>
 
-			<aside class="notes">
-				Так что, пилить по компоненту под каждую мелочь?
-			</aside>
-		</section>
+            <ul>
+                <li>Единое место для всей логики</li>
+                <li>Строгая зона ответственности</li>
+                <li>Связи с другими классами через DI</li>
+                <li>Взаимодействие по интерфейсам</li>
+                <li>Повторное использование</li>
+                <li>Тестируемость</li>
+                <li>Переносимость</li>
+            </ul>
+        </section>
 
-		<section>
-			<h2>Helpers</h2>
+        <section>
+            <h4>Как это выглядит</h4>
 
-			<ul>
-				<li>Класс со статическими методами</li>
-				<li>Нет конфигурации на уровне приложения</li>
-				<li>Преобразование данных</li>
-				<li>Когда компонент &ndash; лишний</li>
-				<li>Переопределение наследованием</li>
-			</ul>
-		</section>
+            <pre class="highlight php">
+class ClientLogic extends Logic
+{
+    public $billLogic;
+    public $accessChecker;
 
-		<section>
-			<h3>Встроенные хэлперы:</h3>
+    public function __construct(
+        <span class="fragment highlight-red" data-fragment-index="1">BillLogic $billLogic</span>,
+        AccessChecker $accessChecker
+    ) {
+        <span class="fragment highlight-red" data-fragment-index="2">$this->billLogic = $billLogic;</span>
+        $this->accessChecker = $accessChecker;
+    }
 
-			<ul>
-				<li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basestringhelper.html">StringHelper</a> &ndash; манипуляции со строками</li>
-				<li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basearrayhelper.html">ArrayHelper</a> &ndash; манипуляции с массивами</li>
-				<li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basehtml.html">Html</a> &ndash; генерация HTML</li>
-				<li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basejson.html">Json</a> &ndash; работа с JSON</li>
-				<li><a href="https://github.com/yiisoft/yii2/tree/master/framework/helpers">и другие...</a></li>
-			</ul>
-		</section>
+    public function delete(Client $client)
+    {
+        if ($this->accessChecker->checkAccess('client.delete', $client)) {
+            $this->billLogic->finalizeClientBills($client);
+            return $client->delete();
+        }
 
-		<section>
-			<h3>Виджеты</h3>
+        return false;
+    }
+}
+            </pre>
+        </section>
 
-			<ul>
-				<li>Представление в ООП</li>
-				<li>Борьба с копи-пастой во вьюхах</li>
-				<li></li>
-				<li></li>
-				<li></li>
-			</ul>
-		</section>
+        <section>
+            <h2>Компоненты</h2>
 
-		<section>
-			<h2>Модули</h2>
+            <ul>
+                <li>Регистрация в конфигурации приложения</li>
+                <li>Один класс &ndash; много компонентов</li>
+                <li>Доступ через <code>Yii::$app->componentName</code></li>
+                <li>Никаких синглтонов</li>
+                <li>Много встроенных компонентов</li>
+                <li>Большой выбор компонентов в Open-Source</li>
+                <li>Можно переопределять и дополнять</li>
+                <li>Легко писать свои</li>
+            </ul>
+        </section>
 
-			<ul>
-				<li>Группировка похожих функций приложения</li>
-				<li>Изоляция функций для их последующего использования в других проектах.</li>
-			</ul>
+        <section>
+            <h3>Встроенные компоненты</h3>
 
-			<p>Могут объединять всё: контроллеры, модели, вьюхи, компоненты, виджеты, etc.</p>
-		</section>
+            <ul>
+                <li>request &ndash; представление запроса от клиента</li>
+                <li>response &ndash; представление ответа</li>
+                <li>session &ndash; хранилище данных сессии</li>
+                <li>urlManager &ndash; парсинг и генерация URL</li>
+                <li>db &ndash; работа с БД</li>
+                <li>formatter &ndash; форматирование дат, времени, др. величин</li>
+                <li>i18n &ndash; интернационализация</li>
+                <li>log &ndash; цели логирования</li>
+                <li>
+                    <a href="http://www.yiiframework.com/doc-2.0/guide-structure-application-components.html#core-application-components">
+                        и другие ...
+                    </a>
+                </li>
+            </ul>
+        </section>
 
-		<section>
-			<h2>Вопросы?</h2>
+        <section>
+            <h3>Пишите компонент, когда:</h3>
 
-			<ul>
-				<li><a href="http://slides.silverfire.me/2016/webcamp-yii2-tips/">slides.silverfire.me/2016/webcamp-yii2-tips/</a>
-				</li>
-			</ul>
-		</section>
+            <ul>
+                <li>Есть зона ответственности</li>
+                <li>Хочется написать синглтон</li>
+                <li>Конфигурация на уровне приложения</li>
+                <li>Работа с внешними ресурсами</li>
+                <li>Общее поведение</li>
+            </ul>
 
-	</div>
+            <aside class="notes">
+                Так что, пилить по компоненту под каждую мелочь?
+            </aside>
+        </section>
+
+        <section>
+            <h2>Helpers</h2>
+
+            <ul>
+                <li>Класс со статическими методами</li>
+                <li>Когда не нужна конфигурации на уровне приложения</li>
+                <li>Преобразование данных</li>
+                <li>Переопределение наследованием</li>
+                <li>Когда компонент &ndash; лишний</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Встроенные хэлперы:</h3>
+
+            <ul>
+                <li>
+                    <a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basestringhelper.html">StringHelper</a> &ndash;
+                    манипуляции со строками
+                </li>
+                <li>
+                    <a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basearrayhelper.html">ArrayHelper</a> &ndash;
+                    манипуляции с массивами
+                </li>
+                <li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basehtml.html">Html</a> &ndash; генерация
+                    HTML
+                </li>
+                <li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basejson.html">Json</a> &ndash; работа с
+                    JSON
+                </li>
+                <li><a href="https://github.com/yiisoft/yii2/tree/master/framework/helpers">и другие...</a></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Виджеты</h2>
+
+            <ul>
+                <li>Вьюхи в ООП-стиле</li>
+                <li>Борьба копи-пастой во вьюхах</li>
+                <li>Хороши для повторно-используемых элементов: кнопки, таблицы, цельные компоненты вёрстки</li>
+                <li>Приятно тестировать</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Behaviors <span style="color: red;">Нужно ли?</span></h2>
+
+            <pre class="highlight php">
+public function behaviors()
+{
+    return [
+        [
+            'class' => BlameableBehavior::className(),
+            'createdByAttribute' => 'author_id',
+            'updatedByAttribute' => 'updater_id',
+        ],
+    ];
+}
+</pre>
+            <ul>
+                <li>По сути &mdash; миксины</li>
+                <li>Переехали из Yii 1, когда трейтов не было</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Преимущества Behavior'ов</h3>
+
+            <ul>
+                <li>статическое и динамическое прикрепление</li>
+                <li>возможность наследования</li>
+                <li>настройка поведения</li>
+                <li>возможность тестирования</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Модули</h2>
+
+            <ul>
+                <li>Группировка похожих функций приложения</li>
+                <li>Изоляция функций для их последующего использования в других проектах.</li>
+            </ul>
+
+            <p>Могут объединять всё: контроллеры, модели, вьюхи, компоненты, виджеты, etc.</p>
+        </section>
+
+        <section>
+
+        </section>
+
+        <section>
+            <h2>Вопросы?</h2>
+
+            <ul>
+                <li><a href="http://slides.silverfire.me/2016/webcamp-yii2-tips/">slides.silverfire.me/2016/webcamp-yii2-tips/</a>
+                </li>
+            </ul>
+        </section>
+
+    </div>
 
 </div>
 
@@ -315,27 +451,31 @@ http://slides.rmcreative.ru/2013/cooking-yii-the-right-way/#/2
 
 <script>
 
-	// Full list of configuration options available here:
-	// https://github.com/hakimel/reveal.js#configuration
-	Reveal.initialize({
-		progress: true,
-		history: true,
-		center: true,
-		margin: 0.1,
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        progress: true,
+        history: true,
+        center: true,
+        margin: 0.1,
 
-		theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-		transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
 
-		// Optional libraries used to extend on reveal.js
-		dependencies: [
-			{
-				src: 'js/reveal/highlight/highlight.js', async: true, callback: function () {
-				hljs.initHighlightingOnLoad();
-			}
-			},
-			{src: 'js/reveal/notes/notes.js', async: true}
-		]
-	});
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            {
+                src: 'js/reveal/highlight/highlight.js',
+                async: true,
+                callback: function () {
+                    [].forEach.call(document.querySelectorAll('.highlight'), function (v, i) {
+                        hljs.highlightBlock(v);
+                    });
+                }
+            },
+            {src: 'js/reveal/notes/notes.js', async: true}
+        ]
+    });
 
 
 </script>
