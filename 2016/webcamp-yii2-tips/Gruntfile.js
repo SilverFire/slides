@@ -64,7 +64,7 @@ module.exports = function (grunt) {
                     'css/samdark/samdark.css',
                     'css/ubuntu.css',
                     'css/style.css',
-                    'node_modules/highlight.js/styles/github-gist.css'
+                    'node_modules/highlight.js/styles/monokai-sublime.css'
                 ],
                 dest: 'css/all.css'
             },

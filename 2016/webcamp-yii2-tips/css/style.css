@@ -68,8 +68,8 @@ span.comment {
     font-size: 50%
 }
 
-.reveal pre code {
-    max-height: 650px;
+.reveal pre.highlight {
+    padding: 5px;
 }
 
 .reveal .slides section .fragment.underline-dotted {
