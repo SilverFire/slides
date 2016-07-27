@@ -49,6 +49,15 @@ span.comment {
     max-height: 650px;
 }
 
+.reveal .slides section .fragment.underline-dotted {
+    opacity: 1;
+    visibility: visible;
+}
+
+.reveal .slides section .fragment.underline-dotted.visible {
+    border-bottom: 4px dotted #000;
+}
+
 @font-face {
     font-family: 'Bandera Pro';
     src: url("../fonts/BanderaPro.otf") format("opentype");
