@@ -116,24 +116,19 @@
         </section>
 
         <section>
-            <img src="mythbusters.jpg"/>
+            <p><b>M</b> в паттерне <span class="accent">M</span><span class="shadow">VC</span> &mdash; модель</p>
+            <hr class="fragment" data-fragment-index="1"/>
+            <p class="fragment" data-fragment-index="1">Модель в Yii
+                <small>(и не только)</small> &mdash; класс, описывающий структуру таблицы
+            </p>
+            <hr class="fragment" data-fragment-index="2"/>
+            <p class="fragment" data-fragment-index="2">По MVC, бизнес-логика относится к модели</p>
+            <p class="fragment" data-fragment-index="3">&#x25BC;</p>
+            <h3 class="fragment" data-fragment-index="3">Кладём всю логику в модели, которые описывают структуру таблиц!</h3>
         </section>
 
         <section>
-            <h2>Миф об <span class="accent">M</span><span class="shadow">VC</span></h2>
-
-            <hr class="fragment" data-fragment-index="1"/>
-            <p class="fragment" data-fragment-index="1"><b>M</b> в паттерне <span class="accent">M</span><span
-                    class="shadow">VC</span> &mdash; модель</p>
-            <hr class="fragment" data-fragment-index="2"/>
-            <p class="fragment" data-fragment-index="2">Модель в Yii
-                <small>(и не только)</small> &mdash; класс, описывающий структуру таблицы
-            </p>
-            <hr class="fragment" data-fragment-index="3"/>
-            <p class="fragment" data-fragment-index="3">По MVC, бизнес-логика относится к модели</p>
-            <p class="fragment" data-fragment-index="4">&#x25BC;</p>
-            <h3 class="fragment" data-fragment-index="4">Кладём всю логику в модели, которые описывают структуру
-                таблиц!</h3>
+            <img src="mythbusters.jpg"/>
         </section>
 
         <section>
@@ -286,6 +281,7 @@ public function actionDelete($id)
                             <li class="fragment" data-fragment-index="5">фильтры</li>
                             <li class="fragment" data-fragment-index="6">виджеты</li>
                             <li class="fragment" data-fragment-index="7">хелперы</li>
+                            <li class="fragment" data-fragment-index="8">ассеты</li>
                             <li class="fragment" data-fragment-index="8">...</li>
                         </ul>
                     </td>
@@ -503,7 +499,7 @@ public function actions()
 
             <ul>
                 <li>Вьюхи с логикой в ООП-стиле</li>
-                <li>Борьба копи-пастой во вьюхах</li>
+                <li>Борьба с копи-пастой во вьюхах</li>
                 <li>Хороши для повторно-используемых элементов: кнопки, таблицы, цельные компоненты вёрстки</li>
                 <li>Приятно тестировать</li>
             </ul>
@@ -620,7 +616,7 @@ class m160831_create_news extends Migration
 </pre>
 
             <ul>
-                <li>Единственный железный способ поддержания целостности</li>
+                <li>Единственный железный способ поддержания актуальности</li>
                 <li>Абстрактно от БД и среды</li>
                 <li>Легко пишутся</li>
                 <li>Тестируемы</li>
@@ -718,6 +714,25 @@ echo Yii::t('presentation', 'Powered by {link}', [
                 Больше про i18n в докладе <br />
                 <a href="http://slides.rmcreative.ru/2015/webconf-i18n-l10n/#/">Yii and PHP i18n & L10n</a> Александра Макарова
             </p>
+        </section>
+        
+        <section>
+            <h3>Assets</h3>
+
+            <ul>
+                <li>CSS, JS, картинки, шрифты</li>
+                <li>В Yii &mdash; классы, описывающие пути к этим файлам</li>
+                <li class="fragment" data-fragment-index="3">
+                    Компиляция &mdash; <span class="fragment strike" data-fragment-index="4">AssetCompressor</span>
+                    <span class="fragment" data-fragment-index="4">Gulp, Grunt</span>
+                </li>
+                <li class="fragment" data-fragment-index="5">
+                    FXP/composer-asset-plugin
+                    <span class="fragment" data-fragment-index="6">
+                        → <a href="https://asset-packagist.org">asset-packagist.org</a>
+                    </span>
+                </li>
+            </ul>
         </section>
 
         <section>
