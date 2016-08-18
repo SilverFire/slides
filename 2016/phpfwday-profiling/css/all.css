@@ -1824,6 +1824,7 @@ body {
 
 .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
     font-family: "Bandera Pro Heavy";
+    line-height: 1.2em;
 }
 
 .title-slide a {
@@ -1854,6 +1855,14 @@ span.comment {
     font-size: 50%
 }
 
+.reveal pre.highlight {
+    padding: 5px;
+}
+
+.reveal code {
+    display: inline;
+}
+
 .reveal pre code {
     max-height: 650px;
 }
@@ -1881,8 +1890,7 @@ span.comment {
 
 /*
 
-Zenburn style from voldmar.ru (c) Vladimir Epifanov <voldmar@voldmar.ru>
-based on dark.css by Ivan Sagalaev
+Intellij Idea-like styling (c) Vasily Polovnyov <vast@whiteants.net>
 
 */
 
@@ -1890,67 +1898,85 @@ based on dark.css by Ivan Sagalaev
   display: block;
   overflow-x: auto;
   padding: 0.5em;
-  background: #3f3f3f;
-  color: #dcdcdc;
+  color: #000;
+  background: #fff;
 }
 
+.hljs-subst,
+.hljs-title {
+  font-weight: normal;
+  color: #000;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #808080;
+  font-style: italic;
+}
+
+.hljs-meta {
+  color: #808000;
+}
+
+.hljs-tag {
+  background: #efefef;
+}
+
+.hljs-section,
+.hljs-name,
+.hljs-literal,
 .hljs-keyword,
 .hljs-selector-tag,
-.hljs-tag {
-  color: #e3ceab;
-}
-
-.hljs-template-tag {
-  color: #dcdcdc;
-}
-
-.hljs-number {
-  color: #8cd0d3;
-}
-
-.hljs-variable,
-.hljs-template-variable,
-.hljs-attribute {
-  color: #efdcbc;
-}
-
-.hljs-literal {
-  color: #efefaf;
-}
-
-.hljs-subst {
-  color: #8f8f8f;
-}
-
-.hljs-title,
-.hljs-name,
+.hljs-type,
 .hljs-selector-id,
-.hljs-selector-class,
-.hljs-section,
-.hljs-type {
-  color: #efef8f;
+.hljs-selector-class {
+  font-weight: bold;
+  color: #000080;
+}
+
+.hljs-attribute,
+.hljs-number,
+.hljs-regexp,
+.hljs-link {
+  font-weight: bold;
+  color: #0000ff;
+}
+
+.hljs-number,
+.hljs-regexp,
+.hljs-link {
+  font-weight: normal;
+}
+
+.hljs-string {
+  color: #008000;
+  font-weight: bold;
 }
 
 .hljs-symbol,
 .hljs-bullet,
-.hljs-link {
-  color: #dca3a3;
+.hljs-formula {
+  color: #000;
+  background: #d0eded;
+  font-style: italic;
 }
 
-.hljs-deletion,
-.hljs-string,
-.hljs-built_in,
-.hljs-builtin-name {
-  color: #cc9393;
+.hljs-doctag {
+  text-decoration: underline;
 }
 
-.hljs-addition,
-.hljs-comment,
-.hljs-quote,
-.hljs-meta {
-  color: #7f9f7f;
+.hljs-variable,
+.hljs-template-variable {
+  color: #660e7a;
 }
 
+.hljs-addition {
+  background: #baeeba;
+}
+
+.hljs-deletion {
+  background: #ffc8bd;
+}
 
 .hljs-emphasis {
   font-style: italic;

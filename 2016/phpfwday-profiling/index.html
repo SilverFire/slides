@@ -21,12 +21,6 @@
     </head>
 
     <body>
-        <!--
-        HOTKEYS:
-          - s
-          - ESC
-          - b
-        -->
         <div class="reveal">
             <div class="slides">
                 <section class="title-slide">
@@ -80,8 +74,8 @@
 
                     <ul>
                         <li class="fragment" data-fragment-index="1">более быстрый отклик</li>
-                        <li class="fragment" data-fragment-index="2">экономия ресурсов → денег</li>
-                        <li class="fragment" data-fragment-index="3">больше RPS</li>
+                        <li class="fragment" data-fragment-index="2">больше RPS</li>
+                        <li class="fragment" data-fragment-index="3">экономия ресурсов → денег</li>
                     </ul>
                 </section>
 
@@ -195,30 +189,15 @@
 
                 <section>
                     <h2>Stacktrace</h2>
+
                     <img src="xdebug_stacktrace.png" />
                 </section>
 
                 <section>
-                    <h4>Просмотр переменных, доступные в текущей области видимости</h4>
+                    <h4>Просмотр переменных, доступных в текущей области видимости</h4>
                     <img src="xdebug.png" />
                     <h4>Значения можно изменять "на лету"</h4>
                 </section>
-
-                <section>
-                    <h3>Linux: ставится из пакетов</h3>
-                    <pre><code>apt-get install php-xdebug</code></pre>
-                </section>
-
-                <section>
-                    <h3>Windows: подключается DLL как расширение PHP</h3>
-                    <p><a href="https://xdebug.org/download.php">Скачивать тут</a></p>
-                </section>
-
-                <section>
-                    <h3>Всё остальное: собрать из исходников по мануалу</h3>
-                    <p><a href="https://xdebug.org/docs/install">Мануалы тут</a></p>
-                </section>
-
 
                 <section>
                     <h1>XHprof</h1>
@@ -232,7 +211,7 @@
                     <h3>Преимущества:</h3>
 
                     <ul>
-                        <li>практически не даёт overhead'а</li>
+                        <li>минимальный overhead (~10%)</li>
                         <li>можно включать на проде</li>
                     </ul>
                 </section>
@@ -241,52 +220,37 @@
                     <h3>Недостатки:</h3>
 
                     <ul>
-                        <li>официально не поддерживат PHP 7<span class="fragment" data-fragment-index="1">, но есть форки с поддержкой</span></li>
+                        <li>
+                            официально не поддерживает PHP 7.
+                            <div style="display: inline;" class="fragment" data-fragment-index="1">
+                                Но есть форки с поддержкой:
+                                <ul style="margin: 0;">
+                                    <li><a href="https://tideways.io/profiler/xhprof-for-php7-php5.6">Tideways.io</a></li>
+                                    <li><a href="https://github.com/RustJason/xhprof">RustJason/xhprof</a></li>
+                                </ul>
+
+                            </div>
+                        </li>
                         <li>умеет считать только общее время, процессорное время и память<span class="fragment" data-fragment-index="2">, хотя этого обычно достаточно</span></li>
                     </ul>
                 </section>
 
                 <section>
-                    <h5>Linux: из PECL</h5>
-                    <pre><code>pecl install xhprof-beta</code></pre>
-                </section>
-
-                <section>
-                    <h5>Windows: подключается DLL расширение PHP</h5>
-                    <p><a href="http://windows.php.net/downloads/pecl/releases/xhprof">Скачивать тут</a></p>
-                </section>
-
-                <section>
-                    <h4>Всё остальное: собрать из исходников</h4>
-                    <pre><code class="bash">
-    wget http://pecl.php.net/get/xhprof-0.9.4.tgz
-    tar xvf xhprof-0.9.4.tgz
-    cd xhprof-0.9.4/extension
-    phpize
-    ./configure --with-php-config=/usr/bin/php-config
-    make
-    make install
-                    </code></pre>
-                </section>
-
-                <section>
-                    <h4>Как запустить?</h4>
+                    <h4>Начать &mdash; легко!</h4>
 
                     <p>Законфижить в php.ini</p>
-                    <pre><code class="apache">
+                    <pre class="highlight apache">
     [xhprof]
     extension=xhprof.so
-    xhprof.output_dir="/tmp/xhprof"
-                    </code></pre>
+    xhprof.output_dir="/tmp/xhprof"</pre>
 
-                    <p>Включить в коде</p>
-                    <pre><code class="php">
+                    <p>Включить в точке входа</p>
+                    <pre class="highlight php">
     &lt;?php
 
     xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
     (new Application())->run();
-    $xhprof_data = xhprof_disable();
-                    </code></pre>
+    $xhprof_data = xhprof_disable();</pre>
                 </section>
 
                 <section>
@@ -304,11 +268,11 @@
                     </code></pre>
                     <hr class="fragment" data-fragment-index="1" />
                     <ul class="fragment" data-fragment-index="1">
-                        <li><code>ct</code> &ndash; количество вызовов функции</li>
-                        <li><code>wt</code> &ndash; реальное время выполнения, микросекунд</li>
-                        <li><code>cpu</code> &ndash; процессорное время, микросекунд</li>
-                        <li><code>mu</code> &ndash; потребление памяти, байт</li>
-                        <li><code>pmu</code> &ndash; пиковое потребление памяти, байт</li>
+                        <li><em>ct</em> &ndash; количество вызовов функции</li>
+                        <li><em>wt</em> &ndash; реальное время выполнения, микросекунд</li>
+                        <li><em>cpu</em> &ndash; процессорное время, микросекунд</li>
+                        <li><em>mu</em> &ndash; потребление памяти, байт</li>
+                        <li><em>pmu</em> &ndash; пиковое потребление памяти, байт</li>
                     </ul>
                 </section>
 
@@ -341,13 +305,14 @@
                     <h3>А как смотреть?</h3>
 
                     <p>
-                        Берем директории <code>xhprof_lib</code> и <code>xhprof_html</code> из того-же
+                        Берем директории <strong>xhprof_lib</strong> и <strong>xhprof_html</strong> из того-же
                         <a href="https://github.com/phacility/xhprof/tree/master/xhprof_lib/utils">репозитория</a>,
-                        кладём их рядом, и поднимаем веб-сервер, указывая root в <code>xhprof_html</code>.
+                        кладём их рядом, и поднимаем веб-сервер, указывая root в <strong>xhprof_html</strong>.
                     </p>
                 </section>
 
-                <section data-background="xhprof_default_ui.png">
+                <section>
+                    <img src="xhprof_default_ui.png">
                 </section>
 
                 <section>
@@ -355,7 +320,11 @@
                     <p><pre>    http://xhprof.localhost/index.php?run1=__ID1__&run2=__ID2__</pre></p>
                 </section>
 
-                <section data-background="xhprof_default_ui_diff.png"></section>
+                <section>
+                    <img src="xhprof_diff_1.png" />
+
+                    <img src="xhprof_diff_2.png" />
+                </section>
 
                 <section>
                     <h3>Эм... Как-то не круто</h3>
@@ -364,7 +333,7 @@
 
                 <section>
                     <h3>Конечно! Ставим graphviz:</h3>
-                    <code>apt-get install graphviz</code>
+                    <pre class="highlight">apt-get install graphviz</pre>
                 </section>
 
                 <section>
@@ -374,7 +343,9 @@
                     </p>
                 </section>
 
-                <section data-background="xhprof_default_ui.png"></section>
+                <section>
+                    <img src="xhprof_view_callgraph.png" />
+                </section>
 
                 <section data-background="xhprof_default_ui_graph_all.png"></section>
 
@@ -391,7 +362,9 @@
                     </ul>
                 </section>
 
-                <section data-background="xhprof_default_ui_graph_all.png"></section>
+                <section>
+                    <img src="xhprof_callgraph_zoomed.png" />
+                </section>
 
                 <section>
                     <h3>Окей, а можно еще информативнее?</h3>
@@ -399,182 +372,6 @@
 
                 <section>
                     <p>Рисовалка собирает блоки на PHP, можно немного поковырять и добавить вывод нужной инфы, вроде CPU или RAM</p>
-                </section>
-
-                <section>
-                    <h4>А что с форком XHprof, который умеет PHP7?</h4>
-                </section>
-
-                <section>
-                    <img src="tideways-logo.png" />
-                    <h2>Tideways</h2>
-                    <ul>
-                        <li><a href="https://tideways.io/">tideways.io</a></li>
-                        <li><a href="https://github.com/tideways/php-profiler-extension">GitHub</a></li>
-                    </ul>
-                </section>
-
-                <section>
-                    <ul>
-                        <li>Форк XHprof, все упоминания самого XHprof в коде минимизированы</li>
-                        <li>Формат данных на 100% совместивый с XHprof</li>
-                        <li>Активно поддерживается, фиксятся баги и сегфолты, сделана поддержка PHP7</li>
-                        <li>Ребята пилят свой UI для рисования профайлов</li>
-                        <li>Профайлы можно легко заливать на их сервис</li>
-                        <li>Работает на Linux, FreeBSD, Windows, MacOS</li>
-                        <li>Написали много хороших <a href="https://tideways.io/profiler/docs">мануалов</a></li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h4>Загрузка профайлов на Tideways</h4>
-
-                    <ul>
-                        <li><code>tideways-daemon</code> выгружает собранные профайлы на tideways.io</li>
-                        <li>можно смотреть на сайте в модном JS-ном UI</li>
-                        <li>можно добавлять участников в команду и анализировать трейс вместе</li>
-                        <li>опционально</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h2>Как поставить?</h2>
-
-                    <p>На сайте есть <a href="https://tideways.io/profiler/docs/setup/installation">мануалы</a>
-                        для всех вариантов.</p>
-                    <p><code>tideways-daemon</code> можно не ставить, если не планируете пользоваться UI</p>
-                </section>
-
-                <section>
-                    <h4>Как запустить?</h4>
-
-                    <p>Законфижить в php.ini</p>
-                    <pre><code class="apache">
-    [tideways]
-    extension=tideways.so
-    tideways.auto_prepend_library=0
-    ;Закомментировать строку выше, если хотите сливать профайлы на Tideways
-                    </code></pre>
-
-                    <p>Включить в коде</p>
-                    <pre><code class="php">
-    &lt;?php
-    tideways_enable(TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY | TIDEWAYS_FLAGS_NO_SPANS);
-    (new Application())->run();
-    $xhprof_data = tideways_disable();
-                    </code></pre>
-                </section>
-
-                <section>
-                    <table>
-                        <tr>
-                            <td>xhprof_enable()</td>
-                            <td>→</td>
-                            <td>tideways_enable()</td>
-                        </tr>
-                        <tr>
-                            <td>xhprof_disable()</td>
-                            <td>→</td>
-                            <td>tideways_disable()</td>
-                        </tr>
-                        <tr>
-                            <td>XHPROF_FLAGS_CPU</td>
-                            <td>→</td>
-                            <td>TIDEWAYS_FLAGS_CPU</td>
-                        </tr>
-                        <tr>
-                            <td>XHPROF_FLAGS_*</td>
-                            <td>→</td>
-                            <td>XHPROF_FLAGS_*</td>
-                        </tr>
-                    </table>
-                </section>
-
-                <section>
-                    <h3>Как сохранять?</h3>
-
-                    <h4>Можно локально, форк XHprof же</h4>
-                     <pre><code class="php">
-    &lt;?php
-    tideways_enable(TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY | TIDEWAYS_FLAGS_NO_SPANS);
-    (new Application())->run();
-    $xhprof_data = tideways_disable();
-
-    include_once '../xhprof/xhprof_lib.php';
-    include_once '../xhprof/xhprof_runs.php';
-    $xhprof_runs = new XHProfRuns_Default('/tmp/xhprof');
-    $run_id = $xhprof_runs->save_run($xhprof_data, 'my_application');
-                     </code></pre>
-
-                    <p class="small">
-                        Для работы стандартного просмотрщика профайлов XHprof нужно сделать
-                        <code class="php">ini_set('xhprof.output_dir', '/your/path')</code> или найти в исходниках
-                        создание объекта <code class="php">new XHProfRuns_Default('/your/path')</code> и передать
-                        путь явно
-                    </p>
-                </section>
-
-                <section>
-                    <h3>Или выгружать на Tideways</h3>
-
-	                <pre><code>    composer require tideways/profiler:*</code></pre>
-                    <pre><code class="php">
-    &lt;?php
-    \Tideways\Profiler::start(array(
-        'api_key' => 'YOUR API KEY',
-    ));
-    (new Application())->run();
-                    </code></pre>
-
-                    <p class="small">Либо настроить автовыгрузку в конфиге PHP или конфиге Apache/Nginx/FPM.
-                        Примеры есть в документации.
-                        И не забыть <code>tideways-daemon</code>
-                    </p>
-                </section>
-
-                <section>
-                    <img src="tideways_ui.png" />
-                </section>
-
-	            <section data-background="tideways_trace.png">
-                    <!--<img src="tideways_trace.png" />-->
-	            </section>
-
-	            <section>
-                    <img src="tideways_details.png" />
-                </section>
-
-                <section>
-                    <h4>Timeline по категориям</h4>
-
-                    <img src="tideways_timeline.png" />
-                </section>
-
-                <section>
-                    <h4>Для подсветки категорий, нужно обернуть код:</h4>
-                    <pre><code class="php">
-    &lt;?php
-    public function foo()
-    {
-        $span = \Tideways\Profiler::createSpan('sql');
-        $span->startTimer();
-        $span->annotate(array('title' => 'insert users'));
-
-        $this->pdo->query('INSERT INTO users (id, name) values (1, "foo")');
-
-        $span->stopTimer();
-    }
-                    </code></pre>
-                </section>
-
-                <section>
-                    <h3>Пару слов про UI</h3>
-                    <ul>
-                        <li>Пока не рисует ни память, ни CPU</li>
-                        <li>Умеет строить сравнения, как и XHprof</li>
-                        <li>Есть приложение для Chrome, можно включать профилирование по запросу</li>
-                        <li>Платный, от 49€/мес. Испытательный период &ndash; 30 дней. Тарификация по количеству профайлов</li>
-                    </ul>
                 </section>
 
                 <section>
@@ -607,13 +404,13 @@
                 </section>
 
                 <section>
-                    <h4>Blackfire состояит из</h4>
+                    <h4>Blackfire состоит из</h4>
                     <ul>
                         <li>Сайта для просмотра графиков</li>
                         <li>Расширения PHP</li>
                         <li>Агента для отправки данных</li>
                         <li>Расширения для Chrome</li>
-                        <li>Инструментов командной сторки</li>
+                        <li>Инструментов командной строки</li>
                     </ul>
                 </section>
 
@@ -666,7 +463,7 @@
                         <li>Подсчет среднего из N запросов <pre><code class="bash">blackfire --samples 10 run php my-script.php</code></pre></li>
                     </ul>
                 </section>
-                
+
                 <section>
                     <h4>Научились рисовать красоту, но что с ней делать?</h4>
 
@@ -692,7 +489,7 @@
                         <li>Дисковые операции</li>
                         <li>Плохие SQL</li>
                         <li>Взаимодействие с внешним миром</li>
-                        <li>Вызовы консольных комманд</li>
+                        <li>Вызовы консольных команд</li>
                         <li>Слишком много объектов (100К+)</li>
                     </ul>
                 </section>
@@ -707,7 +504,7 @@
 
                     <ul>
                         <li>профилировать и улучшать</li>
-                        <li>искать алтернативные подходы</li>
+                        <li>искать альтернативные подходы</li>
                         <li>кешировать (Memcache, Redis)</li>
                     </ul>
                 </section>
@@ -775,84 +572,11 @@
                 </section>
 
                 <section>
-                    <h4>Помощь хороших фреймворков</h4>
+                    <h2>Почитать</h2>
 
                     <ul>
-                        <li>Архитектура</li>
-                        <li>Решения типичных задач</li>
-                        <li>Вдохновение на хороший код</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h4>Как помогает Yii2?</h4>
-
-                    <ul>
-                        <li>Отложенная загрузка</li>
-                        <li>Дебаг-панель</li>
-                        <li>Модульность</li>
-                        <li>Переопределяемость компонентов</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h3>Пользуйтесь дебаг-панелью</h3>
-                </section>
-
-                <section>
-                    <h3>Логи приложения</h3>
-
-                    <img src="yii_debug_log.png" />
-                </section>
-
-                <section>
-                    <h3>Логи SQL запросов</h3>
-
-                    <img src="yii_debug_db.png" />
-                </section>
-
-                <section>
-                    <h4>Быстрое профилирование по месту</h4>
-
-                    <pre><code class="php">
-    Yii::beginProfile('Checking my new algo');
-    $system->compute();
-    Yii::endProfile('Checking my new algo');
-                    </code></pre>
-
-                    <img src="yii_debug_profiling.png" />
-                </section>
-
-                <section>
-                    <h3>Профайлеры на проде</h3>
-
-                    <ul>
-                        <li>Используйте тригеры для активации</li>
-                        <li>Помните, что профайлы занимают место</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h2>А еще можно:</h2>
-
-                    <ul>
-                        <li>Обновится до PHP 7 (до +40%)</li>
-                        <li><a href="https://github.com/samdark/realpath_cache_tuner">Потюнить OpCache</a> (не должно быть misses)</li>
-                        <li>Настроить кеш (Memcache, Redis)</li>
-                        <li>Apache → nginx + php-fpm</li>
-                    </ul>
-                </section>
-                
-                <section>
-                    <h2>Планы на Yii 2.1</h2>
-
-                    <ul>
-                        <li>PHP 5.6</li>
-                        <li>Отказ от <code>fxp/composer-asset-plugin</code></li>
-                        <li>Удаление AssetСompressor'a и переход к Gulp/Grunt</li>
-                        <li>Переход к SemVer (2.1.x.x)</li>
-                        <li>Отказ от <code>::className()</code> в пользу <code>::class</code></li>
-                        <li>Вынесение <code>MaskedInput</code>, <code>PJAX</code> из ядра</li>
+                        <li><a href="http://phpbench.com/">phpbench.com</a> - The PHP Benchmark</li>
+                        <li><a href="https://blackfire.io/docs/24-days/index">24 Days of Blackfire</a></li>
                     </ul>
                 </section>
 
@@ -860,7 +584,7 @@
                     <h2>Вопросы?</h2>
 
                     <ul>
-                        <li><a href="http://slides.silverfire.me/2016/devpizza-profiling/">slides.silverfire.me/2016/devpizza-profiling/</a></li>
+                        <li><a href="http://slides.silverfire.me/2016/phpfwday-profiling/">slides.silverfire.me/2016/phpfwday-profiling/</a></li>
                     </ul>
                 </section>
 
@@ -879,21 +603,29 @@
                 progress: true,
                 history: true,
                 center: true,
-                margin: 0.3,
+                margin: 0.1,
 
                 theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
                 transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
 
                 // Optional libraries used to extend on reveal.js
                 dependencies: [
-                    { src: 'js/reveal/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-                    { src: 'js/reveal/notes/notes.js', async: true}
+                    {
+                        src: 'js/reveal/highlight/highlight.js',
+                        async: true,
+                        callback: function () {
+                            [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                                hljs.highlightBlock(v);
+                            });
+                        }
+                    },
+                    { src: 'js/reveal/notes/notes.js', async: true},
                 ]
             });
 
 
 
         </script>
-<!-- Yandex.Metrika counter --> <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
+    <!--<script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript> -->
     </body>
 </html>

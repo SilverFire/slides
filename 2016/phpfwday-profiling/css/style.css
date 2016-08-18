@@ -12,6 +12,7 @@
 
 .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
     font-family: "Bandera Pro Heavy";
+    line-height: 1.2em;
 }
 
 .title-slide a {
@@ -40,6 +41,14 @@ span.comment::after {
 span.comment {
     color: red;
     font-size: 50%
+}
+
+.reveal pre.highlight {
+    padding: 5px;
+}
+
+.reveal code {
+    display: inline;
 }
 
 .reveal pre code {

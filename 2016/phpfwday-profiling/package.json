@@ -20,7 +20,8 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-compass": "*",
     "grunt-zip": "*",
-    "grunt": "*"
+    "grunt": "*",
+    "highlight.js": "*"
   },
   "licenses": [
     {"type": "MIT"}
