@@ -134,11 +134,22 @@
                     <h2>Чем можно профилировать PHP?</h2>
 
                     <ul class="fragment" data-fragment-index="1">
+                        <li class="fragment" data-fragment-index="2">Самим PHP</li>
                         <li>XDebug</li>
                         <li>XHprof</li>
                         <li>Blackfire</li>
-                        <li class="fragment" data-fragment-index="2">Самим PHP</li>
                     </ul>
+                </section>
+
+                <section>
+                    <h2>Самим PHP</h2>
+
+                    <pre class="highlight php">
+
+  $start = microtime(true);
+  $this->check();
+  $time = microtime(true) - $start;
+                    </pre>
                 </section>
 
                 <section>
@@ -535,14 +546,14 @@
                     <h3>Взаимодействие с внешним миром</h3>
 
                     <ul>
-                        <li>Помним, что всё когда-то упадёт</li>
+                        <li>Рано или поздно всё упадёт</li>
                         <li>Асинхронность</li>
                         <li>Очереди (AMQP, RabbitMQ)</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h3>Вызовы консольных комманд</h3>
+                    <h3>Вызовы консольных команд</h3>
 
                     <ul>
                         <li>Делать асинхронными</li>
@@ -555,7 +566,7 @@
                     <h3>Слишком много объектов (100К+)</h3>
 
                     <ul>
-                        <li>Обычно это не нужно</li>
+                        <li>Скорее всего это не нужно</li>
                         <li>Искать более элегантный вариант</li>
                     </ul>
                 </section>
@@ -564,9 +575,9 @@
                     <h2>Нужно стараться</h2>
 
                     <ul>
+                        <li>не забывать об архитектуре и чистоте кода</li>
                         <li>избегать божественных методов и классов</li>
                         <li>помнить о сложности алгоритмов и операций</li>
-                        <li>не забывать об архитектуре и чистоте кода</li>
                         <li class="fragment" data-fragment-index="1">не заниматься преждевременной оптимизацией</li>
                     </ul>
                 </section>
@@ -586,8 +597,9 @@
                     <ul>
                         <li><a href="http://slides.silverfire.me/2016/phpfwday-profiling/">slides.silverfire.me/2016/phpfwday-profiling/</a></li>
                     </ul>
-                </section>
 
+                    <img src="qr.svg" style="width: 12em;" />
+                </section>
             </div>
 
         </div>
@@ -622,9 +634,6 @@
                     { src: 'js/reveal/notes/notes.js', async: true},
                 ]
             });
-
-
-
         </script>
     <!--<script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript> -->
     </body>
