@@ -2,12 +2,16 @@
     font-family: "Bandera Pro Medium";
 }
 
+section.title-slide {
+    background: rgba(0, 0, 0, 0);
+}
+
 .title-slide h1 {
-    font-size: 160% !important;
+    font-size: 100% !important;
 }
 
 .title-slide h2 {
-    font-size: 140% !important;
+    font-size: 100% !important;
 }
 
 .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
@@ -15,12 +19,18 @@
     line-height: 1.2em;
 }
 
-.title-slide a {
-    padding: 8px 16px;
+.reveal .slide-number {
+    position: absolute;
+    top: .5em;
+    right: .5em;
+    bottom: inherit;
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 200%;
+    color: #23acc7;
 }
 
-section.title-slide {
-    background: #fff;
+.title-slide a {
+    padding: 8px 16px;
 }
 
 p.small {
