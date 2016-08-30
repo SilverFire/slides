@@ -6,12 +6,21 @@ section.title-slide {
     background: rgba(0, 0, 0, 0);
 }
 
-.title-slide h1 {
+.title-slide h1, .title-slide h2 {
     font-size: 100% !important;
 }
 
-.title-slide h2 {
-    font-size: 100% !important;
+.final-slide h1 {
+    font-size: 160% !important;
+}
+
+.final-slide table {
+    margin: 0;
+    width: 100%;
+}
+
+.final-slide table a {
+    font-size: 0.8em;
 }
 
 .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
@@ -24,9 +33,10 @@ section.title-slide {
     top: .5em;
     right: .5em;
     bottom: inherit;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
     font-size: 200%;
-    color: #23acc7;
+    color: #00BCD4;
+    text-shadow: #607D8B 1px 1px;
 }
 
 .title-slide a {

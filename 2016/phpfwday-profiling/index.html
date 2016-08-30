@@ -134,7 +134,7 @@
                     <h2>Чем можно профилировать PHP?</h2>
 
                     <ul class="fragment" data-fragment-index="1">
-                        <li class="fragment" data-fragment-index="2">Самим PHP</li>
+                        <li>Самим PHP</li>
                         <li>XDebug</li>
                         <li>XHprof</li>
                         <li>Blackfire</li>
@@ -583,6 +583,76 @@
                 </section>
 
                 <section>
+                    <h2>А еще можно:</h2>
+
+                    <ul>
+                        <li>Обновится до PHP 7 (до +40%)</li>
+                        <li>Настроить кеш (Memcache, Redis)</li>
+                        <li><a href="https://github.com/samdark/realpath_cache_tuner">Потюнить OpCache</a> (не должно быть misses)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Помощь хороших фреймворков</h4>
+
+                    <ul>
+                        <li>Архитектура</li>
+                        <li>Решения типичных задач</li>
+                        <li>Вдохновение на хороший код</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Пользуйтесь дебаг-панелью</h3>
+                </section>
+
+                <section>
+                    <h3>Логи приложения</h3>
+
+                    <img src="yii_debug_log.png" />
+                </section>
+
+                <section>
+                    <h3>Логи SQL запросов</h3>
+
+                    <img src="yii_debug_db.png" />
+                </section>
+
+                <section>
+                    <h4>Быстрое профилирование по месту</h4>
+
+                    <pre><code class="php">
+    Yii::beginProfile('Checking my new algo');
+    $system->compute();
+    Yii::endProfile('Checking my new algo');
+                    </code></pre>
+
+                    <img src="yii_debug_profiling.png" />
+                </section>
+
+                <section>
+                    <h3>Профайлеры на проде</h3>
+
+                    <ul>
+                        <li>Используйте тригеры для активации</li>
+                        <li>Помните, что профайлы занимают место</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Планы на Yii 2.1</h2>
+
+                    <ul>
+                        <li>PHP 5.6</li>
+                        <li>Альтернатива <code>fxp/composer-asset-plugin</code>. Возможно <a href="https://asset-packagist.org">Asset Packagist</a></li>
+                        <li>Удаление AssetСompressor'a и переход к Gulp/Grunt</li>
+                        <li>Переход к SemVer (2.1.x.x)</li>
+                        <li>Отказ от <code>::className()</code> в пользу <code>::class</code></li>
+                        <li>Вынесение модулей из ядра (<code>MaskedInput</code>, <code>PJAX</code>, ...)</li>
+                    </ul>
+                </section>
+
+                <section>
                     <h2>Почитать</h2>
 
                     <ul>
@@ -591,14 +661,24 @@
                     </ul>
                 </section>
 
-                <section>
-                    <h2>Вопросы?</h2>
+                <section class="final-slide" data-background="title-slide.png">
+                    <h1>Вопросы?</h1>
 
-                    <ul>
-                        <li><a href="http://slides.silverfire.me/2016/phpfwday-profiling/">slides.silverfire.me/2016/phpfwday-profiling/</a></li>
-                    </ul>
+                    <table>
+                        <tr>
+                            <td style="width: 30%"><img src="qr.svg" style="width: 10em;" /></td>
+                            <td style="vertical-align: top;">
+                                <ul>
+                                    <li><a href="http://slides.silverfire.me/2016/phpfwday-profiling/">slides.silverfire.me/2016/phpfwday-profiling</a></li>
+                                    <li><a href="http://frameworksdays.com/event/php-frameworks-day-2016">PHP Frameworks day 2016</a></li>
+                                    <li><a href="https://github.com/SilverFire">GitHub</a></li>
 
-                    <img src="qr.svg" style="width: 12em;" />
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+
+
                 </section>
             </div>
 
