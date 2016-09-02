@@ -65,6 +65,11 @@ span.comment {
 
 .reveal pre.highlight {
     padding: 5px;
+    font-size: 0.75em;
+}
+
+.reveal pre.highlight.smaller {
+    font-size: 0.6em;
 }
 
 .reveal code {

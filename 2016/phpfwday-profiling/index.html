@@ -207,7 +207,6 @@
                 <section>
                     <h4>Просмотр переменных, доступных в текущей области видимости</h4>
                     <img src="xdebug.png" />
-                    <h4>Значения можно изменять "на лету"</h4>
                 </section>
 
                 <section>
@@ -251,32 +250,31 @@
 
                     <p>Законфижить в php.ini</p>
                     <pre class="highlight apache">
-    [xhprof]
-    extension=xhprof.so
-    xhprof.output_dir="/tmp/xhprof"</pre>
+[xhprof]
+extension=xhprof.so
+xhprof.output_dir="/tmp/xhprof"</pre>
 
                     <p>Включить в точке входа</p>
                     <pre class="highlight php">
-    &lt;?php
+&lt;?php
 
-    xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
-    (new Application())->run();
-    $xhprof_data = xhprof_disable();</pre>
+xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
+(new Application())->run();
+$xhprof_data = xhprof_disable();</pre>
                 </section>
 
                 <section>
                     <h4>xhprof_disable() возвращает массив вызовов</h4>
                     <p>Каждый вызов описан так:</p>
-                    <pre><code>
-    ["yii\base\Module::runAction==>yii\base\Controller::runAction"] =>
-        array(5) {
-            ["ct"] => int(1)
-            ["wt"] => int(6718)
-            ["cpu"] => int(6720)
-            ["mu"] => int(617624)
-            ["pmu"] => int(672904)
-        }
-                    </code></pre>
+                    <pre class="highlight">
+["yii\base\Module::runAction==>yii\base\Controller::runAction"] =>
+    array(5) {
+        ["ct"] => int(1)
+        ["wt"] => int(6718)
+        ["cpu"] => int(6720)
+        ["mu"] => int(617624)
+        ["pmu"] => int(672904)
+    }</pre>
                     <hr class="fragment" data-fragment-index="1" />
                     <ul class="fragment" data-fragment-index="1">
                         <li><em>ct</em> &ndash; количество вызовов функции</li>
@@ -291,7 +289,7 @@
                     <h4>И чё с этим всем делать?</h4>
                     <h3 class="fragment" data-fragment-index="1">Сохранять</h3>
 
-                    <pre class="fragment" data-fragment-index="2"><code class="php">
+                    <pre class="highlight smaller fragment" data-fragment-index="2">
     &lt;?php
     xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
     (new Application())->run();
@@ -302,8 +300,7 @@
     include_once $XHPROF_LIB_ROOT . "/utils/xhprof_runs.php";
 
     $xhprof_runs = new XHProfRuns_Default();
-    $run_id = $xhprof_runs->save_run($xhprof_data, 'my_application');
-                    </code></pre>
+    $run_id = $xhprof_runs->save_run($xhprof_data, 'my_application');</pre>
 
                     <p class="fragment small" data-fragment-index="3">
                         Эти PHP файлики можно выкачать из
@@ -328,7 +325,7 @@
 
                 <section>
                     <p>Зная ID профайлов, можно сравнить два запуска:</p>
-                    <p><pre>    http://xhprof.localhost/index.php?run1=__ID1__&run2=__ID2__</pre></p>
+                    <pre class="highlight smaller">http://xhprof.localhost/index.php?run1=__ID1__&run2=__ID2__</pre>
                 </section>
 
                 <section>
@@ -369,7 +366,7 @@
                         <li>Название класса и метода</li>
                         <li>Общее время выполнения с учетом вызовов зависимостей и процент от общего времени выполнения скрипта</li>
                         <li>Общее время выполнения без учёта зависимостей и тот же процент</li>
-                        <li>Колчество обращений к данному методу</li>
+                        <li>Количество обращений к данному методу</li>
                     </ul>
                 </section>
 
@@ -672,13 +669,10 @@
                                     <li><a href="http://slides.silverfire.me/2016/phpfwday-profiling/">slides.silverfire.me/2016/phpfwday-profiling</a></li>
                                     <li><a href="http://frameworksdays.com/event/php-frameworks-day-2016">PHP Frameworks day 2016</a></li>
                                     <li><a href="https://github.com/SilverFire">GitHub</a></li>
-
                                 </ul>
                             </td>
                         </tr>
                     </table>
-
-
                 </section>
             </div>
 
@@ -695,7 +689,7 @@
                 progress: true,
                 history: true,
                 center: true,
-                margin: 0.1,
+                margin: 0.05,
                 slideNumber: true,
 
                 theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
