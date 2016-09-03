@@ -569,23 +569,11 @@ $xhprof_data = xhprof_disable();</pre>
                 </section>
 
                 <section>
-                    <h2>Нужно стараться</h2>
+                    <h3>Профайлеры на проде</h3>
 
                     <ul>
-                        <li>не забывать об архитектуре и чистоте кода</li>
-                        <li>избегать божественных методов и классов</li>
-                        <li>помнить о сложности алгоритмов и операций</li>
-                        <li class="fragment" data-fragment-index="1">не заниматься преждевременной оптимизацией</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h2>А еще можно:</h2>
-
-                    <ul>
-                        <li>Обновится до PHP 7 (до +40%)</li>
-                        <li>Настроить кеш (Memcache, Redis)</li>
-                        <li><a href="https://github.com/samdark/realpath_cache_tuner">Потюнить OpCache</a> (не должно быть misses)</li>
+                        <li>Используйте тригеры для активации</li>
+                        <li>Помните, что профайлы занимают место</li>
                     </ul>
                 </section>
 
@@ -600,7 +588,11 @@ $xhprof_data = xhprof_disable();</pre>
                 </section>
 
                 <section>
-                    <h3>Пользуйтесь дебаг-панелью</h3>
+                    <img src="yii.png" alt="Yii Framework" />
+                </section>
+                
+                <section>
+                    <h3>Debug панель</h3>
                 </section>
 
                 <section>
@@ -628,15 +620,6 @@ $xhprof_data = xhprof_disable();</pre>
                 </section>
 
                 <section>
-                    <h3>Профайлеры на проде</h3>
-
-                    <ul>
-                        <li>Используйте тригеры для активации</li>
-                        <li>Помните, что профайлы занимают место</li>
-                    </ul>
-                </section>
-
-                <section>
                     <h2>Планы на Yii 2.1</h2>
 
                     <ul>
@@ -650,11 +633,23 @@ $xhprof_data = xhprof_disable();</pre>
                 </section>
 
                 <section>
-                    <h2>Почитать</h2>
+                    <h2>Нужно стараться</h2>
 
                     <ul>
-                        <li><a href="http://phpbench.com/">phpbench.com</a> - The PHP Benchmark</li>
-                        <li><a href="https://blackfire.io/docs/24-days/index">24 Days of Blackfire</a></li>
+                        <li>не забывать об архитектуре и чистоте кода</li>
+                        <li>избегать божественных методов и классов</li>
+                        <li>помнить о сложности алгоритмов и операций</li>
+                        <li class="fragment" data-fragment-index="1">не заниматься преждевременной оптимизацией</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>А еще можно:</h2>
+
+                    <ul>
+                        <li>Обновится до PHP 7 (до +40%)</li>
+                        <li>Настроить кеш (Memcache, Redis)</li>
+                        <li><a href="https://github.com/samdark/realpath_cache_tuner">Потюнить OpCache</a> (не должно быть misses)</li>
                     </ul>
                 </section>
 
@@ -668,7 +663,8 @@ $xhprof_data = xhprof_disable();</pre>
                                 <ul>
                                     <li><a href="http://slides.silverfire.me/2016/phpfwday-profiling/">slides.silverfire.me/2016/phpfwday-profiling</a></li>
                                     <li><a href="http://frameworksdays.com/event/php-frameworks-day-2016">PHP Frameworks day 2016</a></li>
-                                    <li><a href="https://github.com/SilverFire">GitHub</a></li>
+                                    <li><a href="http://phpbench.com/">phpbench.com</a> - The PHP Benchmark</li>
+                                    <li><a href="https://blackfire.io/docs/24-days/index">24 Days of Blackfire</a></li>
                                 </ul>
                             </td>
                         </tr>
