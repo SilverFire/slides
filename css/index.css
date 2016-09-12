@@ -68,3 +68,14 @@ a:not(.image):hover {
     text-shadow: none;
     border: none;
 }
+
+a.youtube:before {
+    content: ' ';
+    background: url(../img/YouTube-icon-dark.png) no-repeat;
+    width: 28px;
+    height: 22px;
+    background-size: contain;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 2px;
+}
