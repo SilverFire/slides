@@ -1,0 +1,32 @@
+{
+  "name": "GlobalLogic_profiling",
+  "private": true,
+  "author": {
+    "name": "Dmitry Naumenko",
+    "email": "d.naumenko.a@gmail.com"
+  },
+  "dependencies": {
+    "reveal.js": "*"
+  },
+  "devDependencies": {
+    "grunt-contrib-qunit": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-cssmin": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-contrib-sass": "*",
+    "grunt-contrib-connect": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-compass": "*",
+    "grunt-zip": "*",
+    "grunt": "*",
+    "highlight.js": "*"
+  },
+  "licenses": [
+    {"type": "MIT"}
+  ],
+  "scripts": {
+    "start": "grunt serve"
+  }
+}

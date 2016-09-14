@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <title>Профилирование в PHP с XDebug, XHprof, Blackfire</title>
+
+        <meta name="description" content="Профилирование в PHP с XDebug, XHprof, Blackfire">
+        <meta name="author" content="Дмитрий Науменко">
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="css/all.css">
+
+        <script>
+            document.write( '<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+        </script>
+    </head>
+
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section class="title-slide" data-background="title-slide.jpg">
+                    <h1>Профилирование в PHP</h1>
+                    <h2>XDebug, XHprof, Blackfire</h2>
+
+                    <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
+                    <p>
+                        <small>
+                            <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
+                        </small>
+                    </p>
+                </section>
+
+                <section>
+                    <h3>Сегодня поговорим о том:</h3>
+                    <ul>
+                        <li>Что такое профилирование и зачем им заниматься</li>
+                        <li>Как и чем собирать профайлы</li>
+                        <li>Как их смотреть и анализировать</li>
+                        <li>Распространённые медленные места в коде</li>
+                        <li>Как поддерживать производительность</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Зачем оптимизировать, если и так работает быстро?</h3>
+                </section>
+
+                <section>
+                    <h2>Быстро?</h2>
+                    <h2>А насколько быстро?</h2>
+                </section>
+
+                <section>
+                    <h4>Полсекунды - это быстро, или не очень?</h4>
+                </section>
+
+                <section>
+                    <h2>«Все в мире относительно»</h2>
+                    <h4 style="text-align: right; color: #8F8F8F">Альберт Эйнштейн</h4>
+
+                    <aside class="notes">
+                        Тренды, ожидания, требования.<br />
+                        Каждый решает сам
+                    </aside>
+                </section>
+
+                <section>
+                    <h3>Зачем пытаться оптимизировать?</h3>
+
+                    <ul>
+                        <li class="fragment" data-fragment-index="1">более быстрый отклик</li>
+                        <li class="fragment" data-fragment-index="2">больше RPS</li>
+                        <li class="fragment" data-fragment-index="3">экономия ресурсов → денег</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Профилирование</h2>
+                    <p>
+                        &mdash; это сбор характеристик работы программы, используемый
+                        для анализа ее быстродействия и потребления ресурсов с целью дальнейшей оптимизации
+                    </p>
+                </section>
+
+                <section>
+                    <p>Профайлеры дают возможность оценить:</p>
+                    <ul>
+                        <li>где именно</li>
+                        <li>на какие операции</li>
+                        <li>в каких объемах</li>
+                    </ul>
+                    <p>тратятся ресурсы при выполнении программы</p>
+                </section>
+
+                <section>
+                    <h4>Я и так догадываюсь, от чего тупняки.</h4>
+                    <h4>Ща поправим.</h4>
+
+                    <p class="fragment" data-fragment-index="1">
+                        Вряд ли. Оптимизация цельного приложения без
+                        профилирования &ndash; это догадки и тыканье пальцем в небо.
+                    </p>
+                </section>
+
+                <section>
+                    <h4>Какие характеристики могут интересовать?</h4>
+
+                    <ul>
+                        <li class="fragment" data-fragment-index="1">время выполнения</li>
+                        <li class="fragment" data-fragment-index="2">процессорное время</li>
+                        <li class="fragment" data-fragment-index="3">расход оперативной памяти</li>
+                        <li class="fragment" data-fragment-index="4">время дисковых операций (IO)</li>
+                        <li class="fragment" data-fragment-index="5">сетевые операции</li>
+                        <li class="fragment" data-fragment-index="6">ожидание отклика СУБД*</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>А как оно работает?</h3>
+
+                    <ul>
+                        <li>Профайлер &mdash; это программа на C, подключаемая как расширение к PHP</li>
+                        <li>Запускается по требованию или на каждый запрос, и всё считает</li>
+                        <li>Записывает подсчитанное в специальной лог профилирования</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Чем можно профилировать PHP?</h2>
+
+                    <ul class="fragment" data-fragment-index="1">
+                        <li>Самим PHP</li>
+                        <li>XDebug</li>
+                        <li>XHprof</li>
+                        <li>Blackfire</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Самим PHP</h2>
+
+                    <pre class="highlight php">
+
+  $start = microtime(true);
+  $this->check();
+  $time = microtime(true) - $start;
+                    </pre>
+                </section>
+
+                <section>
+                    <h1>XDebug</h1>
+                    <ul>
+                        <li><a href="https://xdebug.org/">Сайт</a></li>
+                        <li><a href="https://xdebug.org/docs/">Документация</a></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Не профайлер.</h2>
+                    <h4 class="fragment" data-fragment-index="1">Отладчик с функцией профилирования</h4>
+                </section>
+
+                <section>
+                    <h2>Почему нет?</h2>
+                    <ul>
+                        <li class="fragment" data-fragment-index="1">огромный overhead (время выполнения программы умножается на 2+)</li>
+                        <li class="fragment" data-fragment-index="2">оптимизация под XDebug на 90% безрезультатна после его отключения</li>
+                        <li class="fragment" data-fragment-index="3">нельзя включать на проде</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Вы всё еще дебажите принтами?</h2>
+                </section>
+
+                <section>
+                    <h3>Must have для отладки</h3>
+                    <h4>Поддерживается в:</h4>
+                    <ul>
+                        <li><a href="https://www.jetbrains.com/help/phpstorm/2016.1/configuring-xdebug.html">PHPStorm</a></li>
+                        <li><a href="https://netbeans.org/kb/docs/php/debugging_ru.html">NetBeans</a></li>
+                        <li><a href="https://atom.io/packages/php-debug">Atom</a></li>
+                        <li><a href="https://github.com/martomo/SublimeTextXdebug">Sublime Text</a></li>
+                        <li><a href="https://c9.io/blog/debug-your-php-code-with-xdebug-and-cloud9/">Cloud9</a></li>
+                        <li><a href="https://github.com/joonty/vdebug">vim</a></li>
+                        <li>...</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Пошаговая отладка</h3>
+
+                    <img src="xdebug_breakpoint.png" />
+                </section>
+
+                <section>
+                    <h2>Stacktrace</h2>
+
+                    <img src="xdebug_stacktrace.png" />
+                </section>
+
+                <section>
+                    <h4>Просмотр переменных, доступных в текущей области видимости</h4>
+                    <img src="xdebug.png" />
+                </section>
+
+                <section>
+                    <h1>XHprof</h1>
+                    <ul>
+                        <li><a href="https://pecl.php.net/package/xhprof">XHprof на PECL</a></li>
+                        <li><a href="http://php.net/xhprof">Документация на PHP.net</a></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Преимущества:</h3>
+
+                    <ul>
+                        <li>минимальный overhead (~10%)</li>
+                        <li>можно включать на проде</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Недостатки:</h3>
+
+                    <ul>
+                        <li>
+                            официально не поддерживает PHP 7.
+                            <div style="display: inline;" class="fragment" data-fragment-index="1">
+                                Но есть форки с поддержкой:
+                                <ul style="margin: 0;">
+                                    <li><a href="https://tideways.io/profiler/xhprof-for-php7-php5.6">Tideways.io</a></li>
+                                    <li><a href="https://github.com/RustJason/xhprof">RustJason/xhprof</a></li>
+                                </ul>
+
+                            </div>
+                        </li>
+                        <li>умеет считать только общее время, процессорное время и память<span class="fragment" data-fragment-index="2">, хотя этого обычно достаточно</span></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Начать &mdash; легко!</h4>
+
+                    <p>Законфижить в php.ini</p>
+                    <pre class="highlight apache">
+[xhprof]
+extension=xhprof.so
+xhprof.output_dir="/tmp/xhprof"</pre>
+
+                    <p>Включить в точке входа</p>
+                    <pre class="highlight php">
+&lt;?php
+
+xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
+(new Application())->run();
+$xhprof_data = xhprof_disable();</pre>
+                </section>
+
+                <section>
+                    <h4>xhprof_disable() возвращает массив вызовов</h4>
+                    <p>Каждый вызов описан так:</p>
+                    <pre class="highlight">
+["yii\base\Module::runAction==>yii\base\Controller::runAction"] =>
+    array(5) {
+        ["ct"] => int(1)
+        ["wt"] => int(6718)
+        ["cpu"] => int(6720)
+        ["mu"] => int(617624)
+        ["pmu"] => int(672904)
+    }</pre>
+                    <hr class="fragment" data-fragment-index="1" />
+                    <ul class="fragment" data-fragment-index="1">
+                        <li><em>ct</em> &ndash; количество вызовов функции</li>
+                        <li><em>wt</em> &ndash; реальное время выполнения, микросекунд</li>
+                        <li><em>cpu</em> &ndash; процессорное время, микросекунд</li>
+                        <li><em>mu</em> &ndash; потребление памяти, байт</li>
+                        <li><em>pmu</em> &ndash; пиковое потребление памяти, байт</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>И чё с этим всем делать?</h4>
+                    <h3 class="fragment" data-fragment-index="1">Сохранять</h3>
+
+                    <pre class="highlight smaller fragment" data-fragment-index="2">
+    &lt;?php
+    xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
+    (new Application())->run();
+    $xhprof_data = xhprof_disable();
+
+    $XHPROF_LIB_ROOT = "/opt/xhprof/xhprof_lib";
+    include_once $XHPROF_LIB_ROOT . "/utils/xhprof_lib.php";
+    include_once $XHPROF_LIB_ROOT . "/utils/xhprof_runs.php";
+
+    $xhprof_runs = new XHProfRuns_Default();
+    $run_id = $xhprof_runs->save_run($xhprof_data, 'my_application');</pre>
+
+                    <p class="fragment small" data-fragment-index="3">
+                        Эти PHP файлики можно выкачать из
+                        <a href="https://github.com/phacility/xhprof/tree/master/xhprof_lib/utils">репозитория XHprof</a>
+                        и положить в проект, чтобы не зависить от окружения. А еще их можно модифицировать*
+                    </p>
+                </section>
+
+                <section>
+                    <h3>А как смотреть?</h3>
+
+                    <p>
+                        Берем директории <strong>xhprof_lib</strong> и <strong>xhprof_html</strong> из того-же
+                        <a href="https://github.com/phacility/xhprof/tree/master/xhprof_lib/utils">репозитория</a>,
+                        кладём их рядом, и поднимаем веб-сервер, указывая root в <strong>xhprof_html</strong>.
+                    </p>
+                </section>
+
+                <section>
+                    <img src="xhprof_default_ui.png">
+                </section>
+
+                <section>
+                    <p>Зная ID профайлов, можно сравнить два запуска:</p>
+                    <pre class="highlight smaller">http://xhprof.localhost/index.php?run1=__ID1__&run2=__ID2__</pre>
+                </section>
+
+                <section>
+                    <img src="xhprof_diff_1.png" />
+
+                    <img src="xhprof_diff_2.png" />
+                </section>
+
+                <section>
+                    <h3>Эм... Как-то не круто</h3>
+                    <h4>Можно что-то красивенькое?</h4>
+                </section>
+
+                <section>
+                    <h3>Конечно! Ставим graphviz:</h3>
+                    <pre class="highlight">apt-get install graphviz</pre>
+                </section>
+
+                <section>
+                    <p>
+                        Нажимаем на ссылку <span style="color: darkblue">[View Full Callgraph]</span>
+                        на странице просмотра профайла и получаем...
+                    </p>
+                </section>
+
+                <section>
+                    <img src="xhprof_view_callgraph.png" />
+                </section>
+
+                <section data-background="xhprof_default_ui_graph_all.png"></section>
+
+                <section data-background="xhprof_cat.jpg"></section>
+
+                <section>
+                    <h5>Спокойно! Разбираемся:</h5>
+                    <p><img src="xhprof_default_ui_graph_small.png" /></p>
+                    <ul>
+                        <li>Название класса и метода</li>
+                        <li>Общее время выполнения с учетом вызовов зависимостей и процент от общего времени выполнения скрипта</li>
+                        <li>Общее время выполнения без учёта зависимостей и тот же процент</li>
+                        <li>Количество обращений к данному методу</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="xhprof_callgraph_zoomed.png" />
+                </section>
+
+                <section>
+                    <h3>Окей, а можно еще информативнее?</h3>
+                </section>
+
+                <section>
+                    <p>Рисовалка собирает блоки на PHP, можно немного поковырять и добавить вывод нужной инфы, вроде CPU или RAM</p>
+                </section>
+
+                <section>
+                    <img src="blackfire-io_primary_square.png" style="max-width: 350px;"/>
+                    <h1>Blackfire</h1>
+                    <ul>
+                        <li><a href="https://blackfire.io">blackfire.io</a></li>
+                        <li><a href="https://blackfire.io/docs/introduction">Доки</a></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <ul>
+                        <li>Начинался как форк XHprof, но был серьезно переделан</li>
+                        <li>Занимаются ребята из Sensio Labs</li>
+                        <li>Нет overhead'a</li>
+                        <li>Можно включать на проде</li>
+                        <li>Поддерживатеся Linux, FreeBSD, Windows, MacOS</li>
+                        <li>Работает на PHP 7</li>
+                        <li>Условно бесплатный. Бесплатно: одно приложение, без сети и SQL. Все возможности стоят от 82,50$/месяц</li>
+                        <li>Очень толковая документация</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Как поставить?</h2>
+                    <ul>
+                        <li>Очень просто, всё круто описано <a href="https://blackfire.io/docs/up-and-running/installation">в мануале</a></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Blackfire состоит из</h4>
+                    <ul>
+                        <li>Сайта для просмотра графиков</li>
+                        <li>Расширения PHP</li>
+                        <li>Агента для отправки данных</li>
+                        <li>Расширения для Chrome</li>
+                        <li>Инструментов командной строки</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Включается только по тригеру</h3>
+
+                    <img src="blackfire_chrome.png" />
+
+                    <img src="blackfire_topbar.png" class="fragment" data-fragment-index="1" />
+                </section>
+
+                <section>
+                    <img src="blackfire_profile.png" />
+                </section>
+
+                <section>
+                    <img src="blackfire_details.png" />
+                </section>
+
+                <section>
+                    <img src="blackfire_expand.png" />
+                </section>
+
+                <section>
+                    <h4>Сравнение профайлов</h4>
+                    <img src="blackfile_compare.png" />
+                </section>
+
+                <section>
+                    <h4>Как я добился ускорения в 10 раз?</h4>
+                    <p class="fragment" data-fragment-index="2" style="text-align: left; -webkit-transform: rotate(180deg);-moz-transform: rotate(180deg);-ms-transform: rotate(180deg);-o-transform: rotate(180deg);transform: rotate(180deg);;">Выключил XDebug</p>
+                </section>
+
+                <section>
+                    <h4>У Blackfire есть еще много крутых фишек</h4>
+
+                    <ul>
+                        <li>
+                            <a href="https://blackfire.io/docs/reference-guide/uploading-profiles">загрузка профайлов XHprof в ручном режиме</a>
+                        </li>
+                        <li>
+                            <a href="https://blackfire.io/docs/integrations/phpunit">метрики и их тестирование в PHPUnit</a>
+                        </li>
+                        <li>
+                            <a href="https://blackfire.io/docs/integrations/travis">профилирование при билде в Travis, Jenkins</a>
+                        </li>
+                        <li>
+                            <a href="https://blackfire.io/docs/reference-guide/notifiers">уведомления на GitHub, Gitlab, Slack, HipChat, e-mail</a>
+                        </li>
+                        <li>Подсчет среднего из N запросов <pre><code class="bash">blackfire --samples 10 run php my-script.php</code></pre></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Научились рисовать красоту, но что с ней делать?</h4>
+
+                    <h3 class="fragment" data-fragment-index="1">Анализировать!</h3>
+                </section>
+
+                <section>
+                    <h4>Что профилировать в первую очередь?</h4>
+
+                    <ul>
+                        <li>Инициализация приложения</li>
+                        <li>Типовые страницы модулей</li>
+                        <li>То, что долго отдаётся</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Что чаще всего тормозит?</h3>
+
+                    <ul>
+                        <li>Плохие/сложные алгоритмы</li>
+                        <li>Вложенные циклы</li>
+                        <li>Дисковые операции</li>
+                        <li>Плохие SQL</li>
+                        <li>Взаимодействие с внешним миром</li>
+                        <li>Вызовы консольных команд</li>
+                        <li>Слишком много объектов (100К+)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Код может взлететь!</h2>
+                    <img src="flying_cat.jpg" />
+                </section>
+
+                <section>
+                    <h3>Плохие/сложные алгоритмы</h3>
+
+                    <ul>
+                        <li>профилировать и улучшать</li>
+                        <li>искать альтернативные подходы</li>
+                        <li>кешировать (Memcache, Redis)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Дисковые операции</h3>
+
+                    <ul>
+                        <li>Отложенная загрузка (lazy loading)</li>
+                        <li>SSD</li>
+                        <li>OpCache</li>
+                        <li>Memcache, Redis</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Плохие SQL</h3>
+
+                    <ul>
+                        <li>Оптимизировать запросы (смотреть EXPLAIN)</li>
+                        <li>Индексы</li>
+                        <li>Тюнить СУБД</li>
+                        <li>Не делать сложных запросов</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Взаимодействие с внешним миром</h3>
+
+                    <ul>
+                        <li>Рано или поздно всё упадёт</li>
+                        <li>Асинхронность</li>
+                        <li>Очереди (AMQP, RabbitMQ)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Вызовы консольных команд</h3>
+
+                    <ul>
+                        <li>Делать асинхронными</li>
+                        <li>Минимизировать</li>
+                        <li>Кешировать</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Слишком много объектов (100К+)</h3>
+
+                    <ul>
+                        <li>Скорее всего это не нужно</li>
+                        <li>Искать более элегантный вариант</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Профайлеры на проде</h3>
+
+                    <ul>
+                        <li>Используйте тригеры для активации</li>
+                        <li>Помните, что профайлы занимают место</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Помощь хороших фреймворков</h4>
+
+                    <ul>
+                        <li>Архитектура</li>
+                        <li>Решения типичных задач</li>
+                        <li>Вдохновение на хороший код</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="yii.png" alt="Yii Framework" />
+                </section>
+                
+                <section>
+                    <h3>Debug панель</h3>
+                </section>
+
+                <section>
+                    <h3>Логи приложения</h3>
+
+                    <img src="yii_debug_log.png" />
+                </section>
+
+                <section>
+                    <h3>Логи SQL запросов</h3>
+
+                    <img src="yii_debug_db.png" />
+                </section>
+
+                <section>
+                    <h4>Быстрое профилирование по месту</h4>
+
+                    <pre><code class="php">
+    Yii::beginProfile('Checking my new algo');
+    $system->compute();
+    Yii::endProfile('Checking my new algo');
+                    </code></pre>
+
+                    <img src="yii_debug_profiling.png" />
+                </section>
+
+                <section>
+                    <h2>Планы на Yii 2.1</h2>
+
+                    <ul>
+                        <li>PHP 5.6</li>
+                        <li>Альтернатива <code>fxp/composer-asset-plugin</code>. Возможно <a href="https://asset-packagist.org">Asset Packagist</a></li>
+                        <li>Удаление AssetСompressor'a и переход к Gulp/Grunt</li>
+                        <li>Переход к SemVer (2.1.x.x)</li>
+                        <li>Отказ от <code>::className()</code> в пользу <code>::class</code></li>
+                        <li>Вынесение модулей из ядра (<code>MaskedInput</code>, <code>PJAX</code>, ...)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Нужно стараться</h2>
+
+                    <ul>
+                        <li>не забывать об архитектуре и чистоте кода</li>
+                        <li>избегать божественных методов и классов</li>
+                        <li>помнить о сложности алгоритмов и операций</li>
+                        <li class="fragment" data-fragment-index="1">не заниматься преждевременной оптимизацией</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>А еще можно:</h2>
+
+                    <ul>
+                        <li>Обновится до PHP 7 (до +40%)</li>
+                        <li>Настроить кеш (Memcache, Redis)</li>
+                        <li><a href="https://github.com/samdark/realpath_cache_tuner">Потюнить OpCache</a> (не должно быть misses)</li>
+                    </ul>
+                </section>
+
+                <section class="final-slide" data-background="title-slide.png">
+                    <h1>Вопросы?</h1>
+
+                    <table>
+                        <tr>
+                            <td style="width: 30%"><img src="qr.svg" style="width: 10em;" /></td>
+                            <td style="vertical-align: top;">
+                                <ul>
+                                    <li><a href="http://slides.silverfire.me/2016/gl-profiling/">slides.silverfire.me/2016/gl-profiling</a></li>
+                                    <li><a href="http://phpbench.com/">phpbench.com</a> - The PHP Benchmark</li>
+                                    <li><a href="https://blackfire.io/docs/24-days/index">24 Days of Blackfire</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+            </div>
+
+        </div>
+
+        <script src="js/all.js"></script>
+
+        <script>
+
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+                margin: 0.05,
+                slideNumber: true,
+
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    {
+                        src: 'js/reveal/highlight/highlight.js',
+                        async: true,
+                        callback: function () {
+                            [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                                hljs.highlightBlock(v);
+                            });
+                        }
+                    },
+                    { src: 'js/reveal/notes/notes.js', async: true},
+                ]
+            });
+        </script>
+    <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    </body>
+</html>
