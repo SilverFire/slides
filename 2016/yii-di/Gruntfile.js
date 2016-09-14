@@ -14,7 +14,7 @@ module.exports = function (grunt) {
         },
 
         zip: {
-            'phpfwday_profiling.zip': [
+            'yii_dc.zip': [
                 'index.html',
                 '*.css',
                 '*.png',
