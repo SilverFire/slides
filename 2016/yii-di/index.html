@@ -155,7 +155,7 @@ class DoorManager
                                 <ul>
                                     <li>метод open() божественный</li>
                                     <li>порождён High Coupling</li>
-                                    <li>смешан сбор данных, бизнес-логику и конфигурацию</li>
+                                    <li>смешан сбор данных, бизнес-логика и конфигурация</li>
                                     <li>убита возможность тестировать</li>
                                 </ul>
                             </td>
@@ -227,10 +227,10 @@ class DoorManager {
                                 <span class="text-red">Lose:</span>
 
                                 <ul>
-                                    <li>божественный конструктор классы</li>
-                                    <li>смешаны сбор данных, бизнес-логика и конфигурация</li>
-                                    <li>High Coupling</li>
-                                    <li>убита возможность тестировать</li>
+                                    <li>божественный конструктор класса</li>
+                                    <li>все еще смешан сбор данных, бизнес-логика и конфигурация</li>
+                                    <li>тот же High Coupling</li>
+                                    <li>возможности тестировать нет</li>
                                 </ul>
                             </td>
                         </tr>
@@ -238,7 +238,7 @@ class DoorManager {
                 </section>
 
                 <section>
-                    <h4>Часть дверей работает переводится на магнитные замки.</h4>
+                    <h4>Часть дверей переводится на магнитные замки.</h4>
                     <h5>Протокол управления отличается.</h5>
                 </section>
 
@@ -543,7 +543,14 @@ public function actionOpen()
                 </section>
 
                 <section>
+                    <p class="todo">TBD:</p>
 
+                    <ul>
+                        <li>DIC на коленке</li>
+                        <li>Service (component)</li>
+                        <li>Service Locator</li>
+                        <li>...</li>
+                    </ul>
                 </section>
 
                 <section class="final-slide" data-background="title-slide.png">
