@@ -142,7 +142,7 @@ class DoorManager
                 <section>
                     <table>
                         <tr>
-                            <td>
+                            <td width="50%">
                                 <span class="text-green">Win:</span>
 
                                 <ul>
@@ -194,7 +194,7 @@ class DoorManager {
         $this->log = new EmailAccessLogger('alert@superdoors.com');
         $this->indicator = new SoundIndicator();
         $this->auth = new RfidAuthenticator($this->key, [
-            'users' => Users::find()->where(['active' => 1])->all()
+            'users' => User::find()->where(['active' => 1])->all()
         ]);
     }
 
@@ -214,7 +214,7 @@ class DoorManager {
                 <section>
                     <table>
                         <tr>
-                            <td>
+                            <td width="50%">
                                 <span class="text-green">Win:</span>
 
                                 <ul>
@@ -334,7 +334,7 @@ class DoorManager {
         $this->indicator = new SoundIndicator();
         $this->log = new EmailAccessLogger('alert@superdoors.com');
         $this->auth = new RfidAuthenticator($this->key, [
-            'users' => Users::find()->where(['active' => 1])->all()
+            'users' => User::find()->where(['active' => 1])->all()
         ]);
     }
 }</pre>
@@ -352,7 +352,7 @@ public function actionOpen()
                 <section>
                     <table>
                         <tr>
-                            <td>
+                            <td width="50%">
                                 <span class="text-green">Win:</span>
 
                                 <ul>
@@ -438,41 +438,55 @@ public function actionOpen()
                 </section>
 
                 <section>
-                    <section>
-                        <table>
-                            <tr>
-                                <td width="50%">
-                                    <span class="text-green">Win:</span>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
 
-                                    <ul>
-                                        <li>избавились от божественных методов</li>
-                                        <li><code>DoorManager</code> стал независим от реализаций</li>
-                                        <li>все зависимости опциональны</li>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <span class="text-red">Lose:</span>
+                                <ul>
+                                    <li>нет божественных методов</li>
+                                    <li><code>DoorManager</code> стал независим от реализаций</li>
+                                    <li>все зависимости &ndash; опциональны</li>
+                                    <li>стало реальным тестирование</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
 
-                                    <ul>
-                                        <li>сильно усложнилась инициализация <code>DoorManager</code></li>
-                                        <li>перед тем, как использовать любую зависимость, нужно проверить, установлена ли она</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <span class="text-blue">Tip:</span>
-
-                                    <ul>
-                                        <li>опциональных зависимостей не существует</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        </table>
-                    </section>
+                                <ul>
+                                    <li>сильно усложнилась инициализация <code>DoorManager</code></li>
+                                    <li>все зависимости &ndash; опциональны</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
                 </section>
 
                 <section>
+                    <h4 class="fragment strike semi-fade-out" data-fragment-index="1">Все зависимости &ndash; опциональны</h4>
+
+                    <pre class="highlight php fragment semi-fade-out" data-fragment-index="1">
+public function open()
+{
+    if ($this->log !== null) {
+        $this->log->accessGranted($this->door, $this->key);
+    }
+}</pre>
+                    <h4 class="fragment fade-down" data-fragment-index="2">Опциональные зависимости не нужны</h4>
+
+                    <pre class="highlight php fragment fade-down" data-fragment-index="3">
+class FakeLogger implements LoggerInterface
+{
+    public function accessGranted(DoorInterface $door, KeyInterface $key)
+    {
+        return true;
+    }
+}</pre>
+                </section>
+
+                <section>
+                    <h4>DI через конструктор</h4>
+
                     <pre class="highlight php">
 class DoorManager {
     private $door; // key, indicator, auth, log
@@ -488,12 +502,48 @@ class DoorManager {
                 </section>
 
                 <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>все зависимости обязательны</li>
+                                    <li>убрали сеттеры, которые могут дать неопределенное состояние</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>инициализация <code>DoorManager</code> всё еще сложная</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h4>Как мы сейчас создаём зависимости?</h4>
+
                     <pre class="highlight php">
 public function actionOpen()
 {
-    $doorManager = new DoorManager($key);
+    $key = new RfidKey();
+    $door = new MagnetDoor(Yii::$app->params['door-uuid']);
+
+    $users = User::find()->active()->all();
+    $auth = new RfidAuthenticator($this->key, $users);
+    $indicator = new SoundIndicator();
+    $log = new EmailAccessLogger(Yii::$app->params['adminEmail']);
+
+    $doorManager = new DoorManager($key, $door, $auth, $log, $indicator);
     return $doorManager->open();
 }</pre>
+                </section>
+
+                <section>
+
                 </section>
 
                 <section class="final-slide" data-background="title-slide.png">
