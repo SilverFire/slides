@@ -32,6 +32,35 @@ section.title-slide {
     line-height: 1.2em;
 }
 
+.reveal .inverted h1,
+.reveal .inverted h2,
+.reveal .inverted h3,
+.reveal .inverted h4,
+.reveal .inverted h5,
+.reveal .inverted h6,
+.reveal .inverted p,
+.reveal .inverted ul li {
+    color: #fff;
+}
+
+.reveal .inverted a {
+    color: #e8ff8e;
+}
+
+.copyright {
+    position: absolute;
+    width: 100%;
+    height: 2em;
+    background-color: rgba(0,0,0, 0.3);
+    color: #fff;
+    bottom: 0;
+    left: 0;
+}
+
+.shaded {
+    text-shadow: 3px 3px 5px #000 !important;
+}
+
 .reveal .slide-number {
     position: absolute;
     top: .5em;
@@ -63,7 +92,7 @@ section.title-slide {
     font-weight: bold !important;
 }
 
-p.small {
+p.small, ul.small {
     font-size: 60%;
 }
 
@@ -86,6 +115,18 @@ span.comment {
     color: red;
     font-size: 50%
 }
+
+.reveal .slides section .fragment.highlight-tomato,
+.reveal .slides section .fragment.highlight-current-tomato {
+    opacity: 1;
+    visibility: visible; }
+
+.reveal .slides section .fragment.highlight-tomato.visible {
+    color: #ff6347; }
+
+.reveal .slides section .fragment.highlight-current-tomato.current-fragment,
+.reveal .slides section .fragment.highlight-current-tomato.current-fragment * {
+    color: #ff6347; }
 
 .reveal pre.highlight {
     padding: 5px;
