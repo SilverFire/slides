@@ -67,9 +67,9 @@
                     <p>Двери с электронным замком и кнопка открытия</p>
 
                     <ul>
-                        <li>Кнопка по обращается к приложению</li>
+                        <li>Кнопка обращается к приложению по HTTP</li>
                         <li>Открываем замок, если это разрешено</li>
-                        <li>Выводии сообщение на дисплей</li>
+                        <li>Выводим сообщение на дисплей</li>
                     </ul>
                 </section>
 
@@ -107,7 +107,7 @@ public function actionOpen() {
                         <li class="fragment" data-fragment-index="5">представление</li>
                     </ul>
                 </section>
-                
+
                 <section>
                     <img src="poopcake.jpg" />
 
@@ -598,16 +598,11 @@ public function actionOpen($keySecret)
     $doorManager = new DoorManager($key, $door, $auth, $log);
     return $doorManager->open();
 }</pre>
-                </section>
 
-                <section>
-                    <h4>Что получается?</h4>
-
-                    <ul>
-                        <li>Минимальный Coupling</li>
-                        <li>Создание объектов находятся за их пределами</li>
-                        <li class="fragment" data-fragment-index="1">Сделали новый божественный метод - <code>actionOpen</code></li>
-                        <li class="fragment" data-fragment-index="2">Теперь повторить то же самое в <code>actionClose</code>?...</li>
+                    <ul class="fragment" data-fragment-index="1">
+                        <li>Создание зависимостей за пределами класса</li>
+                        <li class="fragment" data-fragment-index="2">Сделали новый божественный метод - <code>actionOpen</code></li>
+                        <li class="fragment" data-fragment-index="3">Теперь повторить то же самое в <code>actionClose</code>?...</li>
                     </ul>
                 </section>
 
@@ -619,7 +614,7 @@ public function actionOpen($keySecret)
 
                 <section data-background="containers.jpg" class="inverted">
                     <h1 class="shaded">DiC!</h1>
-                    <h4 class="shaded">Dependency injection container</h4>
+                    <h4 class="shaded">Dependency injection Container</h4>
 
                     <!-- https://flic.kr/p/ahGVdG -->
                 </section>
@@ -780,7 +775,7 @@ public function actionOpen($keySecret)
                         <li>Реализация паттерна Service Locator</li>
                         <li>Конфигурация через массив <code>components</code></li>
                         <li>Lazy loading</li>
-                        <li>Создаёт компоненты через <code>Yii::createObject()</code></li>
+                        <li>Компоненты создаются через <code>Yii::createObject()</code></li>
                     </ul>
                 </section>
 
@@ -830,6 +825,19 @@ function getDependencies($class)
 }</pre>
                 </section>
 
+                <section data-background-image="implementations.jpg" class="inverted">
+                    <h4 class="shaded">Разные реализации DI:</h4>
+
+                    <ul class="shaded">
+                        <li><a href="http://php-di.org/">PHP-DI</a></li>
+                        <li><a href="http://pimple.sensiolabs.org/">Pimple</a></li>
+                        <li><a href="https://github.com/illuminate/container">Illuminate\Container</a></li>
+                        <li><a href="http://container.thephpleague.com/">league\container</a></li>
+                        <li><a href="http://symfony.com/doc/current/components/dependency_injection.html">Symfony\DependencyInjection</a></li>
+                        <li><a href="https://zendframework.github.io/zend-di/">zend-di</a></li>
+                    </ul>
+                </section>
+
                 <section>
                     <h3>Допилим двери?</h3>
 
@@ -853,7 +861,7 @@ $c->set(DoorInterface::class, function () {
 $c->set(DoorManagerInterface::class, function ($cont, $params, $config) {
     // DoorManager constructor params order:
     // 0 - Key, 1 - Door, 2 - Auth, 3 - Logger
-    $params[2] = $container->get(AuthManagerInterface::class, [$params[0]]);
+    $params[2] = $cont->get(AuthManagerInterface::class, [$params[0]]);
 
     return $cont->get(DoorManager::class, $params, $config);
 });
@@ -866,48 +874,80 @@ public function actionOpen($keySecret)
 {
     $container = Yii::$container;
 
-    $key = $container->get(KeyInterface::class, ['some-secret']);
+    $key = $container->get(KeyInterface::class, [$keySecret]);
     $doorManager = $container->get(DoorManagerInterface::class, [$key]);
 
     return $doorManager->open();
 }</pre>
                 </section>
-                
-                <section data-background-image="implementations.jpg" class="inverted">
-                    <h4 class="shaded">Разные реализации DI:</h4>
 
-                    <ul class="shaded">
-                        <li><a href="http://php-di.org/">PHP-DI</a></li>
-                        <li><a href="http://pimple.sensiolabs.org/">Pimple</a></li>
-                        <li><a href="https://github.com/illuminate/container">Illuminate\Container</a></li>
-                        <li><a href="http://container.thephpleague.com/">league\container</a></li>
-                        <li><a href="http://symfony.com/doc/current/components/dependency_injection.html">Symfony\DependencyInjection</a></li>
-                        <li><a href="https://zendframework.github.io/zend-di/">zend-di</a></li>
+                <section>
+                    <table>
+                        <tr>
+                            <td width="80%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>красивый код</li>
+                                    <li>нет божественных методов</li>
+                                    <li>Low Coupling</li>
+                                    <li>взаимодействие по интерфейсам</li>
+                                    <li>нет <code class="highlight php">new Something()</code> &rarr; тестируемо в изоляции</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>чуть сложновато :)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h3>DiC на каждый день</h3>
+                    <p><code class="highlight php">new Foo()</code> &nbsp;&nbsp;&rarr;&nbsp;&nbsp; <code class="highlight php">Yii::createObject()</code></p>
+
+                    <ul>
+                        <li>Удобнее, чем <code>Yii::$container->get(Foo::class)</code></li>
+                        <li>Возможность подменить класс другим</li>
+                        <li>Возможность настроить на уровне приложения</li>
+                        <li>Не бьёт по производительности</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h2>Общие рекомндации:</h2>
+                    <h4>Другие распространённые приёмы DiC</h4>
+
+                    <pre class="highlight php">Yii::$container->set('yii\widgets\LinkPager', ['maxButtonCount' => 5]);</pre>
+
+                    <pre class="highlight php">Yii::$container->set('yii\widgets\ActiveField', ['template' => '...']);</pre>
                 </section>
 
                 <section>
-                    <h3>Ожидайте <span class="text-blue">интерфейсы</span>, а не реализации</h3>
+                    <h2>Общие рекомендации:</h2>
                 </section>
 
-                <section>
-                    <h3>Не храните в DiC данные</h3>
+                <section data-background="hdmi.jpg" class="inverted">
+                    <h3 class="shaded">Ожидайте <span class="text-green">интерфейсы</span>, а не реализации</h3>
                 </section>
 
-                <section>
-                    <h3>Не увлекайтесь абстракциями. Плата за гибкость &mdash; сложность</h3>
+                <section data-background="no_data.jpg" class="inverted">
+                    <h3 class="shaded">Не храните в DiC данные</h3>
                 </section>
 
-                <section>
-                    <h3>Не бойтесь создавать много маленьких классов</h3>
+                <section data-background="minions.jpg" class="inverted">
+                    <h3 class="shaded">Не бойтесь создавать много маленьких классов</h3>
                 </section>
 
-                <section>
-                    <h3>Развивайтесь и делайте крутые вещи!</h3>
+                <section data-background="yoga.jpg" class="inverted">
+                    <h3 class="shaded">Не увлекайтесь абстракциями. Плата за гибкость &mdash; сложность</h3>
+                </section>
+
+                <section data-background="inspiration.jpg" class="inverted">
+                    <h3 class="shaded">Развивайтесь, делитесь опытом и делайте крутые вещи!</h3>
                 </section>
 
                 <section class="final-slide" data-background="title-slide.png">
@@ -918,7 +958,8 @@ public function actionOpen($keySecret)
                             <td style="width: 30%"><img src="qr.svg" style="width: 10em;" /></td>
                             <td style="vertical-align: top;">
                                 <ul>
-                                    <li><a href="https://github.com/SilverFire">GitHub</a></li>
+                                    <li><a href="https://github.com/SilverFire">SilverFire@GitHub</a></li>
+                                    <li><a href="http://www.yiiframework.com/">Yii Framework</a></li>
                                 </ul>
                             </td>
                         </tr>
