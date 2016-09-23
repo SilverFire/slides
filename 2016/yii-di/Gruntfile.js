@@ -16,7 +16,9 @@ module.exports = function (grunt) {
         zip: {
             'yii_dc.zip': [
                 'index.html',
-                '*.css',
+                'css/all.css',
+                'js/all.js',
+                'fonts/*',
                 '*.png',
                 '*.jpg'
             ]
