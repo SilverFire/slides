@@ -825,10 +825,17 @@ function getDependencies($class)
 }</pre>
                 </section>
 
+                <section>
+                    <p>Используя <strong class="text-green">Service Locator</strong>, мы <span class="text-blue">явно запрашиваем</span> зависимости и зависимы от самого локатора.</p>
+                    <hr />
+                    <p>Используя <strong class="text-green">DiC</strong>, что-то <span class="text-blue">даёт</span> зависимости в конструктор и нам всё равно, что это.</p>
+                </section>
+
                 <section data-background-image="implementations.jpg" class="inverted">
                     <h4 class="shaded">Разные реализации DI:</h4>
 
                     <ul class="shaded">
+                        <li><a href="http://www.yiiframework.com/doc-2.0/guide-concept-di-container.html">Yii DI</a></li>
                         <li><a href="http://php-di.org/">PHP-DI</a></li>
                         <li><a href="http://pimple.sensiolabs.org/">Pimple</a></li>
                         <li><a href="https://github.com/illuminate/container">Illuminate\Container</a></li>
@@ -986,7 +993,7 @@ public function actionOpen($keySecret)
                 slideNumber: true,
 
                 theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-                transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+                transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
 
                 // Optional libraries used to extend on reveal.js
                 dependencies: [
