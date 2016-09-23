@@ -20,7 +20,8 @@ module.exports = function (grunt) {
                 'js/all.js',
                 'fonts/*',
                 '*.png',
-                '*.jpg'
+                '*.jpg',
+                '*.svg'
             ]
         },
 
@@ -101,7 +102,7 @@ module.exports = function (grunt) {
     grunt.registerTask('build', ['copy', 'concat']);
 
     // Package presentation to archive
-    grunt.registerTask('package', ['default', 'zip']);
+    grunt.registerTask('package', ['build', 'zip']);
 
     // Serve presentation locally
     grunt.registerTask('serve', ['connect', 'default']);
