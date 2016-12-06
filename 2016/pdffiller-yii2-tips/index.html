@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+
+    <title>Рецепты для Yii 2</title>
+
+    <meta name="description" content="Рецепты для Yii 2">
+    <meta name="author" content="Дмитрий Науменко">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/all.css">
+
+    <script>
+        document.write('<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+    </script>
+</head>
+
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section class="title-slide" data-background-image="title-slide.jpg">
+            <h1>«Рецепты для Yii 2»</h1>
+
+            <p>Дмитрий Науменко</p>
+            <p class="role">PHP Developer - HiQDev, Yii</p>
+        </section>
+
+        <section>
+            <h5>Большинство сегодняшних тем достойны отдельных больших докладов</h5>
+
+            <h2 class="fragment" data-fragment-index="1">Цели на сегодня:</h2>
+
+            <ul>
+                <li class="fragment fade-left" data-fragment-index="1">узнать больше о возможностях Yii 2</li>
+                <li class="fragment fade-left" data-fragment-index="2">научиться организовывать структуру проекта</li>
+                <li class="fragment fade-left" data-fragment-index="3">рассмотреть ошибки и научиться их избегать</li>
+                <li class="fragment fade-left" data-fragment-index="4">узнать хорошие решения для типичных задач</li>
+                <li class="fragment fade-left" data-fragment-index="5">найти для себя что-то новое и полезное</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>О PHP в целом</h3>
+        </section>
+
+        <section>
+            <h3>PHP развивается</h3>
+            <ul>
+                <li>новый синтаксис (??, <=>, group use)</li>
+                <li>новые возможности (anonymous classes, return type declaration)</li>
+                <li>крутое ускорение</li>
+                <li>рост сообщества</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>... а проблемы остаются:</h3>
+            <ul>
+                <li>рост количества кода ≠ росту качества кода</li>
+                <li>код постоянно меняется</li>
+                <li>переусложнение кода</li>
+                <li>обратная совместимость</li>
+                <li>серебренная пуля так и не найдена</li>
+            </ul>
+
+            <aside class="notes">
+                код может стать плохим<br/><br/>
+                "Все проблемы программирования можно решить дополнительным слоем абстракции… кроме проблемы избыточной
+                абстракции" David Wheeler<br/>
+            </aside>
+        </section>
+
+        <section>
+            <h3>Мы все стремимся</h3>
+            <ul>
+                <li>писать хорошо читабельный и легко поддерживаемый код</li>
+                <li>использовать актуальные технологии</li>
+                <li>получать удовольствие от работы</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Хорошим инструментом приятно работать!</h4>
+            <img src="microscope.jpg"/>
+        </section>
+
+        <section data-background="microscope_nails.jpg">
+            <h4>Но нужно уметь.</h4>
+            <div style="height: 300px;"></div>
+        </section>
+
+        <section>
+            <img src="yii.png"/>
+        </section>
+
+        <section>
+            <h3>Yii 2 &mdash; MVC фреймворк</h3>
+
+            <table>
+                <tr>
+                    <td><img src="mvc-not-ok.png"/></td>
+                    <td style="vertical-align: middle;">
+                        <ul>
+                            <li>модель</li>
+                            <li>представления</li>
+                            <li>контроллеры</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <p><b>M</b> в паттерне <span class="accent">M</span><span class="shadow">VC</span> &mdash; модель</p>
+            <hr class="fragment" data-fragment-index="1"/>
+            <p class="fragment" data-fragment-index="1">Модель в Yii
+                <small>(и не только)</small> &mdash; класс, описывающий структуру таблицы
+            </p>
+            <hr class="fragment" data-fragment-index="2"/>
+            <p class="fragment" data-fragment-index="2">По MVC, бизнес-логика относится к модели</p>
+            <p class="fragment" data-fragment-index="3">&#x25BC;</p>
+            <h3 class="fragment" data-fragment-index="3">Кладём всю логику в модели, которые описывают структуру таблиц!</h3>
+        </section>
+
+        <section>
+            <img src="mythbusters.jpg"/>
+        </section>
+
+        <section>
+            <h4>На таком MVC далеко не уедешь</h4>
+
+            <ul>
+                <li>Раздутые модели</li>
+                <li>Бизнес-логика размазана</li>
+                <li>Копи-паста</li>
+                <li>Тестировать сложно</li>
+                <li class="fragment" data-fragment-index="1">Трогать опасно</li>
+                <li class="fragment" data-fragment-index="2">Жить больно</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Разбираемся!</h2>
+        </section>
+
+        <section>
+            <h3>Модели в фреймворке</h3>
+
+            <ul>
+                <li>Представляют структуры данных:
+                    <ul style="margin: 0">
+                        <li>таблицы и связи (ActiveRecord)</li>
+                        <li>формы</li>
+                        <li>запросы к API</li>
+                    </ul>
+                <li class="fragment" data-fragment-index="1">Содержат сценарии и правила валидации</li>
+                <li class="fragment" data-fragment-index="2">Не содержат бизнес-логику</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Модель в MVC</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Не один класс! Это целый доменный слой!</li>
+                <li class="fragment" data-fragment-index="2">Содержит бизнес-логику</li>
+                <li class="fragment" data-fragment-index="3">Содержит модели (таблиц, форм, ...)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Так куда именно писать бизнес-логику?</h3>
+
+            <ul>
+                <li class="fragment semi-fade-out" data-fragment-index="1">В модели (таблиц, форм, ...)</li>
+                <li class="fragment semi-fade-out" data-fragment-index="2">В контроллеры</li>
+                <li class="fragment semi-fade-out" data-fragment-index="3">Размазать тонким слоем по всему коду</li>
+                <li class="fragment semi-fade-out" data-fragment-index="4">В отдельные классы со статическими методами</li>
+                <li class="fragment highlight-green" data-fragment-index="5">В отдельные классы</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Отдельные классы для бизнес-логики &mdash; это:</h4>
+
+            <ul>
+                <li>Строгая зона ответственности</li>
+                <li>Место для всей грязной логики</li>
+                <li>Внедрение зависимостей (DI)</li>
+                <li>Интерфейсное взаимодействие</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Куда класть и как называть</h3>
+
+            <ul>
+                <li>Не боимся создавать директории и пространства имён</li>
+                <li>Создаём директорию в src модуля/приложения</li>
+                <li>Называем классы по сути действия - СущностьДействие</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Нужен пример.</h3>
+            <h3 class="fragment fade-up" data-fragment-index="1">Давайте удалим пользователя :)</h3>
+        </section>
+
+        <section>
+            <h5>Класс бизнес-логики ClientDeleter</h5>
+
+            <pre><code class="php">
+class ClientDeleter {
+    protected $accessChecker;
+    protected $client;
+    protected $logger;
+
+    public function __construct(Client $client,
+                AccessChecker $accessChecker, Logger $logger) {
+        // ...
+    }
+    public function execute() {
+        $this->accessChecker->checkPermission('client.delete', $client);
+        foreach ($client->getActivePurses() as $purse) {
+            (new PurseBlocker($purse))->execute();
+        }
+        $client->delete();
+        $this->afterDelete($client);
+    }
+    protected function afterDelete(Client $client) {
+        $this->logger->logDeleting($client);
+        (new ClientMailer($client))->sendBye();
+    }
+}
+            </code></pre>
+
+            <aside class="notes">Один метод - для примера</aside>
+        </section>
+
+        <section>
+            <h5>ClientController</h5>
+
+            <pre class="highlight php">
+public function actionDelete($id)
+{
+    $client = Client::findById($id);
+    Yii::createObject(ClientDeleter::class, [$client])->execute();
+    return $this->render('goodbye', ['model' => $client]);
+}
+            </pre>
+        </section>
+
+        <section>
+            <h2>На выходе получим:</h2>
+
+            <ul>
+                <li>Тонкий контроллер</li>
+                <li>Тонкую модель</li>
+                <li>Тестируемый в изоляции класс логики</li>
+                <li>Готовность к повторному использованию</li>
+                <li>Возможность переопределения и дополнения</li>
+            </ul>
+        </section>
+
+        <section>
+            <table>
+                <tr>
+                    <td><img src="yii_structure.png"/></td>
+                    <td style="vertical-align: middle;">
+                        <ul style="font-size: 75%;">
+                            <li>MVC</li>
+                            <li class="fragment" data-fragment-index="1">DI</li>
+                            <li class="fragment" data-fragment-index="2">сервис-локатор</li>
+                            <li class="fragment" data-fragment-index="3">компоненты</li>
+                            <li class="fragment" data-fragment-index="4">модули</li>
+                            <li class="fragment" data-fragment-index="5">фильтры</li>
+                            <li class="fragment" data-fragment-index="6">виджеты</li>
+                            <li class="fragment" data-fragment-index="7">хелперы</li>
+                            <li class="fragment" data-fragment-index="8">ассеты</li>
+                            <li class="fragment" data-fragment-index="8">...</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h3>Ещё немного о моделях</h3>
+
+            <ul>
+                <li>Описываем ENUM-типы &mdash; константами (STATE_ENABLED, TYPE_PARTNER)</li>
+                <li class="fragment" data-fragment-index="1">Не работаем с $_GET, $_POST, etc</li>
+                <li class="fragment" data-fragment-index="2">Не генерируем HTML</li>
+                <li class="fragment" data-fragment-index="3">Перечисляем используемые сценарии в константах (SCENARIO_CREATE)</li>
+                <li class="fragment" data-fragment-index="4">При необходимости, переопределяем load()</li>
+                <li class="fragment" data-fragment-index="5">Не создаём модели, если они мешают (отчёты, статистика)</li>
+                <li class="fragment" data-fragment-index="6">Не раздуваем</li>
+
+            </ul>
+        </section>
+
+        <section>
+            <p>Переопределяем класс ActiveQuery</p>
+
+            <pre class="highlight php">
+class ClientQuery extends \yii\db\ActiveQuery
+{
+    public function active()
+    {
+        $this->andWhere(['disabled' => 0]);
+    }
+
+    public function topCountries($limit = 10)
+    {
+        $this->select(['country', 'clientsCount' => 'count(*)']
+            ->groupBy(['country'])
+            ->orderBy(['count(*)' => SORT_DESC])
+            ->limit($limit)
+            ->asArray()->all();
+    }
+}
+            </pre>
+
+            <pre class="highlight php">
+class Client extends \yii\db\ActiveRecord
+{
+    public static function find()
+    {
+        return Yii::createObject(ClientQuery::class, [get_called_class()]);
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <p>Описываем хитрые или уточнённые связи прямо в модели</p>
+            <pre class="highlight php">
+public function getPurses()
+{
+    return $this->hasMany(Purse::class, ['client_id' => 'id']);
+}
+
+public function getActivePurses()
+{
+    return $this->getPurses()->active();
+}
+                </pre>
+        </section>
+
+
+        <section>
+            <h3>View</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">HTML</li>
+                <li class="fragment" data-fragment-index="2">Минимум логики</li>
+                <li class="fragment" data-fragment-index="3">Не делает запросов в БД</li>
+                <li class="fragment" data-fragment-index="4">Не запрашивает и не изменяет данные</li>
+                <li class="fragment" data-fragment-index="5">Получает данные от контролера</li>
+                <li class="fragment" data-fragment-index="6">Разделять большие вьюхи на части</li>
+                <li class="fragment" data-fragment-index="7">Сложный HTML с логикой оформлять в виджеты</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Controllers & Actions</h3>
+
+            <ul>
+                <li>Обрабатывают действия</li>
+                <li>Создают и наполняют модели</li>
+                <li>Не генерируют HTML (рендерят вьюхи)</li>
+                <li>Не содержат голый SQL</li>
+                <li>Не содержат бизнес-логику (вызывают её)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Переиспользуемые экшены</h3>
+
+            <table style="width: 100%">
+                <tr>
+                    <td>
+<pre><code class="php" data-trim data-noescape>
+public function actions()
+{
+  return [
+    'error' => [
+      'class' => 'yii\web\ErrorAction',
+    ]
+  ];
+}
+                        </code></pre>
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <ul>
+                            <li>Унификации стандартных действий</li>
+                            <li>Отдельностоящие классы</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+            <ul>
+                <li>Декларативное описание</li>
+                <li>Легче тестировать</li>
+                <li>Сложность локального изменения поведения</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Компоненты</h2>
+
+            <ul>
+                <li>Регистрация в конфигурации приложения</li>
+                <li>Доступ через <code>Yii::$app->componentName</code></li>
+                <li>Один класс &ndash; много компонентов</li>
+                <li>Никаких синглтонов</li>
+                <li>Много встроенных компонентов</li>
+                <li>Большой выбор компонентов в Open-Source</li>
+                <li>Можно переопределять и дополнять</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Встроенные компоненты</h3>
+
+            <ul>
+                <li>request &ndash; представление запроса от клиента</li>
+                <li>response &ndash; представление ответа</li>
+                <li>session &ndash; хранилище данных сессии</li>
+                <li>urlManager &ndash; парсинг и генерация URL</li>
+                <li>db &ndash; работа с БД</li>
+                <li>formatter &ndash; форматирование дат, времени, др. величин</li>
+                <li>i18n &ndash; интернационализация</li>
+                <li>log &ndash; цели логирования</li>
+                <li>
+                    <a href="http://www.yiiframework.com/doc-2.0/guide-structure-application-components.html#core-application-components">
+                        и другие ...
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Пишите компонент, когда:</h3>
+
+            <ul>
+                <li>Конфигурация на уровне приложения</li>
+                <li>Нужно один раз инициализировать</li>
+                <li>Хочется написать синглтон</li>
+            </ul>
+
+            <aside class="notes">
+                Работа с внешними данными
+            </aside>
+        </section>
+
+        <section>
+            <h2>Helpers</h2>
+
+            <ul>
+                <li>Класс со статическими методами</li>
+                <li>Замена функций и их группировка</li>
+                <li>Когда не нужна конфигурация на уровне приложения</li>
+                <li>Преобразование данных</li>
+                <li>Переопределение наследованием</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Встроенные хэлперы:</h3>
+
+            <ul>
+                <li>
+                    <a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basestringhelper.html">StringHelper</a> &ndash;
+                    манипуляции со строками
+                </li>
+                <li>
+                    <a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basearrayhelper.html">ArrayHelper</a> &ndash;
+                    манипуляции с массивами
+                </li>
+                <li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basehtml.html">Html</a> &ndash; генерация
+                    HTML
+                </li>
+                <li><a href="http://www.yiiframework.com/doc-2.0/yii-helpers-basejson.html">Json</a> &ndash; работа с
+                    JSON
+                </li>
+                <li><a href="https://github.com/yiisoft/yii2/tree/master/framework/helpers">и другие...</a></li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Виджеты</h2>
+
+            <ul>
+                <li>Вьюхи с логикой в ООП-стиле</li>
+                <li>Борьба с копи-пастой во вьюхах</li>
+                <li>Хороши для повторно-используемых элементов: кнопки, таблицы, цельные компоненты вёрстки</li>
+                <li>Приятно тестировать</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Behaviors</h2>
+
+            <pre class="highlight php">
+public function behaviors()
+{
+    return [
+        [
+            'class' => BlameableBehavior::className(),
+            'createdByAttribute' => 'author_id',
+            'updatedByAttribute' => 'updater_id',
+        ],
+    ];
+}
+</pre>
+            <ul>
+                <li>По сути &mdash; миксины</li>
+                <li>Добавление к классу свойств и методов без изменения класса</li>
+                <li>Подключение слушателей событий</li>
+                <li>Переехали из Yii 1, когда трейтов не было</li>
+                <li>Не содержат бизнес-логики</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Где пригодится</h3>
+
+            <ul>
+                <li>Преобразование или дополнение данных в моделях</li>
+                <li>Проверка прав доступа перед выполнением действия</li>
+                <li>Автоматизация логирования</li>
+            </ul>
+
+            <aside class="notes">
+                FileBehavior
+                Вешать слушателей на события
+            </aside>
+        </section>
+
+        <section>
+            <h4>Преимущества Behavior'ов над Trait'ами</h4>
+
+            <ul>
+                <li>статическое и динамическое прикрепление</li>
+                <li>возможность наследования</li>
+                <li>настройка поведения</li>
+                <li>возможность тестирования</li>
+            </ul>
+
+            <aside class="notes">
+                Было очереди на выпиливание, но под большим вопросом
+            </aside>
+        </section>
+
+        <section>
+            <h3>Недостатки Behavior'ов</h3>
+
+            <ul>
+                <li>Медленнее, чем Trait'ы</li>
+                <li>Не будет подсветки в IDE</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Модули</h2>
+
+            <p>Могут объединять всё: контроллеры, модели, вьюхи, компоненты, виджеты, etc.</p>
+
+            <ul>
+                <li>Группировка похожих функций приложения</li>
+                <li>
+                    <span class="fragment underline-dotted" data-fragment-index="1">Изоляция</span> функций для их
+                    последующего использования в других проектах
+                </li>
+            </ul>
+
+
+            <aside class="notes">
+                Изоляция - проблема
+                Пример модуля (корзина)
+            </aside>
+        </section>
+
+        <section>
+            <h2>RBAC</h2>
+
+            <ul>
+                <li>Хоть и Role Based, проверяем Permission</li>
+                <li>Детализация прав доступа по необходимости &ndash; YAGNI</li>
+                <li>Используем фильтр AccessControl</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Миграции</h3>
+
+            <pre class="highlight php">
+class m160831_create_news extends Migration
+{
+    public function up()
+    {
+        $this->createTable('news', [
+            'id' => $this->primaryKey(),
+            'title' => $this->string()->notNull(),
+            'content' => $this->text(),
+        ]);
+    }
+}
+</pre>
+
+            <ul>
+                <li>Единственный железный способ поддержания актуальности</li>
+                <li>Абстрактно от БД и среды</li>
+                <li>Легко пишутся</li>
+                <li>Тестируемы</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Миграции применимы для</h4>
+
+            <ul>
+                <li>Создания и изменения структуры БД</li>
+                <li>Наполнение и конвертации таблицы</li>
+                <li>Управления RBAC</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>i18n &mdash; internationalization</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Исходный язык &ndash; английский</li>
+                <li class="fragment" data-fragment-index="2">Делаем специализированные словари</li>
+                <li class="fragment" data-fragment-index="3">Называем их осмысленно</li>
+                <li class="fragment" data-fragment-index="4">Используем генерацию словарей из кода</li>
+                <li class="fragment" data-fragment-index="5">Не пользуемся машинным переводом</li>
+            </ul>
+        </section>
+
+
+        <section>
+            <h3>Yii::t() умеет форматировать:</h3>
+
+            <pre class="highlight php">
+// Числа
+echo Yii::t('app', 'Value: {value, number}', ['value' => 123456,789]);
+// Value: 123,456.789
+
+// Валюты
+echo Yii::t('app', 'Price: {price, number, currency}', ['price' => 100]);
+// Price: $100.00
+
+// Числа прописью
+echo Yii::t('app', '{n,number} is spelled as {n, spellout}', ['n' => 42]);
+// 42 is spelled as forty-two
+
+// Множественные формы
+$message = 'Здесь {n, plural, =0{котов нет} =1{есть один кот}
+                  one{# кот} few{# кота} many{# котов} other{# кота}}!';
+echo Yii::t('app', $message, ['n' => 42]);
+// Здесь есть один кот!
+</pre>
+        </section>
+
+        <section>
+            <h4>Пишем выражения правильно</h4>
+
+            <p class="fragment" data-fragment-index="1">Last update: 07/31/2016</p>
+        </section>
+
+        <section>
+            <h2>Плохо:</h2>
+
+            <pre class="highlight php">Yii::t('app', 'Last') .' '. Yii::t('app', 'update') .': '. date('m/d/Y')</pre>
+
+            <ul>
+                <li>Склонение</li>
+                <li>Падежи</li>
+                <li>Последовательность слов</li>
+                <li>Формат даты</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Хорошо:</h2>
+
+            <pre class="highlight php">
+echo Yii::t('presentation', 'Last update: {date}', [
+    'date' => Yii::$app->formatter->asDate($model->date, 'short')
+]);
+// Последнее обновление: 07.12.2016</pre>
+        </section>
+
+        <section>
+            <h2>Как быть с HTML</h2>
+            <pre class="highlight php">
+echo Yii::t('presentation', 'Powered by {link}', [
+    'link' => Html::a('//yiiframework.com', Yii::t('yii', 'Yii Framework'))
+]);
+// Сделано на &lt;a href="//yiiframework.com"&gt;фреймворке Yii&lt;/a&gt;
+            </pre>
+        </section>
+
+        <section>
+            <p>
+                Больше про i18n в докладе <br />
+                <a href="http://slides.rmcreative.ru/2015/webconf-i18n-l10n/#/">Yii and PHP i18n & L10n</a> Александра Макарова
+            </p>
+        </section>
+        
+        <section>
+            <h3>Assets</h3>
+
+            <ul>
+                <li>CSS, JS, картинки, шрифты</li>
+                <li>В Yii &mdash; классы, описывающие пути к этим файлам</li>
+                <li class="fragment" data-fragment-index="3">
+                    Компиляция &mdash; <span class="fragment strike" data-fragment-index="4">AssetCompressor</span>
+                    <span class="fragment" data-fragment-index="4">Gulp, Grunt</span>
+                </li>
+                <li class="fragment" data-fragment-index="5">
+                    FXP/composer-asset-plugin
+                    <span class="fragment" data-fragment-index="6">
+                        → <a href="https://asset-packagist.org">asset-packagist.org</a>
+                    </span>
+                </li>
+            </ul>
+            <pre class="highlight josn fragment" data-fragment-index="6">
+"repositories": [
+    {
+        "type": "composer",
+        "url": "https://asset-packagist.org"
+    }
+]
+            </pre>
+        </section>
+
+        <section>
+            <h3>Мифы о Yii 2</h3>
+
+            <ul>
+                <li>Yii &mdash; это программирования на массивах</li>
+                <li>Yii &mdash; не для API</li>
+                <li>Yii &mdash; простой фреймворк</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Общие советы</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Согласованный <a href="http://www.php-fig.org/psr/psr-2/">стиль кода</a></li>
+                <li class="fragment" data-fragment-index="2">Сразу пишем <a href="https://www.phpdoc.org/">PHPDoc</a></li>
+                <li class="fragment" data-fragment-index="3">Пишем тесты</li>
+                <li class="fragment" data-fragment-index="4">Читаем и проверяем перед коммитом</li>
+                <li class="fragment" data-fragment-index="5">Собираем, разделяем и анализируем логи</li>
+                <li class="fragment" data-fragment-index="6">Читаем документацию</li>
+                <li class="fragment" data-fragment-index="7">Смотрим исходники</li>
+                <li class="fragment" data-fragment-index="8"><a href="http://slides.silverfire.me/2016/devpizza-profiling/">Профилируем</a> код</li>
+                <li class="fragment" data-fragment-index="9">Развиваемся и получаем удовольствие от работы :)</li>
+            </ul>
+            
+            <aside class="notes">
+                Стиль может быть свой
+            </aside>
+        </section>
+
+        <section class="final-slide" data-background="title-slide.png">
+            <h2>Вопросы?</h2>
+
+            <table>
+                <tr>
+                    <td style="width: 40%"><img src="qr.svg" /></td>
+                    <td style="vertical-align: top;">
+                        <ul>
+                            <li><a href="https://github.com/SilverFire">SilverFire@GitHub</a></li>
+                            <li><a href="http://www.yiiframework.com/">Yii Framework</a></li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </section>
+    </div>
+</div>
+
+<script src="js/all.js"></script>
+
+<script>
+
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        progress: true,
+        history: true,
+        center: true,
+        margin: 0.1,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+
+        dependencies: [
+            {
+                src: 'js/reveal/highlight/highlight.js',
+                async: true,
+                callback: function () {
+                    [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                        hljs.highlightBlock(v);
+                    });
+                }
+            },
+            { src: 'js/reveal/notes/notes.js', async: true},
+        ]
+    });
+
+
+</script>
+<script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+</body>
+</html>
