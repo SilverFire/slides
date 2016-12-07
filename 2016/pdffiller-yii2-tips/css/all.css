@@ -1976,8 +1976,6 @@ body {
 
 .title-slide p {
     font-family: "Ubuntu";
-    color: #fff;
-    text-transform: uppercase;
     font-size: 2em;
     padding-top: 2em;
 }
@@ -1989,7 +1987,6 @@ body {
 
 .title-slide h1 {
     font-family: "Ubuntu";
-    color: #fff;
     font-size: 1.5em;
     letter-spacing: -2px;
     margin: 1.5em;
