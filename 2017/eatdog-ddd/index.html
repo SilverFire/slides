@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <title>Просто о сложном - Domain Driven Design</title>
+
+        <meta name="description" content="Слайды к презентации о применении подхода Domain Driven Design">
+        <meta name="author" content="Дмитрий Науменко">
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="css/all.css">
+
+        <script>
+            document.write( '<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+        </script>
+    </head>
+
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section class="title-slide">
+                    <h1>Domain Driven Design</h1>
+                    <h4>просто о сложном</h4>
+
+                    <br />
+                    <br />
+                    <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
+                    <p>
+                        <small>
+                            <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
+                        </small>
+                    </p>
+                </section>
+
+                <section>
+                    <h3>Disclaimer</h3>
+
+                    <h4>Тем очень глубокая, за 40 минут ее не осилить.</h4>
+                </section>
+
+                <section>
+                    <h3>План на сегодня</h3>
+
+                    <ul>
+                        <li>Узнать понятии DDD и его целях</li>
+                        <li>Познакомиться с элементами DDD</li>
+                        <li>Итеративно отрефакторить приложение</li>
+                        <li>Рассмотреть преимущества и недостатки</li>
+                        <li>Сделать выводы</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Сложность</h2>
+                    <h4>С какой сложностью мы чаще всего сталкиваемся?</h4>
+                </section>
+
+                <section>
+                    <h4>Сложность понимания &rarr; сложность поддержки</h4>
+                </section>
+
+                <section>
+                    <h3>Откуда берётся сложность?</h3>
+
+                    <ul>
+                        <li>Сложность реального мира</li>
+                        <li class="fragment" data-fragment-index="1">Гибкость программы</li>
+                        <li class="fragment" data-fragment-index="2">Проблема описания поведения системы</li>
+                        <li class="fragment" data-fragment-index="3">CI с <u>изменяющимися требованиями</u></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>DDD - Domain Driven Design</h3>
+
+                    <h5>Набор подходов для борьбы со сложностью в приложениях.</h5>
+                </section>
+
+                <section>
+                    <h3>Домен</h3>
+
+                    <p>Предметная область знаний, связей или действий, для которой создается программное обеспечение.</p>
+                </section>
+
+                <section>
+                    <h4>Как часто <u>изменяются требования</u> домена?</h4>
+                </section>
+
+                <section>
+                    <h4>Как часто <u>изменяются требования</u> бизнеса?</h4>
+                </section>
+
+                <section>
+                    <h2 class="fragment semi-fade-out fade-up" data-fragment-index="1">Часто</h2>
+                    <h2 class="fragment fade-up" data-fragment-index="1">Постоянно</h2>
+                </section>
+
+                <section>
+                    <p>
+                        Было бы круто <span class="text-green">отображать</span> бизнесс-процессы в коде,
+                        <span class="text-green">следовать</span> их изменениям и не создавать себе проблемы, правда?
+                    </p>
+                </section>
+
+                <section>
+                    <h3>DDD &ndash; ключевые концепции:</h3>
+
+                    <ul>
+                        <li>Единый язык домена (Ubiquitous Language)</li>
+                        <li>Проектирование по модели (Model-Driven Design)</li>
+                        <li>
+                            Шаблоны проектирования:
+                            <ul style="margin: 0">
+                                <li>Entity</li>
+                                <li>Value Object</li>
+                                <li>Aggregation Root</li>
+                                <li>Repository</li>
+                                <li>Service</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Единый язык домена</h2>
+
+                    <p>Набор терминов, применяемых в модели домена для объяснения связей и действий</p>
+                </section>
+
+                <section>
+                    <h2>Зачем?</h2>
+
+                    <ul>
+                        <li>общаться с доменными экспертами на одном языке</li>
+                        <li>называть вещи своими именами</li>
+                        <li>отслеживать изменения домена через изменения языка</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <p class="todo">todo</p>
+                </section>
+
+                <section>
+                    <h3>Проектирование по модели</h3>
+
+                    <p class="todo"></p>
+                </section>
+
+                <section>
+                    <h2>Entity</h2>
+
+                    <ul>
+                        <li>Определяется по идентификатору, а не значению аттрибутов</li>
+                        <li class="todo">Представляет сущность предметной области</li>
+                        <li></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Value Object</h2>
+
+                    <ul>
+                        <li>Определяется по значению аттрибутов, а не по идентификатору</li>
+                        <li class="todo">когда уместно</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4 class="todo">Использование VO</h4>
+
+                    <ul>
+                        <li>пример с валидацией</li>
+                        <li>пример с деньгами</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Aggregate root</h3>
+
+                    <ul>
+                        <li class="todo"></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Примеры</h3>
+
+                    <p class="todo"></p>
+                </section>
+
+                <section>
+                    <h3>Service</h3>
+
+                    <ul>
+                        <li class="todo"></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <p class="todo">десяток слайдов с примерами</p>
+                </section>
+
+                <section>
+                    <h4>Извлечение скрытых концепций</h4>
+
+                    <p class="todo">пример по всякие policy</p>
+                </section>
+
+                <section>
+                    <h3>И всё прям так хорошо?</h3>
+                </section>
+
+                <section>
+                    <h3>Конечно, есть и проблемы</h3>
+
+                    <ul>
+                        <li>crosscutting concerns</li>
+                        <li>переабстрагирование</li>
+                        <li class="todo"></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>А без DDD этих проблем нет, ведь так?</h4>
+                </section>
+
+                <section>
+                    <p class="todo">Про процедурную бизнес-логику с примерами, преимуществами и недостатками</p>
+                </section>
+
+                <section>
+                    <p class="todo">Thin controller, fat model и наоборот</p>
+                    <p class="todo">Про переливание кода между Model и Controller</p>
+                </section>
+
+                <section>
+                    <h4>Как это собрать воедино?</h4>
+
+                    <p class="todo"></p>
+                </section>
+
+                <section>
+                    <h3>Почитать</h3>
+
+                    <ul>
+                        <li>https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software-ebook/dp/B00794TAUG</li>
+                        <li>https://github.com/PhpFriendsOfDdd</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+
+        <script src="js/all.js"></script>
+
+        <script>
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: false,
+                progress: true,
+                history: true,
+                center: true,
+                margin: 0.1,
+                slideNumber: true,
+
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    {
+                        src: 'js/reveal/highlight/highlight.js',
+                        async: true,
+                        callback: function () {
+                            [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                                hljs.highlightBlock(v);
+                            });
+                        }
+                    },
+                    { src: 'js/reveal/notes/notes.js', async: true}
+                ]
+            });
+        </script>
+    <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    </body>
+</html>
