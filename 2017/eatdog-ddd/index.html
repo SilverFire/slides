@@ -40,14 +40,18 @@
                 <section>
                     <h3>Disclaimer</h3>
 
-                    <h4>Тем очень глубокая, за 40 минут ее не осилить.</h4>
+                    <ul>
+                        <li>Тем очень глубокая, за 40 минут ее не осилить.</li>
+                        <li>Будет много кода.</li>
+                        <li>...</li>
+                    </ul>
                 </section>
 
                 <section>
                     <h3>План на сегодня</h3>
 
                     <ul>
-                        <li>Узнать понятии DDD и его целях</li>
+                        <li>Узнать понятии DDD и его элементах</li>
                         <li>Познакомиться с элементами DDD</li>
                         <li>Итеративно отрефакторить приложение</li>
                         <li>Рассмотреть преимущества и недостатки</li>
@@ -76,53 +80,83 @@
                 </section>
 
                 <section>
-                    <h3>DDD - Domain Driven Design</h3>
+                    <h4>Как часто <u>изменяются требования</u>?</h4>
+
+                    <h2 class="fragment" data-fragment-index="1">
+                        <span class="fragment semi-fade-out" data-fragment-index="2">Часто</span>
+                    </h2>
+                    <h2 class="fragment fade-up" data-fragment-index="2">Постоянно</h2>
+                </section>
+
+                <section>
+                    <p>
+                        Было бы круто <span class="text-green">отображать</span> бизнес-процессы в архитектуре
+                        и <span class="text-green">реагировать</span> на это без увеличения <b>сложности</b>.
+                    </p>
+                </section>
+
+                <section>
+                    <h3>DDD &ndash; Domain Driven Design</h3>
 
                     <h5>Набор подходов для борьбы со сложностью в приложениях.</h5>
                 </section>
 
                 <section>
-                    <h3>Домен</h3>
-
-                    <p>Предметная область знаний, связей или действий, для которой создается программное обеспечение.</p>
-                </section>
-
-                <section>
-                    <h4>Как часто <u>изменяются требования</u> домена?</h4>
-                </section>
-
-                <section>
-                    <h4>Как часто <u>изменяются требования</u> бизнеса?</h4>
-                </section>
-
-                <section>
-                    <h2 class="fragment semi-fade-out fade-up" data-fragment-index="1">Часто</h2>
-                    <h2 class="fragment fade-up" data-fragment-index="1">Постоянно</h2>
-                </section>
-
-                <section>
-                    <p>
-                        Было бы круто <span class="text-green">отображать</span> бизнесс-процессы в коде,
-                        <span class="text-green">следовать</span> их изменениям и не создавать себе проблемы, правда?
-                    </p>
-                </section>
-
-                <section>
-                    <h3>DDD &ndash; ключевые концепции:</h3>
+                    <h3>Ключевые концепции:</h3>
 
                     <ul>
-                        <li>Единый язык домена (Ubiquitous Language)</li>
-                        <li>Проектирование по модели (Model-Driven Design)</li>
+                        <li>Domain</li>
+                        <li>Ubiquitous Language (Единый язык домена)</li>
+                        <li>Model-Driven Design (Проектирование по модели)</li>
                         <li>
                             Шаблоны проектирования:
                             <ul style="margin: 0">
                                 <li>Entity</li>
                                 <li>Value Object</li>
-                                <li>Aggregation Root</li>
+                                <li>Aggregate Root</li>
                                 <li>Repository</li>
                                 <li>Service</li>
                             </ul>
                         </li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Домен</h3>
+
+                    <p>Предметная область знаний, связей и действий, для которой создается программное обеспечение.</p>
+                </section>
+
+                <section>
+                    <h3>Счёт на оплату</h3>
+                </section>
+
+                <section>
+                    <h3>Domain experts</h3>
+
+                    <ul>
+                        <li>Знают, как работает домен и его бизнес-процессы</li>
+                        <li class="fragment" data-fragment-index="1">Упускают "очевидные" детали</li>
+                        <li class="fragment" data-fragment-index="2">Не знают ничего программировании и DDD</li>
+                    </ul>
+
+                    <small class="todo">картинка с экспертами</small>
+                </section>
+
+                <section>
+                    <p class="quote">Создаём счёт, добавляем в него товары и выставляем его клиенту.</p>
+                </section>
+
+                <section>
+                    <h3>Наши задачи:</h3>
+
+                    <ul>
+                        <li>Добыть знания о домене</li>
+                        <li>Выделить общие случаи из частных</li>
+                        <li>Понять, что из сказанного &mdash; туфта</li>
+                        <li class="fragment strike" data-fragment-index="1">Научить <b>их</b> изъясняться на <u>нашем</u> языке</li>
+                        <li class="fragment" data-fragment-index="1"><span class="fragment strike" data-fragment-index="2">Научиться изъясняться на <u>их</u> языке</span></li>
+                        <li class="fragment" data-fragment-index="2">Выработать <b>понятный</b> для обоих сторон язык!</li>
                     </ul>
                 </section>
 
@@ -136,14 +170,333 @@
                     <h2>Зачем?</h2>
 
                     <ul>
-                        <li>общаться с доменными экспертами на одном языке</li>
                         <li>называть вещи своими именами</li>
-                        <li>отслеживать изменения домена через изменения языка</li>
+                        <li>общаться с доменными экспертами на одном языке</li>
                     </ul>
                 </section>
 
                 <section>
-                    <p class="todo">todo</p>
+                    <p class="quote"><i>Создаём</i> <u>счёт</u>, <i>добавляем</i> в него <u>товары</u> и <i>выставляем</i> его <u>клиенту</u>.</p>
+
+                    <h3>Извлечение скрытого смысла</h3>
+
+                    <ul>
+                        <li>Какие есть характеристики счёта?</li>
+                        <li>Что может быть товаром?</li>
+                        <li>Какие характеристики товара важны?</li>
+                        <li>Что значит "выставить счёт"?</li>
+                        <li>Что мы знаем о клиенте?</li>
+                        <li>...</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="bill_product_client_0.png">
+                </section>
+
+                <section>
+                    <p class="todo">
+                        Картинка с блоками M V C
+                    </p>
+
+                    <ul>
+                        <li>Model</li>
+                        <li>Contoller</li>
+                        <li>View</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Начнём по-простому</h3>
+
+                    <pre class="highlight php">
+class BillController
+{
+    public function actionCreateBill($client_id, array $product_ids)
+    {
+        $client = Client::find()-&gt;byId($client_id)-&gt;one();
+        if (!$client) { throw new NotFoundException(&apos;No client&apos;); }
+
+        $bill = new Bill();
+        $bill-&gt;client = $client;
+        $bill-&gt;status = &apos;new&apos;;
+
+        $products = Product::find()-&gt;byId($product_ids)-&gt;all();
+        if (!$product) { throw new NotFoundException(&apos;No products&apos;); }
+
+        $bill-&gt;items = $products;
+        foreach ($bill-&gt;items as $item) {
+            $bill-&gt;sum += $item-&gt;price;
+        }
+        $bill-&gt;save();
+        $this-&gt;notifyBillCreated($client-&gt;email, $bill);
+        $this-&gt;log-&gt;info(&apos;Created bill &apos; . $bill-&gt;id);
+
+        return $this-&gt;render(&apos;bill&apos;, [&apos;bill&apos; =&gt; $bill]);
+    }
+}
+</pre>
+                </section>
+
+                <section>
+                    <p class="quote">Само собой, товары в счёт можно добавлять и удалять, если счёт еще не выставлен</p>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+class BillController
+{
+    public function actionAddItem($bill_id, $item_id = null)
+    {
+        $bill = Bill::find()-&gt;byId($bill_id)-&gt;one();
+        if (!$bill) { throw new NotFoundException(&apos;No bill&apos;); }
+        if ($bill-&gt;status !== &apos;new&apos;) { throw new HttpException(403); }
+
+        $product = Product::find()-&gt;byId($req-&gt;post(&apos;product_id&apos;))-&gt;one();
+        if (!$product) { throw new NotFoundException(&apos;No product&apos;); }
+
+        $bill-&gt;items[] = $product;
+        $bill-&gt;calculateSum();
+
+        $this-&gt;log-&gt;info(&apos;Updated bill &apos; . $bill-&gt;id);
+
+        $bill-&gt;save();
+
+        return $this-&gt;render(&apos;bill&apos;, [&apos;bill&apos; =&gt; $bill]);
+    }
+}
+</pre>
+                </section>
+
+                <section>
+                    <h3>Ок :)</h3>
+
+                    <img src="i_v_prod.jpg" alt="">
+                </section>
+
+                <section>
+                    <h3>Преимущества:</h3>
+
+                    <ul>
+                        <li>Вся логика рядом, легко понять что происходит</li>
+                        <li>Нет ничего лишнего</li>
+                        <li>Низкий входной порог</li>
+                        <li>Легко дописать еще пару-тройку if-ов</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Недостатки:</h3>
+
+                    <ul>
+                        <li>Всё перемешано</li>
+                        <li>Сложно переиспользовать</li>
+                        <li>Тесты? Лолшто?</li>
+                        <li>Дописать еще пару if'ов и будет месиво</li>
+                        <li>ActiveRecord</li>
+                        <li>Это не DDD</li>
+                    </ul>
+                </section>
+
+                <section>
+                    Может вынести логику из контроллера в модель <strong>Bill</strong>?
+                </section>
+
+                <section>
+                    <h3>Fat controller & Slim model</h3>
+                    <h4>VS</h4>
+                    <h3>Slim controller & Fat model</h3>
+                </section>
+
+                <section>
+                    <p class="quote">Каждого товара может быть больше чем 1 единица в счёте!</p>
+
+                    <h4>Уточним:</h4>
+                    <ul>
+                        <li>Единицы измерения &mdash; шт, метры, литры?</li>
+                        <li>Меньше целой единицы можно?</li>
+                        <li>Валюта, правила округления?</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>MVC</h2>
+                    <h3>M &ne; Модель ActiveRecord</h3>
+
+                    <h3>M &mdash; это целый Мир!</h3>
+                </section>
+
+                <section>
+                    <p class="todo">Картинка со слоями архитектуры</p>
+
+                    <ul>
+                        <li>Domain model</li>
+                        <li>Repository interfaces</li>
+                        <li>Domain services</li>
+                        <li>Infrastructure</li>
+                        <li>Application</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Domain level</h2>
+                </section>
+
+                <section>
+                    <h2>Entity</h2>
+
+                    <ul>
+                        <li>Описывает целостную сущность предметной области</li>
+                        <li>Определяется по идентификатору, а не по значению атрибутов</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="item_client.png" alt="">
+                </section>
+
+                <section>
+                    <h4>Name, address, phone</h4>
+                    <ul>
+                        <li>Целостность</li>
+                        <li data-fragment-index="1" class="fragment">Валидация</li>
+                        <li data-fragment-index="2" class="fragment">Типизация</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Value Object</h2>
+
+                    <ul>
+                        <li>Описывает характеристику или атрибут</li>
+                        <li>Типизирует в контексте домена</li>
+                        <li>Не обладает идентичностью</li>
+                        <li>Неизменяемый после создания</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="address.png" />
+                </section>
+
+                <section>
+                    <img src="client_vo.png" alt="">
+                </section>
+
+                <section>
+                    <h3>Aggregation root</h3>
+
+                    <ul>
+                        <li>Собирательная сущность, считаетсы единым целым</li>
+                        <li>Состоит из VO и Entity</li>
+                        <li>Определяется по идентификатору</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="bill.png" alt="">
+                </section>
+
+                <section>
+                    <img src="bill_w_vo.png" alt="">
+                </section>
+
+                <section>
+                    <h3>А как это всё связать с БД?</h3>
+                </section>
+
+                <section>
+                    <h2>ActiveRecord</h2>
+
+                    <h3>Плюсы:</h3>
+                    <ul>
+                        <li>Нужно минимум для старта</li>
+                        <li>Низкий порог вхождения</li>
+                        <li>Хорош для простого CRUD</li>
+                        <li>Нет лишних преобразований</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>ActiveRecord</h2>
+
+                    <h4>Минусы:</h4>
+                    <ul>
+                        <li>Жесткая связь с таблицей в БД</li>
+                        <li>Привязка типов данных к типам столбцов</li>
+                        <li>Сложность использования разных источников данных</li>
+                        <li>Изменение таблицы &rarr; изменение кода</li>
+                        <li>Нарушение Single Responsibility</li>
+                        <li>Больше логики &mdash; сложнее поддерживать</li>
+                        <li>Не для DDD</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Repository</h3>
+
+                    <h3>Плюсы:</h3>
+                    <ul>
+                        <li>Описывается интерфейсами &rarr; реализация не важна &rarr; домен отделён от хранилища</li>
+                        <li>Проще тестировать</li>
+                        <li>Типы полей не связаны</li>
+                        <li>Хорошо ложится в DDD</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+class ProductRepository
+{
+    public function findById($id)
+    {
+        // PDO, API, whatever
+        return $product;
+    }
+
+    public function save($product)
+    {
+
+    }
+}
+</pre>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+class BillController
+{
+    public function actionAddItem()
+    {
+        $req = $this-&gt;request;
+        $bill = $this-&gt;billRepository-&gt;findById($req-&gt;post(&apos;id&apos;));
+        if (!$bill) { throw new NotFoundException(&apos;No bill&apos;); }
+        if ($bill-&gt;status !== &apos;new&apos;) { throw new HttpException(403); }
+
+        $product = $this-&gt;productRepository-&gt;findById($req-&gt;post(&apos;product_id&apos;));
+        if (!$product) { throw new NotFoundException(&apos;No product&apos;); }
+
+        $bill-&gt;items[] = $product;
+        $bill-&gt;calculateSum();
+
+        if ($bill-&gt;client) {
+            $this-&gt;sendUpdatedBill($bill-&gt;client-&gt;email, $bill);
+        }
+
+        $bill-&gt;save();
+
+        return $this-&gt;render(&apos;bill&apos;, [&apos;bill&apos; =&gt; $bill]);
+    }
+}</pre>
+
+                </section>
+
+                <section>
+// Агрегат состоит и из VO, не имеющих id, и из Entity, имеющих id. Агрегат состоит из объектов. Агрегат не содержит Id вместо сущностей.
+// ddd не используются тупые сеттеры. Методы должны быть названы более человекопонятно - rename например, changePassword, activize
+// репозиторий - это не сервис. Домен состоит из трех частей - модели (сущности и value objects), сервисы домена, репозитории.
+// ddd красиво ложится на богатую бизнес-процессами модель, а на crud ложится тяжко, как мы видим
+                    <img src="order-item.png" alt="">
                 </section>
 
                 <section>
@@ -153,63 +506,7 @@
                 </section>
 
                 <section>
-                    <h2>Entity</h2>
-
-                    <ul>
-                        <li>Определяется по идентификатору, а не значению аттрибутов</li>
-                        <li class="todo">Представляет сущность предметной области</li>
-                        <li></li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h2>Value Object</h2>
-
-                    <ul>
-                        <li>Определяется по значению аттрибутов, а не по идентификатору</li>
-                        <li class="todo">когда уместно</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h4 class="todo">Использование VO</h4>
-
-                    <ul>
-                        <li>пример с валидацией</li>
-                        <li>пример с деньгами</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h3>Aggregate root</h3>
-
-                    <ul>
-                        <li class="todo"></li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h3>Примеры</h3>
-
-                    <p class="todo"></p>
-                </section>
-
-                <section>
-                    <h3>Service</h3>
-
-                    <ul>
-                        <li class="todo"></li>
-                    </ul>
-                </section>
-
-                <section>
-                    <p class="todo">десяток слайдов с примерами</p>
-                </section>
-
-                <section>
-                    <h4>Извлечение скрытых концепций</h4>
-
-                    <p class="todo">пример по всякие policy</p>
+                    <p class="todo">Кривая сложности</p>
                 </section>
 
                 <section>
@@ -235,14 +532,17 @@
                 </section>
 
                 <section>
-                    <p class="todo">Thin controller, fat model и наоборот</p>
-                    <p class="todo">Про переливание кода между Model и Controller</p>
-                </section>
-
-                <section>
                     <h4>Как это собрать воедино?</h4>
 
                     <p class="todo"></p>
+                </section>
+
+                <section>
+                    <ul>
+                        <li>Я рассказал про абстрактного коня в вакууме</li>
+                        <li>Think first. DDD &mdash; даёт рекомендации, а не правила</li>
+                        <li>Начните с малого</li>
+                    </ul>
                 </section>
 
                 <section>
