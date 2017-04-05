@@ -51,7 +51,7 @@
                     <h3>План на сегодня</h3>
 
                     <ul>
-                        <li>Узнать понятии DDD и его элементах</li>
+                        <li>Узнать понятии DDD</li>
                         <li>Познакомиться с элементами DDD</li>
                         <li>Итеративно отрефакторить приложение</li>
                         <li>Рассмотреть преимущества и недостатки</li>
@@ -212,7 +212,7 @@
                     <pre class="highlight php">
 class BillController
 {
-    public function actionCreateBill($client_id, array $product_ids)
+    public function actionCreate($client_id, array $product_ids)
     {
         $client = Client::find()-&gt;byId($client_id)-&gt;one();
         if (!$client) { throw new NotFoundException(&apos;No client&apos;); }
@@ -309,17 +309,6 @@ class BillController
                 </section>
 
                 <section>
-                    <p class="quote">Каждого товара может быть больше чем 1 единица в счёте!</p>
-
-                    <h4>Уточним:</h4>
-                    <ul>
-                        <li>Единицы измерения &mdash; шт, метры, литры?</li>
-                        <li>Меньше целой единицы можно?</li>
-                        <li>Валюта, правила округления?</li>
-                    </ul>
-                </section>
-
-                <section>
                     <h2>MVC</h2>
                     <h3>M &ne; Модель ActiveRecord</h3>
 
@@ -340,6 +329,12 @@ class BillController
 
                 <section>
                     <h2>Domain level</h2>
+
+                    <ul>
+                        <li>Entity</li>
+                        <li>Aggregate root</li>
+                        <li>Value Object</li>
+                    </ul>
                 </section>
 
                 <section>
@@ -384,7 +379,7 @@ class BillController
                 </section>
 
                 <section>
-                    <h3>Aggregation root</h3>
+                    <h3>Aggregate root</h3>
 
                     <ul>
                         <li>Собирательная сущность, считаетсы единым целым</li>
@@ -398,7 +393,107 @@ class BillController
                 </section>
 
                 <section>
+                    <p class="quote">Каждого товара может быть больше чем 1 единица в счёте!</p>
+
+                    <h4>Уточним:</h4>
+                    <ul>
+                        <li>Единицы измерения &mdash; шт, метры, литры?</li>
+                        <li>Меньше целой единицы можно?</li>
+                        <li>Валюта, правила округления?</li>
+                    </ul>
+                </section>
+
+                <section>
                     <img src="bill_w_vo.png" alt="">
+                </section>
+
+                <section>
+                    <h3>Good practices</h3>
+
+                    <ul>
+                        <li>В конструкторе минимальный набор для целостности</li>
+                        <li>Закрыто всё, что не изменяется по логике домена</li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+class Item
+{
+    protected $id;
+    protected $name;
+    protected $description;
+    protected $price;
+
+    public function __construct($id, $name, $price) {
+        $this-&gt;id = $id;
+        $this-&gt;name = $name;
+        $this-&gt;price = $price;
+    }
+
+    public function getId() {}
+
+    public function setDescription($description) {}
+    public function getDescription() {}
+
+    public function getPrice() {}
+    public function setPrice($price) {}
+
+    public function getName() {}
+    public function setName() {}
+}
+</pre>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+class Position
+{
+    protected $item;
+    protected $quantity;
+
+    public function __construct(Item $item, $quantity = 1) {
+        $this-&gt;item = $item;
+        $this-&gt;quantity = $quantity;
+    }
+
+    public function getItem() {}
+
+    public function getQuantity() {}
+    public function setQuantity($quantity) {}
+
+    public function getPrice() {}
+    public function getAmount() {}
+}
+</pre>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+class Bill
+{
+    protected $id;
+    protected $client;
+    protected $positions;
+
+    public function __construct($id, Client $client, $positions = [])
+    {
+        $this-&gt;id = $id;
+        $this-&gt;client = $client;
+        $this-&gt;positions = $positions;
+    }
+
+    public function getId() {}
+    public function getClient() {}
+    public function getPositions() {}
+}
+</pre>
+                </section>
+
+                <section>
+                    <h3>Пустынно...</h3>
                 </section>
 
                 <section>
@@ -411,9 +506,10 @@ class BillController
                     <h3>Плюсы:</h3>
                     <ul>
                         <li>Нужно минимум для старта</li>
+                        <li>Волшебно простой интерфейс</li>
                         <li>Низкий порог вхождения</li>
-                        <li>Хорош для простого CRUD</li>
                         <li>Нет лишних преобразований</li>
+                        <li>Хорош для простого CRUD</li>
                     </ul>
                 </section>
 
@@ -433,11 +529,19 @@ class BillController
                 </section>
 
                 <section>
-                    <h3>Repository</h3>
+                    <h3>DDD way</h3>
+                </section>
+
+                <section>
+                    <h2>Repository</h2>
 
                     <h3>Плюсы:</h3>
                     <ul>
-                        <li>Описывается интерфейсами &rarr; реализация не важна &rarr; домен отделён от хранилища</li>
+                        <li>Описывается интерфейсами</li>
+                        <li>Используется с DI</li>
+                        <li>Реализация не важна</li>
+                        <li>Описывает бизнес-процессы</li>
+                        <li>Может реализовывать разные хранилища</li>
                         <li>Проще тестировать</li>
                         <li>Типы полей не связаны</li>
                         <li>Хорошо ложится в DDD</li>
@@ -445,50 +549,87 @@ class BillController
                 </section>
 
                 <section>
+                    <h2>Repository</h2>
+
+                    <h3>Минусы:</h3>
+                    <ul>
+                        <li>Сложно со старта</li>
+                        <li>Придётся писать гидраторы</li>
+                        <li>Входной порог выше</li>
+                        <li>Не всегда уместно</li>
+                    </ul>
+                </section>
+
+                <section>
                     <pre class="highlight php">
-class ProductRepository
+class BillRepositoryInterface
 {
-    public function findById($id)
-    {
-        // PDO, API, whatever
-        return $product;
-    }
-
-    public function save($product)
-    {
-
-    }
+    /** @throws BillNotFoundException when no bill exists */
+    public function findById($id);
+    public function print($bill);
+    public function create($product);
+    public function save($product);
 }
 </pre>
+                </section>
+
+                <section>
+                    <h3>Domain Level Exceptions</h3>
+
+                    <h2>Good practices</h2>
+
+                    <ul>
+                        <li>Название исключения точно описывают его суть</li>
+                        <li>Метод либо выполняет работу успешно, либо бросает исключение</li>
+                        <li>Не забывать предупреждать через PHPDoc</li>
+                    </ul>
                 </section>
 
                 <section>
                     <pre class="highlight php">
 class BillController
 {
-    public function actionAddItem()
+    public function actionAddItem($id, $item_id, $quantity)
     {
-        $req = $this-&gt;request;
-        $bill = $this-&gt;billRepository-&gt;findById($req-&gt;post(&apos;id&apos;));
-        if (!$bill) { throw new NotFoundException(&apos;No bill&apos;); }
+        $bill = $this-&gt;billRepository-&gt;findById($id);
         if ($bill-&gt;status !== &apos;new&apos;) { throw new HttpException(403); }
 
-        $product = $this-&gt;productRepository-&gt;findById($req-&gt;post(&apos;product_id&apos;));
-        if (!$product) { throw new NotFoundException(&apos;No product&apos;); }
+        $item = $this-&gt;itemRepository-&gt;findById($item_id);
+        $position = new Position($item, $quantity);
 
-        $bill-&gt;items[] = $product;
-        $bill-&gt;calculateSum();
+        $bill-&gt;addPosition($position)
+        $bill-&gt;calculateSum(); // а его то уже и нет...
 
-        if ($bill-&gt;client) {
+        if ($bill-&gt;client-&gt;email) {
             $this-&gt;sendUpdatedBill($bill-&gt;client-&gt;email, $bill);
         }
 
-        $bill-&gt;save();
+        $this-&gt;billRepository-&gt;save($bill);
 
         return $this-&gt;render(&apos;bill&apos;, [&apos;bill&apos; =&gt; $bill]);
     }
 }</pre>
 
+                </section>
+
+                <section>
+                    <h3>Win</h3>
+
+                    <ul>
+                        <li>Используем репозитории</li>
+                        <li>Часть исключений вынесена из контроллера</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Lose</h3>
+
+                    <ul>
+                        <li>Бизнес-логика всё еще в контроллере</li>
+                        <li>Непонятно, как считать сумму</li>
+                        <li></li>
+                        <li></li>
+                    </ul>
                 </section>
 
                 <section>
@@ -541,6 +682,7 @@ class BillController
                     <ul>
                         <li>Я рассказал про абстрактного коня в вакууме</li>
                         <li>Think first. DDD &mdash; даёт рекомендации, а не правила</li>
+                        <li>Между контроллером и сервисами еще есть DAO, но это другая история</li>
                         <li>Начните с малого</li>
                     </ul>
                 </section>
