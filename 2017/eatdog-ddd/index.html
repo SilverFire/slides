@@ -1,215 +1,216 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
+<head>
+    <meta charset="utf-8">
 
-        <title>Просто о сложном - Domain Driven Design</title>
+    <title>Просто о сложном - Domain Driven Design</title>
 
-        <meta name="description" content="Слайды к презентации о применении подхода Domain Driven Design">
-        <meta name="author" content="Дмитрий Науменко">
+    <meta name="description" content="Слайды к презентации о применении подхода Domain Driven Design">
+    <meta name="author" content="Дмитрий Науменко">
 
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-        <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="css/all.css">
 
-        <script>
-            document.write( '<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
-        </script>
-    </head>
+    <script>
+        document.write('<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+    </script>
+</head>
 
-    <body>
-        <div class="reveal">
-            <div class="slides">
-                <section class="title-slide">
-                    <h1>Domain Driven Design</h1>
-                    <h4>просто о сложном</h4>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section class="title-slide">
+            <h1>Domain Driven Design</h1>
+            <h4>просто о сложном</h4>
 
-                    <br />
-                    <br />
-                    <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
-                    <p>
-                        <small>
-                            <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
-                        </small>
-                    </p>
-                </section>
+            <br/>
+            <br/>
+            <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
+            <p>
+                <small>
+                    <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
+                </small>
+            </p>
+        </section>
 
-                <section>
-                    <h3>Disclaimer</h3>
+        <section>
+            <h3>Disclaimer</h3>
 
-                    <ul>
-                        <li>Тем очень глубокая, за 40 минут ее не осилить.</li>
-                        <li>Будет много кода.</li>
-                        <li>...</li>
+            <ul>
+                <li>Тем очень глубокая, я расскажу самые базовые вещи за 40 минут.</li>
+                <li>Будет много кода.</li>
+                <li>Многое упрощено для ясности.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>План на сегодня</h3>
+
+            <ul>
+                <li>Узнать понятии DDD</li>
+                <li>Познакомиться с элементами DDD</li>
+                <li>Итеративно отрефакторить приложение</li>
+                <li>Рассмотреть преимущества и недостатки</li>
+                <li>Сделать выводы</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Сложность</h2>
+            <h4>С какой сложностью мы чаще всего сталкиваемся?</h4>
+        </section>
+
+        <section>
+            <h4>Сложность понимания &rarr; сложность поддержки</h4>
+        </section>
+
+        <section>
+            <h3>Откуда берётся сложность?</h3>
+
+            <ul>
+                <li>Сложность реального мира</li>
+                <li class="fragment" data-fragment-index="1">Гибкость программы</li>
+                <li class="fragment" data-fragment-index="2">Проблема описания поведения системы</li>
+                <li class="fragment" data-fragment-index="3">CI с <u>изменяющимися требованиями</u></li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Как часто <u>изменяются требования</u>?</h4>
+
+            <h2 class="fragment" data-fragment-index="1">
+                <span class="fragment semi-fade-out" data-fragment-index="2">Часто</span>
+            </h2>
+            <h2 class="fragment fade-up" data-fragment-index="2">Постоянно</h2>
+        </section>
+
+        <section>
+            <p>
+                Было бы круто <span class="text-green">отображать</span> бизнес-процессы в архитектуре
+                и <span class="text-green">реагировать</span> на это без увеличения <b>сложности</b>.
+            </p>
+        </section>
+
+        <section>
+            <h3>DDD &ndash; Domain Driven Design</h3>
+
+            <h5>Набор подходов для борьбы со сложностью в приложениях.</h5>
+        </section>
+
+        <section>
+            <h3>Ключевые концепции:</h3>
+
+            <ul>
+                <li>Domain</li>
+                <li>Ubiquitous Language (Единый язык домена)</li>
+                <li>Model-Driven Design (Проектирование по модели)</li>
+                <li>
+                    Шаблоны проектирования:
+                    <ul style="margin: 0">
+                        <li>Entity</li>
+                        <li>Value Object</li>
+                        <li>Aggregate Root</li>
+                        <li>Repository</li>
+                        <li>Service</li>
                     </ul>
-                </section>
+                </li>
+            </ul>
+        </section>
 
-                <section>
-                    <h3>План на сегодня</h3>
+        <section>
+            <h3>Домен</h3>
 
-                    <ul>
-                        <li>Узнать понятии DDD</li>
-                        <li>Познакомиться с элементами DDD</li>
-                        <li>Итеративно отрефакторить приложение</li>
-                        <li>Рассмотреть преимущества и недостатки</li>
-                        <li>Сделать выводы</li>
-                    </ul>
-                </section>
+            <p>Сущности и действия реального мира, которые нужно автоматизировать</p>
+        </section>
 
-                <section>
-                    <h2>Сложность</h2>
-                    <h4>С какой сложностью мы чаще всего сталкиваемся?</h4>
-                </section>
+        <section>
+            <h3>Счёт на оплату</h3>
+        </section>
 
-                <section>
-                    <h4>Сложность понимания &rarr; сложность поддержки</h4>
-                </section>
+        <section>
+            <h3>Domain experts</h3>
 
-                <section>
-                    <h3>Откуда берётся сложность?</h3>
+            <ul>
+                <li>Знают, как работает домен и его бизнес-процессы</li>
+                <li class="fragment" data-fragment-index="1">Упускают "очевидные" детали</li>
+                <li class="fragment" data-fragment-index="2">Ничего не знают о программировании и DDD</li>
+            </ul>
 
-                    <ul>
-                        <li>Сложность реального мира</li>
-                        <li class="fragment" data-fragment-index="1">Гибкость программы</li>
-                        <li class="fragment" data-fragment-index="2">Проблема описания поведения системы</li>
-                        <li class="fragment" data-fragment-index="3">CI с <u>изменяющимися требованиями</u></li>
-                    </ul>
-                </section>
+            <small class="todo">картинка с экспертами</small>
+        </section>
 
-                <section>
-                    <h4>Как часто <u>изменяются требования</u>?</h4>
+        <section>
+            <p class="quote">Создаём счёт, добавляем в него товары и выставляем его клиенту.</p>
+        </section>
 
-                    <h2 class="fragment" data-fragment-index="1">
-                        <span class="fragment semi-fade-out" data-fragment-index="2">Часто</span>
-                    </h2>
-                    <h2 class="fragment fade-up" data-fragment-index="2">Постоянно</h2>
-                </section>
+        <section>
+            <h3>Наши задачи:</h3>
 
-                <section>
-                    <p>
-                        Было бы круто <span class="text-green">отображать</span> бизнес-процессы в архитектуре
-                        и <span class="text-green">реагировать</span> на это без увеличения <b>сложности</b>.
-                    </p>
-                </section>
+            <ul>
+                <li>Добыть знания о домене</li>
+                <li>Выделить общие случаи из частных</li>
+                <li>Понять, что из сказанного &mdash; туфта</li>
+                <li class="fragment strike" data-fragment-index="1">Научить <b>их</b> изъясняться на <u>нашем</u> языке
+                </li>
+                <li class="fragment" data-fragment-index="1">Научиться изъясняться на <u>их</u> языке</li>
+            </ul>
+        </section>
 
-                <section>
-                    <h3>DDD &ndash; Domain Driven Design</h3>
+        <section>
+            <h2>Единый язык домена</h2>
 
-                    <h5>Набор подходов для борьбы со сложностью в приложениях.</h5>
-                </section>
+            <p>Набор терминов, применяемых в модели домена для объяснения связей и действий</p>
+        </section>
 
-                <section>
-                    <h3>Ключевые концепции:</h3>
+        <section>
+            <h2>Зачем?</h2>
 
-                    <ul>
-                        <li>Domain</li>
-                        <li>Ubiquitous Language (Единый язык домена)</li>
-                        <li>Model-Driven Design (Проектирование по модели)</li>
-                        <li>
-                            Шаблоны проектирования:
-                            <ul style="margin: 0">
-                                <li>Entity</li>
-                                <li>Value Object</li>
-                                <li>Aggregate Root</li>
-                                <li>Repository</li>
-                                <li>Service</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </section>
+            <ul>
+                <li>называть вещи своими именами</li>
+                <li>общаться с доменными экспертами на одном языке</li>
+            </ul>
+        </section>
 
-                <section>
-                    <h3>Домен</h3>
+        <section>
+            <p class="quote"><i>Создаём</i> <u>счёт</u>, <i>добавляем</i> в него <u>товары</u> и <i>выставляем</i> его
+                <u>клиенту</u>.</p>
 
-                    <p>Предметная область знаний, связей и действий, для которой создается программное обеспечение.</p>
-                </section>
+            <h3>Извлечение скрытого смысла</h3>
 
-                <section>
-                    <h3>Счёт на оплату</h3>
-                </section>
+            <ul>
+                <li>Какие есть характеристики счёта?</li>
+                <li>Что может быть товаром?</li>
+                <li>Какие характеристики товара важны?</li>
+                <li>Что значит "выставить счёт"?</li>
+                <li>Что мы знаем о клиенте?</li>
+                <li>...</li>
+            </ul>
+        </section>
 
-                <section>
-                    <h3>Domain experts</h3>
+        <section>
+            <img src="bill_product_client_0.png">
+        </section>
 
-                    <ul>
-                        <li>Знают, как работает домен и его бизнес-процессы</li>
-                        <li class="fragment" data-fragment-index="1">Упускают "очевидные" детали</li>
-                        <li class="fragment" data-fragment-index="2">Не знают ничего программировании и DDD</li>
-                    </ul>
+        <section>
+            <p class="todo">
+                Картинка с блоками M V C
+            </p>
 
-                    <small class="todo">картинка с экспертами</small>
-                </section>
+            <ul>
+                <li>Model</li>
+                <li>Contoller</li>
+                <li>View</li>
+            </ul>
+        </section>
 
-                <section>
-                    <p class="quote">Создаём счёт, добавляем в него товары и выставляем его клиенту.</p>
-                </section>
+        <section>
+            <h3>Начнём по-простому</h3>
 
-                <section>
-                    <h3>Наши задачи:</h3>
-
-                    <ul>
-                        <li>Добыть знания о домене</li>
-                        <li>Выделить общие случаи из частных</li>
-                        <li>Понять, что из сказанного &mdash; туфта</li>
-                        <li class="fragment strike" data-fragment-index="1">Научить <b>их</b> изъясняться на <u>нашем</u> языке</li>
-                        <li class="fragment" data-fragment-index="1"><span class="fragment strike" data-fragment-index="2">Научиться изъясняться на <u>их</u> языке</span></li>
-                        <li class="fragment" data-fragment-index="2">Выработать <b>понятный</b> для обоих сторон язык!</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h2>Единый язык домена</h2>
-
-                    <p>Набор терминов, применяемых в модели домена для объяснения связей и действий</p>
-                </section>
-
-                <section>
-                    <h2>Зачем?</h2>
-
-                    <ul>
-                        <li>называть вещи своими именами</li>
-                        <li>общаться с доменными экспертами на одном языке</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <p class="quote"><i>Создаём</i> <u>счёт</u>, <i>добавляем</i> в него <u>товары</u> и <i>выставляем</i> его <u>клиенту</u>.</p>
-
-                    <h3>Извлечение скрытого смысла</h3>
-
-                    <ul>
-                        <li>Какие есть характеристики счёта?</li>
-                        <li>Что может быть товаром?</li>
-                        <li>Какие характеристики товара важны?</li>
-                        <li>Что значит "выставить счёт"?</li>
-                        <li>Что мы знаем о клиенте?</li>
-                        <li>...</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <img src="bill_product_client_0.png">
-                </section>
-
-                <section>
-                    <p class="todo">
-                        Картинка с блоками M V C
-                    </p>
-
-                    <ul>
-                        <li>Model</li>
-                        <li>Contoller</li>
-                        <li>View</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h3>Начнём по-простому</h3>
-
-                    <pre class="highlight php">
+            <pre class="highlight php">
 class BillController
 {
     public function actionCreate($client_id, array $product_ids)
@@ -236,13 +237,13 @@ class BillController
     }
 }
 </pre>
-                </section>
+        </section>
 
-                <section>
-                    <p class="quote">Само собой, товары в счёт можно добавлять и удалять, если счёт еще не выставлен</p>
-                </section>
+        <section>
+            <p class="quote">Само собой, товары в счёт можно добавлять и удалять, если счёт еще не выставлен</p>
+        </section>
 
-                <section>
+        <section>
                     <pre class="highlight php">
 class BillController
 {
@@ -266,160 +267,207 @@ class BillController
     }
 }
 </pre>
-                </section>
+        </section>
 
-                <section>
-                    <h3>Ок :)</h3>
+        <section>
+            <h3>Ок :)</h3>
 
-                    <img src="i_v_prod.jpg" alt="">
-                </section>
+            <img src="i_v_prod.jpg" alt="">
+        </section>
 
-                <section>
-                    <h3>Преимущества:</h3>
+        <section>
+            <h3>Преимущества:</h3>
 
-                    <ul>
-                        <li>Вся логика рядом, легко понять что происходит</li>
-                        <li>Нет ничего лишнего</li>
-                        <li>Низкий входной порог</li>
-                        <li>Легко дописать еще пару-тройку if-ов</li>
-                    </ul>
-                </section>
+            <ul>
+                <li>Вся логика рядом, легко понять что происходит</li>
+                <li>Нет ничего лишнего</li>
+                <li>Низкий входной порог</li>
+                <li>Легко дописать еще пару-тройку if-ов</li>
+                <li class="fragment" data-fragment-index="1">Это &ndash; паттерн <a
+                        href="https://martinfowler.com/eaaCatalog/transactionScript.html">Transaction script</a> :)
+                </li>
+            </ul>
+        </section>
 
-                <section>
-                    <h3>Недостатки:</h3>
+        <section>
+            <h3>Недостатки:</h3>
 
-                    <ul>
-                        <li>Всё перемешано</li>
-                        <li>Сложно переиспользовать</li>
-                        <li>Тесты? Лолшто?</li>
-                        <li>Дописать еще пару if'ов и будет месиво</li>
-                        <li>ActiveRecord</li>
-                        <li>Это не DDD</li>
-                    </ul>
-                </section>
+            <ul>
+                <li>Всё перемешано</li>
+                <li>Сложно переиспользовать</li>
+                <li>Тесты? Лолшто?</li>
+                <li>Дописать еще пару if'ов и будет месиво</li>
+                <li>Это не DDD</li>
+            </ul>
+        </section>
 
-                <section>
-                    Может вынести логику из контроллера в модель <strong>Bill</strong>?
-                </section>
+        <section>
+            Может вынести логику из контроллера в модель <strong>Bill</strong>?
+        </section>
 
-                <section>
-                    <h3>Fat controller & Slim model</h3>
-                    <h4>VS</h4>
-                    <h3>Slim controller & Fat model</h3>
-                </section>
+        <section>
+            <h3>Fat controller & Slim model</h3>
+            <h4>VS</h4>
+            <h3>Slim controller & Fat model</h3>
+        </section>
 
-                <section>
-                    <h2>MVC</h2>
-                    <h3>M &ne; Модель ActiveRecord</h3>
+        <section>
+            <h3>Table Driven Domain model</h3>
 
-                    <h3>M &mdash; это целый Мир!</h3>
-                </section>
+            <ul>
+                <li>Модель домена = модель данных</li>
+                <li>Каждый объект модели представлен таблицей</li>
+                <li>Объекты описывают связи БД</li>
+            </ul>
+        </section>
 
-                <section>
-                    <p class="todo">Картинка со слоями архитектуры</p>
+        <section>
+            <h4>a.k.a</h4>
+            <h2>ActiveRecord</h2>
+        </section>
 
-                    <ul>
-                        <li>Domain model</li>
-                        <li>Repository interfaces</li>
-                        <li>Domain services</li>
-                        <li>Infrastructure</li>
-                        <li>Application</li>
-                    </ul>
-                </section>
+        <section>
+            <h3>Плюсы:</h3>
+            <ul>
+                <li>Нужно минимум для старта</li>
+                <li>Волшебно простой интерфейс</li>
+                <li>Низкий порог вхождения</li>
+                <li>Нет лишних преобразований</li>
+                <li>Хорош для простого CRUD</li>
+            </ul>
+        </section>
 
-                <section>
-                    <h2>Domain level</h2>
+        <section>
+            <h4>Минусы:</h4>
+            <ul>
+                <li>Жесткая связь с таблицей в БД</li>
+                <li>Изменение таблицы &rarr; изменение кода</li>
+                <li>Привязка типов данных к типам столбцов</li>
+                <li>Сложность использования разных источников данных</li>
+                <li>Нарушение Single Responsibility</li>
+                <li>Больше логики &mdash; сложнее поддерживать</li>
+            </ul>
+        </section>
 
-                    <ul>
-                        <li>Entity</li>
-                        <li>Aggregate root</li>
-                        <li>Value Object</li>
-                    </ul>
-                </section>
+        <section>
+            <h2>MVC</h2>
+            <h3>M &ne; Модель ActiveRecord</h3>
 
-                <section>
-                    <h2>Entity</h2>
+            <h3>M &mdash; это целый Мир!</h3>
+        </section>
 
-                    <ul>
-                        <li>Описывает целостную сущность предметной области</li>
-                        <li>Определяется по идентификатору, а не по значению атрибутов</li>
-                    </ul>
-                </section>
+        <section>
+            <p class="todo">Картинка со слоями архитектуры</p>
 
-                <section>
-                    <img src="item_client.png" alt="">
-                </section>
+            <ul>
+                <li>Domain model</li>
+                <li>Repository interfaces</li>
+                <li>Domain services</li>
+                <li>---</li>
+                <li>Infrastructure</li>
+                <li>Application</li>
+            </ul>
+        </section>
 
-                <section>
-                    <h4>Name, address, phone</h4>
-                    <ul>
-                        <li>Целостность</li>
-                        <li data-fragment-index="1" class="fragment">Валидация</li>
-                        <li data-fragment-index="2" class="fragment">Типизация</li>
-                    </ul>
-                </section>
+        <section>
+            <h4>We need to go deeper</h4>
 
-                <section>
-                    <h2>Value Object</h2>
+            <h3>Забудем на время о контроллерах</h3>
+        </section>
 
-                    <ul>
-                        <li>Описывает характеристику или атрибут</li>
-                        <li>Типизирует в контексте домена</li>
-                        <li>Не обладает идентичностью</li>
-                        <li>Неизменяемый после создания</li>
-                    </ul>
-                </section>
+        <section>
+            <h2>Domain level</h2>
 
-                <section>
-                    <img src="address.png" />
-                </section>
+            <ul>
+                <li>Entity</li>
+                <li>Aggregate root</li>
+                <li>Value Object</li>
+            </ul>
+        </section>
 
-                <section>
-                    <img src="client_vo.png" alt="">
-                </section>
+        <section>
+            <h2>Entity</h2>
 
-                <section>
-                    <h3>Aggregate root</h3>
+            <ul>
+                <li>Описывает целостную сущность предметной области</li>
+                <li>Определяется по идентификатору, а не по значению атрибутов</li>
+            </ul>
+        </section>
 
-                    <ul>
-                        <li>Собирательная сущность, считаетсы единым целым</li>
-                        <li>Состоит из VO и Entity</li>
-                        <li>Определяется по идентификатору</li>
-                    </ul>
-                </section>
+        <section>
+            <img src="item_client.png" alt="">
+        </section>
 
-                <section>
-                    <img src="bill.png" alt="">
-                </section>
+        <section>
+            <h4>Name, address, phone</h4>
+            <ul>
+                <li>Целостность</li>
+                <li data-fragment-index="1" class="fragment">Валидация</li>
+                <li data-fragment-index="2" class="fragment">Типизация</li>
+            </ul>
+        </section>
 
-                <section>
-                    <p class="quote">Каждого товара может быть больше чем 1 единица в счёте!</p>
+        <section>
+            <h2>Value Object</h2>
 
-                    <h4>Уточним:</h4>
-                    <ul>
-                        <li>Единицы измерения &mdash; шт, метры, литры?</li>
-                        <li>Меньше целой единицы можно?</li>
-                        <li>Валюта, правила округления?</li>
-                    </ul>
-                </section>
+            <ul>
+                <li>Описывает характеристику или атрибут</li>
+                <li>Типизирует в контексте домена</li>
+                <li>Не обладает идентичностью</li>
+                <li>Неизменяемый после создания</li>
+            </ul>
+        </section>
 
-                <section>
-                    <img src="bill_w_vo.png" alt="">
-                </section>
+        <section>
+            <img src="address.png"/>
+        </section>
 
-                <section>
-                    <h3>Good practices</h3>
+        <section>
+            <img src="client_vo.png" alt="">
+        </section>
 
-                    <ul>
-                        <li>В конструкторе минимальный набор для целостности</li>
-                        <li>Закрыто всё, что не изменяется по логике домена</li>
-                        <li></li>
-                        <li></li>
-                    </ul>
-                </section>
+        <section>
+            <h3>Aggregate root</h3>
 
-                <section>
-                    <pre class="highlight php">
+            <ul>
+                <li>Собирательная сущность, считается единым целым</li>
+                <li>Состоит из VO и Entity</li>
+                <li>Определяется по идентификатору</li>
+                <li>Снаружи объекты ссылаются только на сам root</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="bill.png" alt="">
+        </section>
+
+        <section>
+            <p class="quote">Каждого товара может быть больше чем 1 единица в счёте!</p>
+
+            <h4>Уточним:</h4>
+            <ul>
+                <li>Меньше целой единицы можно?</li>
+                <li>Валюта, правила округления и отображения цены?</li>
+                <li>Единицы измерения &mdash; шт, метры, литры?</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="bill_w_vo.png" alt="">
+        </section>
+
+        <section>
+            <h3>Good practices</h3>
+
+            <ul>
+                <li>В конструкторе минимальный набор для целостности</li>
+                <li>Интерфейсы для контроля типов и полиморфизма</li>
+                <li>Закрыто всё, что не изменяется по логике домена</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre class="highlight php">
 class Item
 {
     protected $id;
@@ -427,28 +475,35 @@ class Item
     protected $description;
     protected $price;
 
-    public function __construct($id, $name, $price) {
+    public function __construct($id, $name, Money $price) {
         $this-&gt;id = $id;
         $this-&gt;name = $name;
         $this-&gt;price = $price;
     }
 
-    public function getId() {}
+    public function getId() {};
 
-    public function setDescription($description) {}
-    public function getDescription() {}
+    public function getDescription() {};
+    public function setDescription($description) {};
 
-    public function getPrice() {}
-    public function setPrice($price) {}
+    public function getPrice() {};
+    public function setPrice(Money $price) {};
 
-    public function getName() {}
-    public function setName() {}
+    public function getName() {};
+    public function setName() {};
 }
 </pre>
-                </section>
+        </section>
 
-                <section>
-                    <pre class="highlight php">
+        <section>
+<pre class="highlight php">
+$item = new Item(UUID::create(), &apos;Silver bullet&apos;, Money::USD(1000));
+$item->setDescription('This bullet is a killing feature!');
+</pre>
+        </section>
+
+        <section>
+        <pre class="highlight php">
 class Position
 {
     protected $item;
@@ -464,19 +519,22 @@ class Position
     public function getQuantity() {}
     public function setQuantity($quantity) {}
 
+    public function getUnit() {}
+
     public function getPrice() {}
     public function getAmount() {}
 }
 </pre>
-                </section>
+        </section>
 
-                <section>
-                    <pre class="highlight php">
+        <section>
+            <pre class="highlight php">
 class Bill
 {
     protected $id;
     protected $client;
     protected $positions;
+    protected $status;
 
     public function __construct($id, Client $client, $positions = [])
     {
@@ -487,105 +545,197 @@ class Bill
 
     public function getId() {}
     public function getClient() {}
+
     public function getPositions() {}
+    public function setPositions() {}
+
+    public function getStatus() {}
+    public function setStatus($status) {}
+}      </pre>
+        </section>
+
+        <section>
+<pre class="highlight php">
+$item = new Item(UUID::create(), &apos;Silver bullet&apos;, Money::USD(1000));
+$quantity = 2;
+
+$bill = new Bill(
+    UUID::create(),
+    $client,
+    [new Position($item, $quantity)]
+);
+$bill->setStatus('new');
+
+// Заменим позицию в счёте
+$anotherPosition = new Position(
+    new Item(UUID::create(), &apos;Rage cup&apos;, Money::USD(500))
+);
+$bill->setPositions([$anotherPosition]);
+// save...
+</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+$bill->setPositions([$anotherPosition]);
+$bill->setStatus('processing');
+
+// VS
+
+$bill->positions = [$anotherPosition];
+$bill->status = 'processing';
+            </pre>
+        </section>
+
+        <section>
+            <h1>???</h1>
+        </section>
+
+        <section>
+            <h3>Анемия модели</h3>
+
+            <ul>
+                <li>Модель отображает связи</li>
+                <li>В модели есть геттеры и сеттеры для свойств</li>
+                <li>Модель не описывает действий и логики бизнеса</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre class="highlight php">abstract class Status
+{
+    protected $name;
+    protected $next = [];
+
+    public function getName()
+    {
+        return $this-&gt;name;
+    }
+
+    public function canBeChangedTo(self $status)
+    {
+        return in_array(get_class($status), $this-&gt;next, true);
+    }
+}
+            </pre>
+
+            <pre class="highlight php">class NewStatus extends Status
+{
+    protected $name = 'New';
+
+    protected $next = [
+        ProcessingStatus::class,
+        RejectedStatus::class
+    ];
 }
 </pre>
-                </section>
+        </section>
 
-                <section>
-                    <h3>Пустынно...</h3>
-                </section>
+        <section>
+            <pre class="highlight php">
+class Bill
+{
+    public function changeStatus(Status $status) {
+        if (!$this-&gt;status-&gt;canBeChangedTo($status)) {
+            throw new WrongStatusChangeDirection();
+        }
 
-                <section>
-                    <h3>А как это всё связать с БД?</h3>
-                </section>
+        $this-&gt;status = $status;
+    }
 
-                <section>
-                    <h2>ActiveRecord</h2>
+    public function addPosition(Position $position) {
+        if (!$this-&gt;status-&gt;allowsModification()) {
+            throw new ModificationProhibitedException();
+        }
 
-                    <h3>Плюсы:</h3>
-                    <ul>
-                        <li>Нужно минимум для старта</li>
-                        <li>Волшебно простой интерфейс</li>
-                        <li>Низкий порог вхождения</li>
-                        <li>Нет лишних преобразований</li>
-                        <li>Хорош для простого CRUD</li>
-                    </ul>
-                </section>
+        $this-&gt;positions-&gt;push($position);
+    }
 
-                <section>
-                    <h2>ActiveRecord</h2>
+    public function removePosition(Position $position) {
+        // ...
+    }
+}
+            </pre>
+        </section>
 
-                    <h4>Минусы:</h4>
-                    <ul>
-                        <li>Жесткая связь с таблицей в БД</li>
-                        <li>Привязка типов данных к типам столбцов</li>
-                        <li>Сложность использования разных источников данных</li>
-                        <li>Изменение таблицы &rarr; изменение кода</li>
-                        <li>Нарушение Single Responsibility</li>
-                        <li>Больше логики &mdash; сложнее поддерживать</li>
-                        <li>Не для DDD</li>
-                    </ul>
-                </section>
+        <section>
+            <pre class="highlight php">
+$bill = new Bill(
+    UUID::create(),
+    $client,
+    [new Position($item, $quantity)]
+);
 
-                <section>
-                    <h3>DDD way</h3>
-                </section>
+$bill->addPosition($anotherPosition);
+$bill->changeStatus(new ProcessingStatus());
+// save...
+</pre>
+        </section>
 
-                <section>
-                    <h2>Repository</h2>
+        <section>
+            <h3>Как это всё связать с БД?</h3>
+        </section>
 
-                    <h3>Плюсы:</h3>
-                    <ul>
-                        <li>Описывается интерфейсами</li>
-                        <li>Используется с DI</li>
-                        <li>Реализация не важна</li>
-                        <li>Описывает бизнес-процессы</li>
-                        <li>Может реализовывать разные хранилища</li>
-                        <li>Проще тестировать</li>
-                        <li>Типы полей не связаны</li>
-                        <li>Хорошо ложится в DDD</li>
-                    </ul>
-                </section>
+        <section>
+            <h3>ActiveRecord || DDD way?</h3>
+        </section>
 
-                <section>
-                    <h2>Repository</h2>
+        <section>
+            <h2>Repository</h2>
 
-                    <h3>Минусы:</h3>
-                    <ul>
-                        <li>Сложно со старта</li>
-                        <li>Придётся писать гидраторы</li>
-                        <li>Входной порог выше</li>
-                        <li>Не всегда уместно</li>
-                    </ul>
-                </section>
+            <h3>Плюсы:</h3>
+            <ul>
+                <li>Реализация не важна</li>
+                <li>Типы полей не связаны</li>
+                <li>Описывается интерфейсом</li>
+                <li>Используется с DI</li>
+                <li>Может реализовывать разные хранилища</li>
+                <li>Проще тестировать</li>
+                <li>Хорошо ложится в DDD</li>
+            </ul>
+        </section>
 
-                <section>
-                    <pre class="highlight php">
-class BillRepositoryInterface
+        <section>
+            <h2>Repository</h2>
+
+            <h3>Минусы:</h3>
+            <ul>
+                <li>Сложно со старта</li>
+                <li>Входной порог существенно выше</li>
+                <li>Придётся писать гидраторы</li>
+                <li>Не всегда уместно</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Repository Interface Level</h3>
+
+            <div class="todo">Картинка со слоями</div>
+        </section>
+
+        <section>
+        <pre class="highlight php">
+interface BillRepositoryInterface
 {
     /** @throws BillNotFoundException when no bill exists */
     public function findById($id);
-    public function print($bill);
     public function create($product);
-    public function save($product);
+    public function save($bill);
 }
 </pre>
-                </section>
+        </section>
 
-                <section>
-                    <h3>Domain Level Exceptions</h3>
+        <section>
+            <h2>Good practices</h2>
 
-                    <h2>Good practices</h2>
+            <ul>
+                <li>Метод либо выполняет работу успешно, либо бросает исключение</li>
+                <li>Название исключения точно описывают его суть</li>
+                <li>Не забывать предупреждать через PHPDoc</li>
+            </ul>
+        </section>
 
-                    <ul>
-                        <li>Название исключения точно описывают его суть</li>
-                        <li>Метод либо выполняет работу успешно, либо бросает исключение</li>
-                        <li>Не забывать предупреждать через PHPDoc</li>
-                    </ul>
-                </section>
-
-                <section>
+        <section>
                     <pre class="highlight php">
 class BillController
 {
@@ -598,7 +748,7 @@ class BillController
         $position = new Position($item, $quantity);
 
         $bill-&gt;addPosition($position)
-        $bill-&gt;calculateSum(); // а его то уже и нет...
+        $bill-&gt;calculateSum(); // а метода уже и нет то...
 
         if ($bill-&gt;client-&gt;email) {
             $this-&gt;sendUpdatedBill($bill-&gt;client-&gt;email, $bill);
@@ -609,126 +759,158 @@ class BillController
         return $this-&gt;render(&apos;bill&apos;, [&apos;bill&apos; =&gt; $bill]);
     }
 }</pre>
+        </section>
 
-                </section>
+        <section>
+            <h3>Win</h3>
 
-                <section>
-                    <h3>Win</h3>
+            <ul>
+                <li>Используем репозитории</li>
+                <li>Часть исключений вынесена из контроллера</li>
+            </ul>
+        </section>
 
-                    <ul>
-                        <li>Используем репозитории</li>
-                        <li>Часть исключений вынесена из контроллера</li>
-                    </ul>
-                </section>
+        <section>
+            <h3>Lose</h3>
 
-                <section>
-                    <h3>Lose</h3>
+            <ul>
+                <li>Бизнес-логика всё еще в контроллере</li>
+                <li>Непонятно, как считать сумму</li>
+                <li></li>
+                <li></li>
+            </ul>
+        </section>
 
-                    <ul>
-                        <li>Бизнес-логика всё еще в контроллере</li>
-                        <li>Непонятно, как считать сумму</li>
-                        <li></li>
-                        <li></li>
-                    </ul>
-                </section>
+        <section>
+            // Агрегат состоит и из VO, не имеющих id, и из Entity, имеющих id. Агрегат состоит из объектов. Агрегат не
+            содержит Id вместо сущностей.
+            // ddd не используются тупые сеттеры. Методы должны быть названы более человекопонятно - rename например,
+            changePassword, activize
+            // репозиторий - это не сервис. Домен состоит из трех частей - модели (сущности и value objects), сервисы
+            домена, репозитории.
+            // ddd красиво ложится на богатую бизнес-процессами модель, а на crud ложится тяжко, как мы видим
+            <img src="order-item.png" alt="">
+        </section>
 
-                <section>
-// Агрегат состоит и из VO, не имеющих id, и из Entity, имеющих id. Агрегат состоит из объектов. Агрегат не содержит Id вместо сущностей.
-// ddd не используются тупые сеттеры. Методы должны быть названы более человекопонятно - rename например, changePassword, activize
-// репозиторий - это не сервис. Домен состоит из трех частей - модели (сущности и value objects), сервисы домена, репозитории.
-// ddd красиво ложится на богатую бизнес-процессами модель, а на crud ложится тяжко, как мы видим
-                    <img src="order-item.png" alt="">
-                </section>
+        <section>
+            <h3>Проектирование по модели</h3>
 
-                <section>
-                    <h3>Проектирование по модели</h3>
+            <p class="todo"></p>
+        </section>
 
-                    <p class="todo"></p>
-                </section>
+        <section>
+            <p class="todo">Кривая сложности</p>
+        </section>
 
-                <section>
-                    <p class="todo">Кривая сложности</p>
-                </section>
+        <section>
+            <h3>И всё прям так хорошо?</h3>
+        </section>
 
-                <section>
-                    <h3>И всё прям так хорошо?</h3>
-                </section>
+        <section>
+            <h3>Конечно, есть и проблемы</h3>
 
-                <section>
-                    <h3>Конечно, есть и проблемы</h3>
+            <ul>
+                <li>crosscutting concerns</li>
+                <li>Переабстрагирование</li>
+                <li>Сложно понять</li>
+                <li>Работа с данными описана сложнее</li>
+                <li>Оверхед для простой бизнес-логики</li>
+                <li class="todo"></li>
+            </ul>
+        </section>
 
-                    <ul>
-                        <li>crosscutting concerns</li>
-                        <li>переабстрагирование</li>
-                        <li class="todo"></li>
-                    </ul>
-                </section>
+        <section>
+            <h4>А без DDD этих проблем нет, ведь так?</h4>
+        </section>
 
-                <section>
-                    <h4>А без DDD этих проблем нет, ведь так?</h4>
-                </section>
+        <section>
+            <p class="todo">Про процедурную бизнес-логику с примерами, преимуществами и недостатками</p>
+        </section>
 
-                <section>
-                    <p class="todo">Про процедурную бизнес-логику с примерами, преимуществами и недостатками</p>
-                </section>
+        <section>
+            <h4>Как это собрать воедино?</h4>
 
-                <section>
-                    <h4>Как это собрать воедино?</h4>
+            <p class="todo"></p>
+        </section>
 
-                    <p class="todo"></p>
-                </section>
+        <section>
+            <ul>
+                <li>Я рассказал про абстрактного коня в вакууме</li>
+                <li>Think first. DDD &mdash; даёт рекомендации, а не правила</li>
+                <li>Между контроллером и сервисами еще есть DAO, но это другая история</li>
+                <li>Начните с малого</li>
+            </ul>
+        </section>
 
-                <section>
-                    <ul>
-                        <li>Я рассказал про абстрактного коня в вакууме</li>
-                        <li>Think first. DDD &mdash; даёт рекомендации, а не правила</li>
-                        <li>Между контроллером и сервисами еще есть DAO, но это другая история</li>
-                        <li>Начните с малого</li>
-                    </ul>
-                </section>
+        <section>
+            <h3>Почитать</h3>
 
-                <section>
-                    <h3>Почитать</h3>
+            <ul>
+                <li>https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software-ebook/dp/B00794TAUG</li>
+                <li>https://github.com/PhpFriendsOfDdd</li>
+                <li>https://lostechies.com/jamesgregory/2009/05/09/entity-interface-anti-pattern</li>
+            </ul>
+        </section>
+    </div>
+</div>
 
-                    <ul>
-                        <li>https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software-ebook/dp/B00794TAUG</li>
-                        <li>https://github.com/PhpFriendsOfDdd</li>
-                    </ul>
-                </section>
-            </div>
-        </div>
+<script src="js/all.js"></script>
 
-        <script src="js/all.js"></script>
+<script>
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: false,
+        progress: true,
+        history: true,
+        center: true,
+        margin: 0.1,
+        slideNumber: true,
 
-        <script>
-            // Full list of configuration options available here:
-            // https://github.com/hakimel/reveal.js#configuration
-            Reveal.initialize({
-                controls: false,
-                progress: true,
-                history: true,
-                center: true,
-                margin: 0.1,
-                slideNumber: true,
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
 
-                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-                transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
-
-                // Optional libraries used to extend on reveal.js
-                dependencies: [
-                    {
-                        src: 'js/reveal/highlight/highlight.js',
-                        async: true,
-                        callback: function () {
-                            [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
-                                hljs.highlightBlock(v);
-                            });
-                        }
-                    },
-                    { src: 'js/reveal/notes/notes.js', async: true}
-                ]
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            {
+                src: 'js/reveal/highlight/highlight.js',
+                async: true,
+                callback: function () {
+                    [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                        hljs.highlightBlock(v);
+                    });
+                }
+            },
+            {src: 'js/reveal/notes/notes.js', async: true}
+        ]
+    });
+</script>
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter37501675 = new Ya.Metrika({
+                id: 37501675,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true
             });
-        </script>
-    <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-    </body>
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/watch.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript>
+</body>
 </html>
