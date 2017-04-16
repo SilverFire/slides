@@ -399,6 +399,39 @@ class BillController
         </section>
 
         <section>
+            <pre class="highlight php">
+class Client
+{
+    private $id;
+    private $name;
+    private $address;
+    private $phone;
+
+    public function __construct($id, $name, $address, $phone)
+    {
+        if (!preg_match(&apos;/\+\d+/&apos;, $phone)) {
+            throw new ValidationException($phone);
+        }
+        $this-&gt;phone = $phone;
+
+        // ... name, address
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+new Client(
+    UUID::create(),
+    &apos;Фамилия Имя Отчество&apos;,
+    &apos;ул. Кодеров, д. 0xFF&apos;,
+    &apos;+380441234567&apos;
+);
+</pre>
+        </section>
+
+        <section>
             <h4>Name, address, phone</h4>
             <ul>
                 <li>Целостность</li>
@@ -423,7 +456,49 @@ class BillController
         </section>
 
         <section>
+            <pre class="highlight php">
+class Address
+{
+    private $country;
+    private $city;
+    private $zip;
+    private $lines;
+
+    public function __construct($country, $city, $zip, $lines)
+    {
+        $this-&gt;country = $this-&gt;validateCountry($country);
+        $this-&gt;city = $this-&gt;validateCity($city);
+        $this-&gt;zip = $this-&gt;validatePhone($zip);
+        $this-&gt;lines = $this-&gt;validateLines($lines);
+    }
+
+    private function validateZip($zip)
+    {
+        if (!preg_match(&apos;/^\d+$/&apos;, $zip) {
+            throw new ZipValidationException($zip);
+        }
+
+        return $zip;
+    }
+
+    // ...
+}
+</pre>
+        </section>
+
+        <section>
             <img src="client_vo.png" alt="">
+        </section>
+
+        <section>
+            <pre class="highlight php">
+new Client(
+    UUID::create(),
+    new Name('Фамилия', 'Имя', 'Отчество'),
+    new Address('Украина', 'Киев', '01001', ['ул. Кодеров, д. 0xFF']),
+    new Phone('+380441234567')
+);
+</pre>
         </section>
 
         <section>
@@ -433,7 +508,7 @@ class BillController
                 <li>Собирательная сущность, считается единым целым</li>
                 <li>Состоит из VO и Entity</li>
                 <li>Определяется по идентификатору</li>
-                <li>Снаружи объекты ссылаются только на сам root</li>
+                <li>В системе объекты ссылаются только на root</li>
             </ul>
         </section>
 
@@ -454,16 +529,6 @@ class BillController
 
         <section>
             <img src="bill_w_vo.png" alt="">
-        </section>
-
-        <section>
-            <h3>Good practices</h3>
-
-            <ul>
-                <li>В конструкторе минимальный набор для целостности</li>
-                <li>Интерфейсы для контроля типов и полиморфизма</li>
-                <li>Закрыто всё, что не изменяется по логике домена</li>
-            </ul>
         </section>
 
         <section>
@@ -503,6 +568,16 @@ $item->setDescription('This bullet is a killing feature!');
         </section>
 
         <section>
+            <h3>Good practices</h3>
+
+            <ul>
+                <li>В конструкторе минимальный набор для целостности</li>
+                <li>Интерфейсы для контроля типов и полиморфизма</li>
+                <li>Закрыто всё, что не изменяется по логике домена</li>
+            </ul>
+        </section>
+
+        <section>
         <pre class="highlight php">
 class Position
 {
@@ -536,11 +611,10 @@ class Bill
     protected $positions;
     protected $status;
 
-    public function __construct($id, Client $client, $positions = [])
+    public function __construct($id, Client $client)
     {
         $this-&gt;id = $id;
         $this-&gt;client = $client;
-        $this-&gt;positions = $positions;
     }
 
     public function getId() {}
@@ -559,13 +633,12 @@ class Bill
 $item = new Item(UUID::create(), &apos;Silver bullet&apos;, Money::USD(1000));
 $quantity = 2;
 
-$bill = new Bill(
-    UUID::create(),
-    $client,
-    [new Position($item, $quantity)]
-);
+$bill = new Bill(UUID::create(), $client);
 $bill->setStatus('new');
+$bill->setPositions([new Position($item, $quantity)]);
+</pre>
 
+<pre class="highlight php fragment" data-fragment-index="1">
 // Заменим позицию в счёте
 $anotherPosition = new Position(
     new Item(UUID::create(), &apos;Rage cup&apos;, Money::USD(500))
@@ -621,7 +694,7 @@ $bill->status = 'processing';
 
             <pre class="highlight php">class NewStatus extends Status
 {
-    protected $name = 'New';
+    protected $name = 'new';
 
     protected $next = [
         ProcessingStatus::class,
@@ -660,12 +733,9 @@ class Bill
 
         <section>
             <pre class="highlight php">
-$bill = new Bill(
-    UUID::create(),
-    $client,
-    [new Position($item, $quantity)]
-);
+$bill = new Bill(UUID::create(), $client);
 
+$bill->addPosition(new Position($item, $quantity));
 $bill->addPosition($anotherPosition);
 $bill->changeStatus(new ProcessingStatus());
 // save...
@@ -685,6 +755,7 @@ $bill->changeStatus(new ProcessingStatus());
 
             <h3>Плюсы:</h3>
             <ul>
+                <li>Является только интерфейсом хранилища</li>
                 <li>Реализация не важна</li>
                 <li>Типы полей не связаны</li>
                 <li>Описывается интерфейсом</li>
@@ -703,7 +774,6 @@ $bill->changeStatus(new ProcessingStatus());
                 <li>Сложно со старта</li>
                 <li>Входной порог существенно выше</li>
                 <li>Придётся писать гидраторы</li>
-                <li>Не всегда уместно</li>
             </ul>
         </section>
 
@@ -714,88 +784,347 @@ $bill->changeStatus(new ProcessingStatus());
         </section>
 
         <section>
-        <pre class="highlight php">
+<pre class="highlight php">
 interface BillRepositoryInterface
 {
     /** @throws BillNotFoundException when no bill exists */
     public function findById($id);
-    public function create($product);
-    public function save($bill);
+    public function insert($bill);
+    public function update($bill);
 }
 </pre>
         </section>
 
         <section>
-            <h2>Good practices</h2>
+            <h4>Реализация BillRepositoryInterface</h4>
 
             <ul>
-                <li>Метод либо выполняет работу успешно, либо бросает исключение</li>
-                <li>Название исключения точно описывают его суть</li>
-                <li>Не забывать предупреждать через PHPDoc</li>
+                <li>Относится к инфраструктурному слою</li>
+                <li>Описывает работу с хранилищем</li>
+                <li>Реализацией может быть несколько</li>
             </ul>
         </section>
 
         <section>
-                    <pre class="highlight php">
-class BillController
+            <pre class="highlight php">
+class SqlBillRepository implements BillRepositoryInterface
 {
-    public function actionAddItem($id, $item_id, $quantity)
+    public function __construct(Connection $db) {
+        $this-&gt;db = $db;
+    }
+
+    public function create(Bill $bill)
     {
-        $bill = $this-&gt;billRepository-&gt;findById($id);
-        if ($bill-&gt;status !== &apos;new&apos;) { throw new HttpException(403); }
+        $this-&gt;db-&gt;transactionBegin();
 
-        $item = $this-&gt;itemRepository-&gt;findById($item_id);
-        $position = new Position($item, $quantity);
+        $this-&gt;db-&gt;insert(&apos;bill&apos;, [
+            &apos;id&apos; =&gt; $bill-&gt;getId(),
+            &apos;client_id&apos; =&gt; $bill-&gt;getClient()-&gt;getId(),
+            &apos;status&apos; =&gt; $bill-&gt;getStatus()
+        ]);
 
-        $bill-&gt;addPosition($position)
-        $bill-&gt;calculateSum(); // а метода уже и нет то...
-
-        if ($bill-&gt;client-&gt;email) {
-            $this-&gt;sendUpdatedBill($bill-&gt;client-&gt;email, $bill);
+        foreach ($bill-&gt;getPositions() as $position) {
+            $this-&gt;db-&gt;insert(&apos;bill_position&apos;, [
+                &apos;item_id&apos; =&gt; $position-&gt;getItem()-&gt;getId(),
+                &apos;quantity&apos; =&gt; $position-&gt;getQuantity(),
+            ]);
         }
 
-        $this-&gt;billRepository-&gt;save($bill);
+        $this-&gt;db-&gt;transactionCommit();
 
-        return $this-&gt;render(&apos;bill&apos;, [&apos;bill&apos; =&gt; $bill]);
+        return $bill-&gt;getId();
+    }
+}
+</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillController
+{
+    public function actionCreate($client_id, $positions = [])
+    {
+        $client = $this->clientRepository->findById($client_id);
+        $bill = new Bill(UUID::create(), $client);
+        $bill->changeStatus(new NewStatus());
+        $this-&gt;billRepository-&gt;create($bill);
+
+        $this->sendEmail(...);
+
+        return $bill-&gt;getId();
     }
 }</pre>
         </section>
 
         <section>
-            <h3>Win</h3>
+            <p class="todo">Картинка с перепрыгиванием через слои</p>
+        </section>
+
+        <section>
+            <h4>Кроме того, есть и другие проблемы:</h4>
 
             <ul>
-                <li>Используем репозитории</li>
-                <li>Часть исключений вынесена из контроллера</li>
+                <li>В контроллере всё еще много логики</li>
+                <li>Что если будет несколько точек входа?</li>
+                <li>Тесты?</li>
             </ul>
         </section>
 
         <section>
-            <h3>Lose</h3>
+            <h3>Service Layer</h3>
 
             <ul>
-                <li>Бизнес-логика всё еще в контроллере</li>
-                <li>Непонятно, как считать сумму</li>
+                <li>Предоставляет приложению интерфейсы для работы с доменом</li>
+                <li>Сервисы содержат методы, описывающие действия домена</li>
+                <li class="todo">Что еще сюда добавить?</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+class BillService
+{
+    public function __construct(
+        ClientRepositoryInterface $clientRepository,
+        BillRepositoryInterface $billRepository
+    ) {
+        $this-&gt;clientRepository = $clientRepository;
+        $this-&gt;billRepository = $billRepository;
+    }
+
+    public function create($clientId)
+    {
+        $client = $this-&gt;clientRepository-&gt;findById($clientId);
+
+        $bill = new Bill(UUID::create(), $client);
+        $bill-&gt;changeStatus(new NewStatus());
+
+        $this-&gt;billRepository-&gt;create($bill);
+
+        return $bill-&gt;getId();
+    }
+}
+</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillService
+{
+    public function reject($billId)
+    {
+        if (($bill = $this-&gt;findById($id)) === null) {
+            return null;
+        }
+
+        if ($bill-&gt;changeStatus(new ProcessingStatus()) === null) {
+            return null;
+        }
+
+        if ($this-&gt;billRepository-&gt;update($bill) !== false) {
+            // аккуратно, там ^^ в случае ошибки возвращается false!
+            return null;
+        }
+
+        return true;
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h2>Exceptions</h2>
+
+            <ul>
+                <li>Метод либо выполняет работу, либо бросает исключение</li>
+                <li>Не забывать предупреждать об исключениях в PHPDoc</li>
+                <li>Название класса исключения максимально ясно описывает проблему</li>
+            </ul>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillService
+{
+    function reject()
+    {
+        $bill = $this-&gt;billRepository-&gt;findById($id);
+        $bill-&gt;changeStatus(new ProcessingStatus());
+
+        $this-&gt;billRepository-&gt;update($bill);
+
+        return true;
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h3>Реакция на смену статуса &mdash; отправка письма</h3>
+        </section>
+
+        <section>
+            <h4>Смена статуса как событие</h4>
+
+            <pre class="highlight php">
+class Bill
+{
+    public function registerEvent($event) { // TODO: можно вынести в trait
+        $this-&gt;events[] = $event;
+    }
+
+    public function releaseEvents() {
+        $events = $this-&gt;events;
+        $this-&gt;events = [];
+
+        return $events;
+    }
+
+    public function changeStatus(Status $status) {
+        if (!$this-&gt;status-&gt;canBeChangedTo($status)) {
+            throw new WrongStatusChangeDirection();
+        }
+
+        $this-&gt;status = $status;
+        $this-&gt;registerEvent(
+            new BillStatusWasChangedEvent($this-&gt;id, $status)
+        );
+    }
+}
+</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillService
+{
+    public function reject($id)
+    {
+        $bill = $this-&gt;billRepository-&gt;findById($id);
+        $bill-&gt;changeStatus(new ProcessingStatus());
+
+        $this-&gt;billRepository-&gt;update($bill);
+
+        $this->dispatcher->dispatchEvents($bill->releaseEvents());
+
+        return true;
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h3>Что если действие более комплексное?</h3>
+            <h4>Например, CRUD</h4>
+        </section>
+
+        <section>
+            <pre class="highlight php">class ClientService
+{
+    public function changeAddress($id, $country, $city, $zip, array $lines)
+    {
+        $address = new Address($country, $city, $zip, $lines);
+
+        $client = $this-&gt;clientRepository-&gt;findById($id);
+        $client-&gt;changeAddress($address);
+
+        $this-&gt;clientRepository-&gt;update($client);
+
+        return $client-&gt;getId();
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h3>Параметров уже многовато</h3>
+            <h4>Что делать?</h4>
+
+            <ul>
+                <li class="fragment strike" data-fragment-index="1">Создавать Address в контролере</li>
+                <li class="fragment strike" data-fragment-index="2">Передавать массив свойств</li>
+                <li>Создать еще один класс</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>DTO</h2>
+            <h3>Data Transfer Object</h3>
+        </section>
+        
+        <section>
+            <h3>Data Transfer Object</h3>
+
+            <ul>
+                <li>Для передачи данных между частями приложения</li>
+                <li>Не содержит логики</li>
+                <li>Типизирует набор данных</li>
+                <li class="todo">Что-то еще?</li>
+            </ul>
+        </section>
+
+        <section>
+        <pre class="highlight php">class AddressDto
+{
+    public $country;
+
+    public $city;
+
+    public $zip;
+
+    public $lines = [];
+
+    public function load($request)
+    {
+        // ...
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">class ClientService
+{
+    public function changeAddress($id, AddressDto $dto)
+    {
+        $address = new Address(
+            $dto-&gt;country,
+            $dto-&gt;city,
+            $dto-&gt;zip,
+            $dto-&gt;lines
+        );
+
+        $client = $this-&gt;clientRepository-&gt;findById($id);
+        $client-&gt;changeAddress($address);
+
+        $this-&gt;clientRepository-&gt;update($client);
+
+        return $client-&gt;getId();
+    }
+}</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class ClientController
+{
+    public function actionChangeAddress($client_id)
+    {
+        $dto = (new AddressDto())-&gt;load($this-&gt;request);
+        $this-&gt;clientRepository-&gt;changeAddress($client_id, $dto);
+
+        return $client_id;
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h4>Что у нас получилось?</h4>
+
+            <ul>
+                <li>Приложение разделено на слои</li>
+                <li>Код стал более выразительный</li>
+                <li></li>
                 <li></li>
                 <li></li>
             </ul>
         </section>
 
         <section>
-            // Агрегат состоит и из VO, не имеющих id, и из Entity, имеющих id. Агрегат состоит из объектов. Агрегат не
-            содержит Id вместо сущностей.
-            // ddd не используются тупые сеттеры. Методы должны быть названы более человекопонятно - rename например,
-            changePassword, activize
-            // репозиторий - это не сервис. Домен состоит из трех частей - модели (сущности и value objects), сервисы
-            домена, репозитории.
-            // ddd красиво ложится на богатую бизнес-процессами модель, а на crud ложится тяжко, как мы видим
-            <img src="order-item.png" alt="">
-        </section>
-
-        <section>
-            <h3>Проектирование по модели</h3>
-
-            <p class="todo"></p>
+            <h3>Всё ли так хорошо?</h3>
         </section>
 
         <section>
@@ -803,43 +1132,38 @@ class BillController
         </section>
 
         <section>
-            <h3>И всё прям так хорошо?</h3>
-        </section>
-
-        <section>
             <h3>Конечно, есть и проблемы</h3>
 
             <ul>
-                <li>crosscutting concerns</li>
+                <li>Сrosscutting concerns</li>
                 <li>Переабстрагирование</li>
                 <li>Сложно понять</li>
                 <li>Работа с данными описана сложнее</li>
                 <li>Оверхед для простой бизнес-логики</li>
-                <li class="todo"></li>
+                <li>Сложно натянуть на "бедную" процессами модель</li>
             </ul>
         </section>
 
         <section>
-            <h4>А без DDD этих проблем нет, ведь так?</h4>
+            <h4>DDD на 90% проектов &mdash; оверхед, который не стоит потраченных усилий</h4>
         </section>
 
         <section>
-            <p class="todo">Про процедурную бизнес-логику с примерами, преимуществами и недостатками</p>
+            <h4>Think first. DDD &mdash; это рекомендации, а не правила</h4>
         </section>
 
         <section>
-            <h4>Как это собрать воедино?</h4>
+            <h4>Идеи из DDD можно использовать и в ActiveRecord</h4>
 
-            <p class="todo"></p>
-        </section>
-
-        <section>
             <ul>
-                <li>Я рассказал про абстрактного коня в вакууме</li>
-                <li>Think first. DDD &mdash; даёт рекомендации, а не правила</li>
-                <li>Между контроллером и сервисами еще есть DAO, но это другая история</li>
-                <li>Начните с малого</li>
+                <li>Entity &mdash; модель ActiveRecord с ясными методами</li>
+                <li>DTO &mdash; формы</li>
+                <li>Repository &mdash; сервисы для сокрытия сложности</li>
             </ul>
+        </section>
+
+        <section>
+            <h4>Начните с малого. И всегда think first.</h4>
         </section>
 
         <section>
