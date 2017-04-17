@@ -41,7 +41,7 @@
             <h3>Disclaimer</h3>
 
             <ul>
-                <li>Тем очень глубокая, я расскажу самые базовые вещи за 40 минут.</li>
+                <li>Тема очень глубокая, я расскажу самые базовые вещи за 40 минут.</li>
                 <li>Будет много кода.</li>
                 <li>Многое упрощено для ясности.</li>
             </ul>
@@ -51,7 +51,7 @@
             <h3>План на сегодня</h3>
 
             <ul>
-                <li>Узнать понятии DDD</li>
+                <li>Узнать о понятии DDD</li>
                 <li>Познакомиться с элементами DDD</li>
                 <li>Итеративно отрефакторить приложение</li>
                 <li>Рассмотреть преимущества и недостатки</li>
@@ -75,7 +75,7 @@
                 <li>Сложность реального мира</li>
                 <li class="fragment" data-fragment-index="1">Гибкость программы</li>
                 <li class="fragment" data-fragment-index="2">Проблема описания поведения системы</li>
-                <li class="fragment" data-fragment-index="3">CI с <u>изменяющимися требованиями</u></li>
+                <li class="fragment" data-fragment-index="3">Работа над проектом с <u>изменяющимися требованиями</u></li>
             </ul>
         </section>
 
@@ -98,10 +98,6 @@
         <section>
             <h3>DDD &ndash; Domain Driven Design</h3>
 
-            <h5>Набор подходов для борьбы со сложностью в приложениях.</h5>
-        </section>
-
-        <section>
             <h3>Ключевые концепции:</h3>
 
             <ul>
@@ -297,7 +293,6 @@ class BillController
                 <li>Сложно переиспользовать</li>
                 <li>Тесты? Лолшто?</li>
                 <li>Дописать еще пару if'ов и будет месиво</li>
-                <li>Это не DDD</li>
             </ul>
         </section>
 
@@ -334,6 +329,7 @@ class BillController
                 <li>Низкий порог вхождения</li>
                 <li>Нет лишних преобразований</li>
                 <li>Хорош для простого CRUD</li>
+                <li>Легкая работа с relations</li>
             </ul>
         </section>
 
@@ -447,7 +443,7 @@ new Client(
             <ul>
                 <li>Описывает характеристику или атрибут</li>
                 <li>Типизирует в контексте домена</li>
-                <li>Не обладает идентичностью</li>
+                <li>Не обладает идентификатором</li>
                 <li>Неизменяемый после создания</li>
             </ul>
         </section>
@@ -509,6 +505,7 @@ new Client(
                 <li>Собирательная сущность, считается единым целым</li>
                 <li>Состоит из VO и Entity</li>
                 <li>Определяется по идентификатору</li>
+                <li>Рассматривается как единое целое при изменении данных</li>
                 <li>Ничего не знает о БД или фреймворке</li>
                 <li>В системе объекты ссылаются только на root</li>
             </ul>
@@ -761,7 +758,7 @@ $bill->changeStatus(new ProcessingStatus());
                 <li>Реализация не важна</li>
                 <li>Типы полей не связаны</li>
                 <li>Описывается интерфейсом</li>
-                <li>Используется с DI</li>
+                <li>Может использоваться с DI</li>
                 <li>Может реализовывать разные хранилища</li>
                 <li>Проще тестировать</li>
                 <li>Хорошо ложится в DDD</li>
@@ -783,6 +780,8 @@ $bill->changeStatus(new ProcessingStatus());
             <h3>Repository Interface Level</h3>
 
             <div class="todo">Картинка со слоями</div>
+
+            <p>Описывает интерфейсы репозиториев и не содержит реализаций.</p>
         </section>
 
         <section>
@@ -791,8 +790,9 @@ interface BillRepositoryInterface
 {
     /** @throws BillNotFoundException when no bill exists */
     public function findById($id);
-    public function insert($bill);
-    public function update($bill);
+    public function findByStatus(Status $status);
+    public function insert(Bill $bill);
+    public function update(Bill $bill);
 }
 </pre>
         </section>
@@ -875,9 +875,11 @@ class SqlBillRepository implements BillRepositoryInterface
             <h3>Service Layer</h3>
 
             <ul>
+                <li>В сервисы переезжает логика из контроллеров</li>
                 <li>Предоставляет приложению интерфейсы для работы с доменом</li>
                 <li>Сервисы содержат методы, описывающие действия домена</li>
-                <li class="todo">Что еще сюда добавить?</li>
+                <li>Может обращаться к репозиториям и другим сервисам</li>
+                <li>Не содержит состояния</li>
             </ul>
         </section>
 
@@ -909,6 +911,62 @@ class BillService
         </section>
 
         <section>
+            <h3>Что если метод сервиса получается сложный?</h3>
+        </section>
+
+        <section>
+            <h4>Создавать более специализированные сервисы?</h4>
+
+<pre class="highlight php">class BillPriceCalculationService
+{
+    public function calculate($bill)
+    {
+        // ...
+    }
+
+    private function applyDiscounts($bill)
+    {
+        // ...
+    }
+
+    private function calculatePositionsPrice($bill)
+    {
+        // ...
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h4>Или отдельные классы, которые хранят состояние</h4>
+
+<pre class="highlight php">class BillPriceCalculator
+{
+    public function __construct(Bill $bill)
+    {
+        $this->bill = $bill;
+    }
+
+    public function calculate($bill)
+    {
+        // ...
+    }
+
+    private function applyDiscounts()
+    {
+        // ...
+    }
+
+    private function calculatePositionsPrice()
+    {
+        // ...
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h3>Добавим немного проверок?</h3>
+
 <pre class="highlight php">class BillService
 {
     public function reject($billId)
@@ -1011,8 +1069,7 @@ class Bill
         </section>
 
         <section>
-            <h3>Что если действие более комплексное?</h3>
-            <h4>Например, CRUD</h4>
+            <h3>Что если действие более сложное?</h3>
         </section>
 
         <section>
@@ -1118,7 +1175,7 @@ class Bill
 
             <ul>
                 <li>Приложение разделено на независимые слои</li>
-                <li>Нет звязанности на БД, фреймворке</li>
+                <li>Нет завязанности на БД, фреймворке</li>
                 <li>Код более выразительный</li>
                 <li>Чистое ООП</li>
                 <li>Каждый слой легко тестируется</li>
@@ -1149,19 +1206,22 @@ class Bill
 
         <section>
             <h4>DDD на 90% проектов &mdash; оверхед, который не стоит потраченных усилий</h4>
+
+            <h3 class="fragment" data-fragment-index="1">Но это не повод не учиться.</h3>
         </section>
 
         <section>
-            <h4>Think first. DDD &mdash; это рекомендации, а не правила</h4>
+            <h4>Think first. DDD &mdash; это рекомендации, а не правила.</h4>
         </section>
 
         <section>
-            <h4>Идеи из DDD можно использовать и в ActiveRecord</h4>
+            <h4>Идеи из DDD можно использовать и c ActiveRecord</h4>
 
             <ul>
                 <li>Entity, Aggregate root &mdash; модель ActiveRecord с ясными методами</li>
                 <li>DTO &mdash; формы</li>
-                <li>Services &mdash; так и остаются</li>
+                <li>Services &mdash; уносят сложность из контроллеров и моделей</li>
+                <li>Repository &mdash; можно заменить ActiveQuery с методами, которые ясно описыают условия</li>
             </ul>
         </section>
 
