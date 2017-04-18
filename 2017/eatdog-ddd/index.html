@@ -144,7 +144,7 @@
         </section>
 
         <section>
-            <p class="quote">Создаём счёт, добавляем в него товары и выставляем его клиенту.</p>
+            <blockquote>Создаём счёт, добавляем в него товары и выставляем его клиенту.</blockquote>
         </section>
 
         <section>
@@ -153,7 +153,7 @@
             <ul>
                 <li>Добыть знания о домене</li>
                 <li>Выделить общие случаи из частных</li>
-                <li>Понять, что из сказанного &mdash; туфта</li>
+                <li>Понять, что из сказанного &mdash; лишнее</li>
                 <li class="fragment strike" data-fragment-index="1">Научить <b>их</b> изъясняться на <u>нашем</u> языке
                 </li>
                 <li class="fragment" data-fragment-index="1">Научиться изъясняться на <u>их</u> языке</li>
@@ -171,13 +171,14 @@
 
             <ul>
                 <li>называть вещи своими именами</li>
-                <li>общаться с доменными экспертами на одном языке</li>
+                <li>иметь в команде единую терминологию</li>
             </ul>
         </section>
 
         <section>
-            <p class="quote"><i>Создаём</i> <u>счёт</u>, <i>добавляем</i> в него <u>товары</u> и <i>выставляем</i> его
-                <u>клиенту</u>.</p>
+            <blockquote>
+                <i>Создаём</i> <u>счёт</u>, <i>добавляем</i> в него <u>товары</u> и <i>выставляем</i> его <u>клиенту</u>.
+            </blockquote>
 
             <h3>Извлечение скрытого смысла</h3>
 
@@ -196,15 +197,7 @@
         </section>
 
         <section>
-            <p class="todo">
-                Картинка с блоками M V C
-            </p>
-
-            <ul>
-                <li>Model</li>
-                <li>Contoller</li>
-                <li>View</li>
-            </ul>
+            <img src="mvc.png" />
         </section>
 
         <section>
@@ -240,7 +233,7 @@ class BillController
         </section>
 
         <section>
-            <p class="quote">Само собой, товары в счёт можно добавлять и удалять, если счёт еще не выставлен</p>
+            <blockquote>Само собой, товары в счёт можно добавлять и удалять, если счёт еще не выставлен</blockquote>
         </section>
 
         <section>
@@ -327,18 +320,20 @@ class BillController
 
         <section>
             <h3>Плюсы:</h3>
+
             <ul>
                 <li>Нужно минимум для старта</li>
                 <li>Волшебно простой интерфейс</li>
                 <li>Низкий порог вхождения</li>
                 <li>Нет лишних преобразований</li>
                 <li>Хорош для простого CRUD</li>
-                <li>Легкая работа с relations</li>
+                <li>Легкая работа со связями (relations)</li>
             </ul>
         </section>
 
         <section>
-            <h4>Минусы:</h4>
+            <h3>Минусы:</h3>
+
             <ul>
                 <li>Жесткая связь с таблицей в БД</li>
                 <li>Изменение таблицы &rarr; изменение кода</li>
@@ -357,31 +352,21 @@ class BillController
         </section>
 
         <section>
-            <p class="todo">Картинка со слоями архитектуры</p>
-
-            <ul>
-                <li>Domain model</li>
-                <li>Repository interfaces</li>
-                <li>Domain services</li>
-                <li>---</li>
-                <li>Infrastructure</li>
-                <li>Application</li>
-            </ul>
-        </section>
-
-        <section>
             <h4>We need to go deeper</h4>
 
             <h3>Забудем на время о контроллерах</h3>
         </section>
 
         <section>
-            <h2>Domain level</h2>
+            <img src="layers.png">
+        </section>
+
+        <section>
+            <h2>Domain Layer</h2>
 
             <ul>
-                <li>Entity</li>
-                <li>Aggregate root</li>
-                <li>Value Object</li>
+                <li>Является представлением предметной области в коде</li>
+                <li>Ничего не знает о БД или фреймворке</li>
             </ul>
         </section>
 
@@ -391,7 +376,6 @@ class BillController
             <ul>
                 <li>Описывает целостную сущность предметной области</li>
                 <li>Определяется по идентификатору, а не по значению атрибутов</li>
-                <li>Ничего не знает о БД или фреймворке</li>
             </ul>
         </section>
 
@@ -497,21 +481,23 @@ new Client(
     UUID::create(),
     new Name('Фамилия', 'Имя', 'Отчество'),
     new Address('Украина', 'Киев', '01001', ['ул. Кодеров, д. 0xFF']),
-    new Phone('+380441234567')
+    new Phone('380', '44', '1234567')
 );
 </pre>
         </section>
 
         <section>
-            <h3>Aggregate root</h3>
+            <h3>Entity vs Value Object</h3>
+
+            <p>Адрес &mdash; это Value Object или Entity?</p>
+        </section>
+
+        <section>
+            <h3>Зависит от предметной области</h3>
 
             <ul>
-                <li>Собирательная сущность, считается единым целым</li>
-                <li>Состоит из VO и Entity</li>
-                <li>Определяется по идентификатору</li>
-                <li>Рассматривается как единое целое при изменении данных</li>
-                <li>Ничего не знает о БД или фреймворке</li>
-                <li>В системе объекты ссылаются только на root</li>
+                <li>Если адрес доставки одного заказа &mdash; Value Object</li>
+                <li>Если сохраняемый для последующих доставок &mdash; Entity</li>
             </ul>
         </section>
 
@@ -520,28 +506,50 @@ new Client(
         </section>
 
         <section>
-            <p class="quote">Каждого товара может быть больше чем 1 единица в счёте!</p>
+            <h3>Aggregate root</h3>
 
-            <h4>Уточним:</h4>
             <ul>
-                <li>Меньше целой единицы можно?</li>
+                <li>Собирательная сущность, считается единым целым</li>
+                <li>Является границей транзакции при изменении данных</li>
+                <li>Состоит из VO и Entity</li>
+                <li>Является границей уникальности для Entity</li>
+                <li>Определяется по идентификатору</li>
+                <li>Может ссылаться на другие VO</li>
+                <li>Другие элементы системы ссылаются только на root</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Client &mdash; это Aggregate root</h3>
+
+            <img src="client_vo.png" alt="">
+        </section>
+
+        <section>
+            <blockquote>Каждого товара может быть больше чем 1 единица в счёте!</blockquote>
+            <br /><br />
+            <h3>Уточняем детали:</h3>
+            <ul>
                 <li>Валюта, правила округления и отображения цены?</li>
+                <li>Меньше целой единицы можно?</li>
                 <li>Единицы измерения &mdash; шт, метры, литры?</li>
             </ul>
         </section>
 
         <section>
-            <img src="bill_w_vo.png" alt="">
+            <img src="bill_w_vo.png" />
         </section>
 
         <section>
+            <h4>Агрегат Item</h4>
+
             <pre class="highlight php">
 class Item
 {
-    protected $id;
-    protected $name;
-    protected $description;
-    protected $price;
+    private $id;
+    private $name;
+    private $description;
+    private $price;
 
     public function __construct($id, $name, Money $price) {
         $this-&gt;id = $id;
@@ -574,13 +582,15 @@ $item->setDescription('This bullet is a killing feature!');
             <h3>Good practices</h3>
 
             <ul>
-                <li>В конструкторе минимальный набор для целостности</li>
+                <li>В конструкторе обязательные свойства</li>
+                <li>Необязательные &mdash; в сеттеры</li>
                 <li>Интерфейсы для контроля типов и полиморфизма</li>
                 <li>Закрыто всё, что не изменяется по логике домена</li>
             </ul>
         </section>
 
         <section>
+            <h4>Entity Position</h4>
         <pre class="highlight php">
 class Position
 {
@@ -606,6 +616,7 @@ class Position
         </section>
 
         <section>
+            <h4>Aggregate root Bill</h4>
             <pre class="highlight php">
 class Bill
 {
@@ -647,8 +658,7 @@ $anotherPosition = new Position(
     new Item(UUID::create(), &apos;Rage cup&apos;, Money::USD(500))
 );
 $bill->setPositions([$anotherPosition]);
-// save...
-</pre>
+// save...</pre>
         </section>
 
         <section>
@@ -659,8 +669,7 @@ $bill->setStatus('processing');
 // VS
 
 $bill->positions = [$anotherPosition];
-$bill->status = 'processing';
-            </pre>
+$bill->status = 'processing';</pre>
         </section>
 
         <section>
@@ -678,6 +687,7 @@ $bill->status = 'processing';
         </section>
 
         <section>
+            <h4>Value Object Status</h4>
             <pre class="highlight php">abstract class Status
 {
     protected $name;
@@ -692,8 +702,7 @@ $bill->status = 'processing';
     {
         return in_array(get_class($status), $this-&gt;next, true);
     }
-}
-            </pre>
+}</pre>
 
             <pre class="highlight php">class NewStatus extends Status
 {
