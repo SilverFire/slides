@@ -113,7 +113,7 @@
                     <ul style="margin: 0">
                         <li>Entity</li>
                         <li>Value Object</li>
-                        <li>Aggregate Root</li>
+                        <li>Aggregate</li>
                         <li>Repository</li>
                         <li>Service</li>
                     </ul>
@@ -374,8 +374,9 @@ class BillController
             <h2>Entity</h2>
 
             <ul>
-                <li>Описывает целостную сущность предметной области</li>
+                <li>Описывает индивидуально существующие элементы домена</li>
                 <li>Определяется по идентификатору, а не по значению атрибутов</li>
+                <li>Однозначно и непрерывно определяется на всём протяжении существования</li>
             </ul>
         </section>
 
@@ -429,10 +430,10 @@ new Client(
             <h2>Value Object</h2>
 
             <ul>
-                <li>Описывает характеристику или атрибут</li>
-                <li>Типизирует в контексте домена</li>
                 <li>Не обладает идентификатором</li>
+                <li>Описывает элементы домена, полностью определяемые свойствами</li>
                 <li>Неизменяемый после создания</li>
+                <li>Используется для типизации и структурирования данных</li>
             </ul>
         </section>
 
@@ -489,16 +490,43 @@ new Client(
         <section>
             <h3>Entity vs Value Object</h3>
 
-            <p>Адрес &mdash; это Value Object или Entity?</p>
+            <img src="uah.jpg" class="fragment" data-fragment-index="1" />
         </section>
 
         <section>
-            <h3>Зависит от предметной области</h3>
+            <h3>Нужно ли отличать две купюры одного номинала?</h3>
+
+            <ul class="fragment" data-fragment-index="1">
+                <li>Кассиру не нужно &mdash; Value Object</li>
+                <li>Эксперту-криминалисту нужно &mdash; Entity</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Aggregate</h3>
 
             <ul>
-                <li>Если адрес доставки одного заказа &mdash; Value Object</li>
-                <li>Если сохраняемый для последующих доставок &mdash; Entity</li>
+                <li>Собирательная сущность которая считается единым целым</li>
+                <li>Состоит из VO и Entity</li>
+                <li>Определяется по идентификатору</li>
+                <li>Является границей транзакции при изменении данных</li>
+                <li>Другие элементы домена не могут ссылаться на внутренности агрегата</li>
             </ul>
+        </section>
+
+        <section>
+            <h4>Агрегат &mdash; это граница уникальности для Entity</h4>
+
+            <ul>
+                <li>Один Entity не может быть в двух агрегатах одновременно</li>
+                <li class="fragment" data-fragment-index="1">Такой Entity должен стать агрегатом</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Client &mdash; это Aggregate</h3>
+
+            <img src="client_vo.png" alt="">
         </section>
 
         <section>
@@ -506,33 +534,14 @@ new Client(
         </section>
 
         <section>
-            <h3>Aggregate root</h3>
-
-            <ul>
-                <li>Собирательная сущность, считается единым целым</li>
-                <li>Является границей транзакции при изменении данных</li>
-                <li>Состоит из VO и Entity</li>
-                <li>Является границей уникальности для Entity</li>
-                <li>Определяется по идентификатору</li>
-                <li>Может ссылаться на другие VO</li>
-                <li>Другие элементы системы ссылаются только на root</li>
-            </ul>
-        </section>
-
-        <section>
-            <h3>Client &mdash; это Aggregate root</h3>
-
-            <img src="client_vo.png" alt="">
-        </section>
-
-        <section>
             <blockquote>Каждого товара может быть больше чем 1 единица в счёте!</blockquote>
             <br /><br />
             <h3>Уточняем детали:</h3>
             <ul>
-                <li>Валюта, правила округления и отображения цены?</li>
+                <li>Нужно учитывать валюту?</li>
                 <li>Меньше целой единицы можно?</li>
                 <li>Единицы измерения &mdash; шт, метры, литры?</li>
+                <li>...</li>
             </ul>
         </section>
 
@@ -541,7 +550,7 @@ new Client(
         </section>
 
         <section>
-            <h4>Агрегат Item</h4>
+            <h4>Агрегат &ndash; Item</h4>
 
             <pre class="highlight php">
 class Item
@@ -584,13 +593,13 @@ $item->setDescription('This bullet is a killing feature!');
             <ul>
                 <li>В конструкторе обязательные свойства</li>
                 <li>Необязательные &mdash; в сеттеры</li>
-                <li>Интерфейсы для контроля типов и полиморфизма</li>
-                <li>Закрыто всё, что не изменяется по логике домена</li>
+                <li>Закрыто для изменения всё, что не изменяется по логике домена</li>
             </ul>
         </section>
 
         <section>
-            <h4>Entity Position</h4>
+            <h4>Entity &ndash; Position</h4>
+
         <pre class="highlight php">
 class Position
 {
@@ -607,8 +616,6 @@ class Position
     public function getQuantity() {}
     public function setQuantity($quantity) {}
 
-    public function getUnit() {}
-
     public function getPrice() {}
     public function getAmount() {}
 }
@@ -616,7 +623,8 @@ class Position
         </section>
 
         <section>
-            <h4>Aggregate root Bill</h4>
+            <h4>Агрегат &ndash; Bill</h4>
+
             <pre class="highlight php">
 class Bill
 {
@@ -658,7 +666,7 @@ $anotherPosition = new Position(
     new Item(UUID::create(), &apos;Rage cup&apos;, Money::USD(500))
 );
 $bill->setPositions([$anotherPosition]);
-// save...</pre>
+</pre>
         </section>
 
         <section>
@@ -682,12 +690,13 @@ $bill->status = 'processing';</pre>
             <ul>
                 <li>Модель отображает связи</li>
                 <li>В модели есть геттеры и сеттеры для свойств</li>
-                <li>Модель не описывает действий и логики бизнеса</li>
+                <li>Модель не описывает действий и логики домена</li>
             </ul>
         </section>
 
         <section>
-            <h4>Value Object Status</h4>
+            <h4>Value Object &ndash; Status</h4>
+
             <pre class="highlight php">abstract class Status
 {
     protected $name;
@@ -767,13 +776,11 @@ $bill->changeStatus(new ProcessingStatus());
 
             <h3>Плюсы:</h3>
             <ul>
-                <li>Является только интерфейсом хранилища</li>
-                <li>Реализация не важна</li>
-                <li>Типы полей не связаны</li>
                 <li>Описывается интерфейсом</li>
-                <li>Может использоваться с DI</li>
-                <li>Может реализовывать разные хранилища</li>
-                <li>Проще тестировать</li>
+                <li>Объекты не зависят от структуры БД и типов полей</li>
+                <li>В рамках доменного реализация не важна</li>
+                <li>Может быть реализован для разных хранилища</li>
+                <li>Удобно тестировать</li>
                 <li>Хорошо ложится в DDD</li>
             </ul>
         </section>
@@ -793,8 +800,15 @@ $bill->changeStatus(new ProcessingStatus());
             <h3>Repository Interface Level</h3>
 
             <div class="todo">Картинка со слоями</div>
+        </section>
 
-            <p>Описывает интерфейсы репозиториев и не содержит реализаций.</p>
+        <section>
+            <h3>Repository Interface Level</h3>
+
+            <ul>
+                <li>Только интерфейсы репозиториев без реализаций</li>
+                <li>Репозитории создаются только для агрегатов</li>
+            </ul>
         </section>
 
         <section>
@@ -828,8 +842,7 @@ class SqlBillRepository implements BillRepositoryInterface
         $this-&gt;db = $db;
     }
 
-    public function create(Bill $bill)
-    {
+    public function create(Bill $bill) {
         $this-&gt;db-&gt;transactionBegin();
 
         $this-&gt;db-&gt;insert(&apos;bill&apos;, [
@@ -846,8 +859,6 @@ class SqlBillRepository implements BillRepositoryInterface
         }
 
         $this-&gt;db-&gt;transactionCommit();
-
-        return $bill-&gt;getId();
     }
 }
 </pre>
@@ -856,7 +867,7 @@ class SqlBillRepository implements BillRepositoryInterface
         <section>
 <pre class="highlight php">class BillController
 {
-    public function actionCreate($client_id, $positions = [])
+    public function actionCreate($client_id)
     {
         $client = $this->clientRepository->findById($client_id);
         $bill = new Bill(UUID::create(), $client);
@@ -878,7 +889,7 @@ class SqlBillRepository implements BillRepositoryInterface
             <h4>Кроме того, есть и другие проблемы:</h4>
 
             <ul>
-                <li>В контроллере всё еще много логики</li>
+                <li>В контроллере всё еще есть логика</li>
                 <li>Что если будет несколько точек входа?</li>
                 <li>Тесты?</li>
             </ul>
@@ -889,10 +900,10 @@ class SqlBillRepository implements BillRepositoryInterface
 
             <ul>
                 <li>В сервисы переезжает логика из контроллеров</li>
-                <li>Предоставляет приложению интерфейсы для работы с доменом</li>
-                <li>Сервисы содержат методы, описывающие действия домена</li>
-                <li>Может обращаться к репозиториям и другим сервисам</li>
-                <li>Не содержит состояния</li>
+                <li>Предоставляют приложению интерфейсы для работы с доменом</li>
+                <li>Сервисы содержат методы, описывающие операции домена</li>
+                <li>Могут обращаться к репозиториям и другим сервисам</li>
+                <li>Не содержат состояния</li>
             </ul>
         </section>
 
@@ -924,25 +935,50 @@ class BillService
         </section>
 
         <section>
-            <h3>Что если метод сервиса получается сложный?</h3>
+<pre class="highlight php">class BillController
+{
+    public function actionCreate($client_id)
+    {
+        $billId = $this->billService->create($client_id);
+
+        return $billId;
+    }
+}</pre>
         </section>
 
         <section>
-            <h4>Создавать более специализированные сервисы?</h4>
+            <p>Что если метод сервиса получается  сложным?</p>
 
-<pre class="highlight php">class BillPriceCalculationService
+<pre class="highlight php">class BillService
 {
-    public function calculate($bill)
+    public function addPosition($billId, $itemId, $quantity)
     {
-        // ...
+        $bill = $this-&gt;billRepository-&gt;findById($billId);
+        $item = $this-&gt;itemRepository-&gt;findById($itemId);
+
+        $bill-&gt;addPosition($item, $quantity);
+
+        foreach ($bill-&gt;getPositions() as $position) {
+            // Merge positions of the same item
+        }
+
+        $this-&gt;billRepository-&gt;update($bill);
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h4>Можно создавать более специализированные сервисы</h4>
+
+<pre class="highlight php">class BillOptimizerService
+{
+    public function mergePositions($bill)
+    {
+        $this->findSimilarPositions($bill);
     }
 
-    private function applyDiscounts($bill)
-    {
-        // ...
-    }
-
-    private function calculatePositionsPrice($bill)
+    private function findSimilarPositions($bill)
     {
         // ...
     }
@@ -950,45 +986,42 @@ class BillService
         </section>
 
         <section>
-            <h4>Или отдельные классы, которые хранят состояние</h4>
+            <h4>Или отдельные классы, которые хранят состояние для выполнения задачи</h4>
 
-<pre class="highlight php">class BillPriceCalculator
+<pre class="highlight php">class BillPositionsMerger
 {
     public function __construct(Bill $bill)
     {
-        $this->bill = $bill;
+        $this-&gt;bill = $bill;
     }
 
-    public function calculate($bill)
+    public function run()
     {
-        // ...
+        while ($pairs = $this-&gt;findSimilarPositions()) {
+            foreach ($pairs as $pair) {
+                $this-&gt;mergePositions($pair);
+            }
+        }
     }
 
-    private function applyDiscounts()
-    {
-        // ...
-    }
-
-    private function calculatePositionsPrice()
-    {
-        // ...
-    }
+    private function findSimilarPositions() { ... }
+    private function mergePositions($pair) { ... }
 }
 </pre>
         </section>
 
         <section>
-            <h3>Добавим немного проверок?</h3>
+            <h4>Добавим немного проверок в BillService</h4>
 
 <pre class="highlight php">class BillService
 {
     public function reject($billId)
     {
-        if (($bill = $this-&gt;findById($id)) === null) {
+        if (($bill = $this-&gt;billRepository->findById($id)) === null) {
             return null;
         }
 
-        if ($bill-&gt;changeStatus(new ProcessingStatus()) === null) {
+        if ($bill-&gt;changeStatus(new RejectedStatus()) === null) {
             return null;
         }
 
@@ -1035,8 +1068,7 @@ class BillService
         <section>
             <h4>Смена статуса как событие</h4>
 
-            <pre class="highlight php">
-class Bill
+<pre class="highlight php">class Bill
 {
     public function registerEvent($event) { // TODO: можно вынести в trait
         $this-&gt;events[] = $event;
@@ -1053,10 +1085,10 @@ class Bill
         if (!$this-&gt;status-&gt;canBeChangedTo($status)) {
             throw new WrongStatusChangeDirection();
         }
-
         $this-&gt;status = $status;
+
         $this-&gt;registerEvent(
-            new BillStatusWasChangedEvent($this-&gt;id, $status)
+            new BillStatusWasChangedEvent($bill, $status)
         );
     }
 }
@@ -1074,42 +1106,38 @@ class Bill
         $this-&gt;billRepository-&gt;update($bill);
 
         $this->dispatcher->dispatchEvents($bill->releaseEvents());
-
-        return true;
     }
 }
 </pre>
         </section>
 
         <section>
-            <h3>Что если действие более сложное?</h3>
+            <h3>Что если действие требует много параметров?</h3>
         </section>
 
         <section>
             <pre class="highlight php">class ClientService
 {
-    public function changeAddress($id, $country, $city, $zip, array $lines)
+    public function changeAddress($id, $country, $city, $zip, $lines)
     {
-        $address = new Address($country, $city, $zip, $lines);
-
         $client = $this-&gt;clientRepository-&gt;findById($id);
+
+        $address = new Address($country, $city, $zip, $lines);
         $client-&gt;changeAddress($address);
 
         $this-&gt;clientRepository-&gt;update($client);
-
-        return $client-&gt;getId();
     }
 }</pre>
         </section>
 
         <section>
-            <h3>Параметров уже многовато</h3>
-            <h4>Что делать?</h4>
+            <h4>Параметров уже многовато</h4>
+            <h5>Что делать?</h5>
 
             <ul>
-                <li class="fragment strike" data-fragment-index="1">Создавать Address в контролере</li>
+                <li class="fragment strike" data-fragment-index="1">Создавать объект Address в контролере</li>
                 <li class="fragment strike" data-fragment-index="2">Передавать массив свойств</li>
-                <li>Создать еще один класс</li>
+                <li>Написать еще один класс</li>
             </ul>
         </section>
 
@@ -1139,9 +1167,14 @@ class Bill
 
     public $lines = [];
 
-    public function load($request)
+    public function load($data)
     {
         // ...
+    }
+
+    public static function fromRequest($request)
+    {
+        return (new self())->load($request->post());
     }
 }
 </pre>
@@ -1152,19 +1185,17 @@ class Bill
 {
     public function changeAddress($id, AddressDto $dto)
     {
+        $client = $this-&gt;clientRepository-&gt;findById($id);
+
         $address = new Address(
             $dto-&gt;country,
             $dto-&gt;city,
             $dto-&gt;zip,
             $dto-&gt;lines
         );
-
-        $client = $this-&gt;clientRepository-&gt;findById($id);
         $client-&gt;changeAddress($address);
 
         $this-&gt;clientRepository-&gt;update($client);
-
-        return $client-&gt;getId();
     }
 }</pre>
         </section>
@@ -1174,7 +1205,7 @@ class Bill
 {
     public function actionChangeAddress($client_id)
     {
-        $dto = (new AddressDto())-&gt;load($this-&gt;request);
+        $dto = AddressDto::fromRequest($this-&gt;request);
         $this-&gt;clientRepository-&gt;changeAddress($client_id, $dto);
 
         return $client_id;
@@ -1199,19 +1230,15 @@ class Bill
         </section>
 
         <section>
-            <p class="todo">Кривая сложности</p>
-        </section>
-
-        <section>
-            <h3>Конечно, есть и проблемы</h3>
+            <h4>Конечно, есть и проблемы</h4>
 
             <ul>
-                <li>Сrosscutting concerns</li>
-                <li>Переабстрагирование</li>
-                <li>Сложно понять</li>
-                <li>Работа с данными описана сложнее</li>
+                <li>Сложно понять &mdash; входной порог выше</li>
+                <li>Работа с данными описывается сложнее</li>
                 <li>Есть много нюансов реализации</li>
+                <li>Сrosscutting concerns</li>
                 <li>Оверхед для простой бизнес-логики</li>
+                <li>Переабстрагирование</li>
                 <li>Сложно натянуть на "бедную" процессами модель</li>
             </ul>
         </section>
@@ -1223,17 +1250,23 @@ class Bill
         </section>
 
         <section>
+            <p class="todo">Кривая сложности</p>
+        </section>
+
+        <section>
             <h4>Think first. DDD &mdash; это рекомендации, а не правила.</h4>
         </section>
 
         <section>
-            <h4>Идеи из DDD можно использовать и c ActiveRecord</h4>
+            <h3>Идеи из DDD можно использовать по кусочкам</h3>
+
+            <h4 class="fragment" data-fragment-index="1">Даже c ActiveRecord</h4>
 
             <ul>
-                <li>Entity, Aggregate root &mdash; модель ActiveRecord с ясными методами</li>
-                <li>DTO &mdash; формы</li>
-                <li>Services &mdash; уносят сложность из контроллеров и моделей</li>
-                <li>Repository &mdash; можно заменить ActiveQuery с методами, которые ясно описыают условия</li>
+                <li class="fragment" data-fragment-index="2">Entity, Aggregate &mdash; модель ActiveRecord с ясными методами</li>
+                <li class="fragment" data-fragment-index="3">DTO &mdash; формы</li>
+                <li class="fragment" data-fragment-index="4">Services &mdash; уносят сложность из контроллеров и моделей</li>
+                <li class="fragment" data-fragment-index="5">Repository &mdash; можно заменить ActiveQuery с методами, которые ясно описыают условия</li>
             </ul>
         </section>
 
