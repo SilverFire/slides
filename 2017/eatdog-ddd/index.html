@@ -140,7 +140,6 @@
                 <li class="fragment" data-fragment-index="2">Ничего не знают о программировании и DDD</li>
             </ul>
 
-            <small class="todo">картинка с экспертами</small>
         </section>
 
         <section>
@@ -797,9 +796,7 @@ $bill->changeStatus(new ProcessingStatus());
         </section>
 
         <section>
-            <h3>Repository Interface Level</h3>
-
-            <div class="todo">Картинка со слоями</div>
+            <img src="domain_filled.png" />
         </section>
 
         <section>
@@ -882,10 +879,6 @@ class SqlBillRepository implements BillRepositoryInterface
         </section>
 
         <section>
-            <p class="todo">Картинка с перепрыгиванием через слои</p>
-        </section>
-
-        <section>
             <h4>Кроме того, есть и другие проблемы:</h4>
 
             <ul>
@@ -896,20 +889,47 @@ class SqlBillRepository implements BillRepositoryInterface
         </section>
 
         <section>
-            <h3>Service Layer</h3>
+            <img src="repository_filled.png">
+        </section>
+
+        <section>
+            <h3>Domain Services Interfaces</h3>
 
             <ul>
-                <li>В сервисы переезжает логика из контроллеров</li>
-                <li>Предоставляют приложению интерфейсы для работы с доменом</li>
-                <li>Сервисы содержат методы, описывающие операции домена</li>
-                <li>Могут обращаться к репозиториям и другим сервисам</li>
+                <li>Сервисы предоставляют приложению интерфейсы для работы с доменом</li>
+                <li>Содержат методы, описывающие операции домена</li>
                 <li>Не содержат состояния</li>
+                <li>Могут обращаться к репозиториям и другим сервисам</li>
+                <li>Уносят логику из контроллеров</li>
             </ul>
         </section>
 
         <section>
-            <pre class="highlight php">
-class BillService
+<pre class="highlight php">class BillServiceInterface
+{
+    public function create($clientId);
+    public function addPosition($id, $itemId, $quantity);
+    public function reject($id);
+    // ...
+}</pre>
+        </section>
+
+        <section>
+            <img src="service_filled.png" />
+        </section>
+
+        <section>
+            <h3>Инфраструктурный слой</h3>
+
+            <ul>
+                <li>Содержит реализации репозиториев и сервисов</li>
+                <li>Знает о БД</li>
+                <li>Работает с IoC контейнером</li>
+            </ul>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillService
 {
     public function __construct(
         ClientRepositoryInterface $clientRepository,
@@ -930,8 +950,7 @@ class BillService
 
         return $bill-&gt;getId();
     }
-}
-</pre>
+}</pre>
         </section>
 
         <section>
@@ -1212,6 +1231,20 @@ class BillService
     }
 }</pre>
         </section>
+        
+        <section>
+            <img src="infrastructure_filled.png">
+        </section>
+        
+        <section>
+            <h4>Что остаётся для Application?</h4>
+
+            <ul>
+                <li>Маршрутизация запросов</li>
+                <li>Конфигурация приложения</li>
+                <li>Конфигурация инфраструктурного слоя</li>
+            </ul>
+        </section>
 
         <section>
             <h4>Что у нас получилось?</h4>
@@ -1244,13 +1277,17 @@ class BillService
         </section>
 
         <section>
-            <h4>DDD на 90% проектов &mdash; оверхед, который не стоит потраченных усилий</h4>
-
-            <h3 class="fragment" data-fragment-index="1">Но это не повод не учиться.</h3>
+            <img src="chart.png" alt="">
         </section>
 
         <section>
-            <p class="todo">Кривая сложности</p>
+            <img src="chart_42.png" alt="">
+        </section>
+
+        <section>
+            <h4>DDD на 90% проектов &mdash; оверхед, который не стоит потраченных усилий</h4>
+
+            <h3 class="fragment" data-fragment-index="1">Но это не повод не учиться.</h3>
         </section>
 
         <section>
@@ -1278,10 +1315,26 @@ class BillService
             <h3>Почитать</h3>
 
             <ul>
-                <li>https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software-ebook/dp/B00794TAUG</li>
-                <li>https://github.com/PhpFriendsOfDdd</li>
-                <li>https://lostechies.com/jamesgregory/2009/05/09/entity-interface-anti-pattern</li>
+                <li><a href="https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software-ebook/dp/B00794TAUG">Eric Evans &mdash; Domain-Driven Design: Tackling Complexity in the Heart of Software</a></li>
+                <li><a href="https://www.dogearpublishing.net/wordpress/domain-driven-design-reference-definitions-and-pattern-summaries-by-eric-evans/">Domain-Driven Design Reference: Definitions and Pattern Summaries Eric Evans</a></li>
+                <li><a href="https://github.com/PhpFriendsOfDdd">github.com/PhpFriendsOfDdd</a></li>
             </ul>
+        </section>
+
+        <section>
+            <h3>Время вопросов</h3>
+
+            <table>
+                <tr>
+                    <td style="width: 30%"><img src="qr.svg" style="width: 15em;" /></td>
+                    <td style="vertical-align: top;">
+                        <ul>
+                            <li><a href="https://github.com/SilverFire">SilverFire@GitHub</a></li>
+                            <li><a href="http://www.yiiframework.com/">Yii Framework</a></li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
         </section>
     </div>
 </div>
