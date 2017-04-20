@@ -1854,6 +1854,7 @@ body {
 
 .reveal {
     font-family: "Bandera Pro Medium";
+    color: #262626;
 }
 
 .todo {}
@@ -1987,6 +1988,10 @@ span.comment::after {
 span.comment {
     color: red;
     font-size: 50%
+}
+
+.reveal pre.highlight.php {
+    font-weight: 600;
 }
 
 .reveal .slides section .fragment.highlight-tomato,
