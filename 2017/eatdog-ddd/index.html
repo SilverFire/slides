@@ -23,6 +23,9 @@
 <body>
 <div class="reveal">
     <div class="slides">
+        <section class="welcome-slide" data-background-image="welcome.jpg" data-state="hide-slide-number">
+        </section>
+
         <section class="title-slide">
             <h1>Domain Driven Design</h1>
             <h4>просто о сложном</h4>
@@ -41,9 +44,10 @@
             <h3>Disclaimer</h3>
 
             <ul>
-                <li>Тема очень глубокая, я расскажу самые базовые вещи за 40 минут.</li>
-                <li>Будет много кода.</li>
-                <li>Многое упрощено для ясности.</li>
+                <li>Тема очень глубокая, я расскажу самые базовые вещи за 40 минут</li>
+                <li>Тайминг &mdash; 20 секунд на слайд</li>
+                <li>Будет много кода</li>
+                <li>Многое упрощено для ясности</li>
             </ul>
         </section>
 
@@ -132,6 +136,10 @@
         </section>
 
         <section>
+            <p>Работа с доменом начинается с анализа предметной области и составления требований</p>
+        </section>
+
+        <section>
             <h3>Domain experts</h3>
 
             <ul>
@@ -205,7 +213,7 @@
             <pre class="highlight php">
 class BillController
 {
-    public function actionCreate($client_id, array $product_ids)
+    public function actionCreate($client_id, array $item_ids)
     {
         $client = Client::find()-&gt;byId($client_id)-&gt;one();
         if (!$client) { throw new NotFoundException(&apos;No client&apos;); }
@@ -214,10 +222,10 @@ class BillController
         $bill-&gt;client = $client;
         $bill-&gt;status = &apos;new&apos;;
 
-        $products = Product::find()-&gt;byId($product_ids)-&gt;all();
-        if (!$product) { throw new NotFoundException(&apos;No products&apos;); }
+        $items = Item::find()-&gt;byId($item_ids)-&gt;all();
+        if (!$items) { throw new NotFoundException(&apos;No items&apos;); }
 
-        $bill-&gt;items = $products;
+        $bill-&gt;items = $items;
         foreach ($bill-&gt;items as $item) {
             $bill-&gt;sum += $item-&gt;price;
         }
@@ -245,10 +253,10 @@ class BillController
         if (!$bill) { throw new NotFoundException(&apos;No bill&apos;); }
         if ($bill-&gt;status !== &apos;new&apos;) { throw new HttpException(403); }
 
-        $product = Product::find()-&gt;byId($req-&gt;post(&apos;product_id&apos;))-&gt;one();
-        if (!$product) { throw new NotFoundException(&apos;No product&apos;); }
+        $item = Item::find()-&gt;byId($item_id)-&gt;one();
+        if (!$item) { throw new NotFoundException(&apos;No item&apos;); }
 
-        $bill-&gt;items[] = $product;
+        $bill-&gt;items[] = $item;
         $bill-&gt;calculateSum();
 
         $this-&gt;log-&gt;info(&apos;Updated bill &apos; . $bill-&gt;id);
@@ -375,7 +383,7 @@ class BillController
             <ul>
                 <li>Описывает индивидуально существующие элементы домена</li>
                 <li>Определяется по идентификатору, а не по значению атрибутов</li>
-                <li>Однозначно и непрерывно определяется на всём протяжении существования</li>
+                <li>Непрерывно и однозначно определяется на всём протяжении существования</li>
             </ul>
         </section>
 
@@ -552,8 +560,7 @@ new Client(
             <h4>Агрегат &ndash; Item</h4>
 
             <pre class="highlight php">
-class Item
-{
+class Item {
     private $id;
     private $name;
     private $description;
@@ -696,30 +703,25 @@ $bill->status = 'processing';</pre>
         <section>
             <h4>Value Object &ndash; Status</h4>
 
-            <pre class="highlight php">abstract class Status
-{
+            <pre class="highlight php">abstract class Status {
     protected $name;
-    protected $next = [];
-
-    public function getName()
-    {
+    public function getName() {
         return $this-&gt;name;
     }
 
-    public function canBeChangedTo(self $status)
-    {
+    protected $next = [];
+    public function canBeChangedTo(self $status) {
         return in_array(get_class($status), $this-&gt;next, true);
+    }
+
+    public function allowsModification() {
+        return true;
     }
 }</pre>
 
-            <pre class="highlight php">class NewStatus extends Status
-{
+            <pre class="highlight php">class NewStatus extends Status {
     protected $name = 'new';
-
-    protected $next = [
-        ProcessingStatus::class,
-        RejectedStatus::class
-    ];
+    protected $next = [ProcessingStatus::class, RejectedStatus::class];
 }
 </pre>
         </section>
@@ -752,6 +754,50 @@ class Bill
         </section>
 
         <section>
+<pre class="highlight php">abstract class Status
+{
+    // ...
+
+    public function ensureCanBeChangedTo(self $status)
+    {
+        if (!$this-&gt;canBeChangedTo($status)) {
+            throw new WrongStatusChangeDirectionException();
+        }
+    }
+
+    public function ensureAllowsModification()
+    {
+        if (!$this-&gt;allowsModification()) {
+            throw new ModificationProhibitedException();
+        }
+    }
+}</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class Bill
+{
+    public function changeStatus(Status $status)
+    {
+        $this-&gt;status-&gt;ensureCanBeChangedTo($status);
+        $this-&gt;status = $status;
+    }
+
+    public function addPosition(Position $position)
+    {
+        $this-&gt;status-&gt;ensureAllowsModification();
+        $this-&gt;positions-&gt;push($position);
+    }
+
+    public function removePosition(Position $position)
+    {
+        $this-&gt;status-&gt;ensureAllowsModification();
+        // ...
+    }
+}</pre>
+        </section>
+
+        <section>
             <pre class="highlight php">
 $bill = new Bill(UUID::create(), $client);
 
@@ -777,8 +823,8 @@ $bill->changeStatus(new ProcessingStatus());
             <ul>
                 <li>Описывается интерфейсом</li>
                 <li>Объекты не зависят от структуры БД и типов полей</li>
-                <li>В рамках доменного реализация не важна</li>
-                <li>Может быть реализован для разных хранилища</li>
+                <li>В рамках доменного слоя реализация не важна</li>
+                <li>Может быть реализован для разных хранилищ</li>
                 <li>Удобно тестировать</li>
                 <li>Хорошо ложится в DDD</li>
             </ul>
@@ -879,9 +925,10 @@ class SqlBillRepository implements BillRepositoryInterface
         </section>
 
         <section>
-            <h4>Кроме того, есть и другие проблемы:</h4>
+            <h4>Есть некоторые проблемы:</h4>
 
             <ul>
+                <li>Мы перепрыгнули через несколько слоев</li>
                 <li>В контроллере всё еще есть логика</li>
                 <li>Что если будет несколько точек входа?</li>
                 <li>Тесты?</li>
@@ -910,6 +957,7 @@ class SqlBillRepository implements BillRepositoryInterface
     public function create($clientId);
     public function addPosition($id, $itemId, $quantity);
     public function reject($id);
+    public function process($id);
     // ...
 }</pre>
         </section>
@@ -1005,6 +1053,25 @@ class SqlBillRepository implements BillRepositoryInterface
         </section>
 
         <section>
+            <p>Что если метод сервиса получается  сложным?</p>
+
+<pre class="highlight php">class BillService
+{
+    public function addPosition($billId, $itemId, $quantity)
+    {
+        $bill = $this-&gt;billRepository-&gt;findById($billId);
+        $item = $this-&gt;itemRepository-&gt;findById($itemId);
+
+        $bill-&gt;addPosition($item, $quantity);
+        $this->billOptimizerService->mergePositions($bill);
+
+        $this-&gt;billRepository-&gt;update($bill);
+    }
+}
+</pre>
+    </section>
+
+        <section>
             <h4>Или отдельные классы, которые хранят состояние для выполнения задачи</h4>
 
 <pre class="highlight php">class BillPositionsMerger
@@ -1030,6 +1097,25 @@ class SqlBillRepository implements BillRepositoryInterface
         </section>
 
         <section>
+            <p>Что если метод сервиса получается  сложным?</p>
+
+            <pre class="highlight php">class BillService
+{
+    public function addPosition($billId, $itemId, $quantity)
+    {
+        $bill = $this-&gt;billRepository-&gt;findById($billId);
+        $item = $this-&gt;itemRepository-&gt;findById($itemId);
+
+        $bill-&gt;addPosition($item, $quantity);
+        (new BillPositionMerger($bill))->run();
+
+        $this-&gt;billRepository-&gt;update($bill);
+    }
+}
+</pre>
+        </section>
+
+        <section>
             <h4>Добавим немного проверок в BillService</h4>
 
 <pre class="highlight php">class BillService
@@ -1040,9 +1126,7 @@ class SqlBillRepository implements BillRepositoryInterface
             return null;
         }
 
-        if ($bill-&gt;changeStatus(new RejectedStatus()) === null) {
-            return null;
-        }
+        $bill-&gt;changeStatus(new RejectedStatus());
 
         if ($this-&gt;billRepository-&gt;update($bill) !== false) {
             // аккуратно, там ^^ в случае ошибки возвращается false!
@@ -1087,8 +1171,16 @@ class SqlBillRepository implements BillRepositoryInterface
         <section>
             <h4>Смена статуса как событие</h4>
 
-<pre class="highlight php">class Bill
-{
+<pre class="highlight php">class Bill {
+    public function changeStatus(Status $status) {
+        $this-&gt;status-&gt;ensureCanBeChangedTo($status);
+        $this-&gt;status = $status;
+
+        $this-&gt;registerEvent(
+            new BillStatusWasChangedEvent($bill, $status)
+        );
+    }
+
     public function registerEvent($event) { // TODO: можно вынести в trait
         $this-&gt;events[] = $event;
     }
@@ -1098,17 +1190,6 @@ class SqlBillRepository implements BillRepositoryInterface
         $this-&gt;events = [];
 
         return $events;
-    }
-
-    public function changeStatus(Status $status) {
-        if (!$this-&gt;status-&gt;canBeChangedTo($status)) {
-            throw new WrongStatusChangeDirection();
-        }
-        $this-&gt;status = $status;
-
-        $this-&gt;registerEvent(
-            new BillStatusWasChangedEvent($bill, $status)
-        );
     }
 }
 </pre>
@@ -1179,15 +1260,13 @@ class SqlBillRepository implements BillRepositoryInterface
         <pre class="highlight php">class AddressDto
 {
     public $country;
-
     public $city;
-
     public $zip;
-
     public $lines = [];
 
     public function load($data)
     {
+        $this->country = $data['country'];
         // ...
     }
 
@@ -1197,6 +1276,19 @@ class SqlBillRepository implements BillRepositoryInterface
     }
 }
 </pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class ClientController
+{
+    public function actionChangeAddress($client_id)
+    {
+        $dto = AddressDto::fromRequest($this-&gt;request);
+        $this-&gt;clientRepository-&gt;changeAddress($client_id, $dto);
+
+        return $client_id;
+    }
+}</pre>
         </section>
 
         <section>
@@ -1215,19 +1307,6 @@ class SqlBillRepository implements BillRepositoryInterface
         $client-&gt;changeAddress($address);
 
         $this-&gt;clientRepository-&gt;update($client);
-    }
-}</pre>
-        </section>
-
-        <section>
-<pre class="highlight php">class ClientController
-{
-    public function actionChangeAddress($client_id)
-    {
-        $dto = AddressDto::fromRequest($this-&gt;request);
-        $this-&gt;clientRepository-&gt;changeAddress($client_id, $dto);
-
-        return $client_id;
     }
 }</pre>
         </section>
@@ -1321,7 +1400,7 @@ class SqlBillRepository implements BillRepositoryInterface
             </ul>
         </section>
 
-        <section>
+        <section data-state="hide-slide-number">
             <h3>Время вопросов</h3>
 
             <table>
@@ -1335,6 +1414,10 @@ class SqlBillRepository implements BillRepositoryInterface
                     </td>
                 </tr>
             </table>
+        </section>
+
+        <section class="title-slide" data-background-image="coffee_break.png" data-state="coffee hide-slide-number">
+
         </section>
     </div>
 </div>

@@ -9,6 +9,22 @@
     color: red !important;
 }
 
+html.coffee div.slide-background.present {
+    background-position: center;
+    background-repeat: repeat-x;
+}
+
+html.hide-slide-number div.slide-number {
+    display: none !important;
+}
+
+.reveal .slide-background {
+    background-position: left center;
+    background-image: url(../slide_background.png);
+    background-size: auto 100%;
+    background-repeat: repeat-x;
+}
+
 section.title-slide {
     background: rgba(0, 0, 0, 0);
 }
@@ -66,11 +82,11 @@ section.title-slide {
 
 .reveal .slide-number {
     position: absolute;
-    top: .5em;
-    right: .5em;
+    top: .75em;
+    right: 2em;
     bottom: inherit;
-    background: rgba(255, 255, 255, 0.3);
-    font-size: 200%;
+    background: rgba(255, 255, 255, 0);
+    font-size: 1em;
     color: #00BCD4;
     text-shadow: #607D8B 1px 1px;
 }
