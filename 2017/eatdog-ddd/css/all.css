@@ -1854,8 +1854,13 @@ body {
 
 .reveal {
     font-family: "Bandera Pro Medium";
-    color: #262626;
+    /*color: #262626;*/
 }
+
+/* bold code
+.reveal pre.highlight.php {*/
+    /*font-weight: 600;*/
+/*}*/
 
 .todo {}
 
@@ -1864,9 +1869,9 @@ body {
     color: red !important;
 }
 
-html.coffee div.slide-background.present {
+html.bg-centered div.slide-background.present {
     background-position: center;
-    background-repeat: repeat-x;
+    background-repeat: no-repeat;
 }
 
 html.hide-slide-number div.slide-number {
@@ -1988,10 +1993,6 @@ span.comment::after {
 span.comment {
     color: red;
     font-size: 50%
-}
-
-.reveal pre.highlight.php {
-    font-weight: 600;
 }
 
 .reveal .slides section .fragment.highlight-tomato,
