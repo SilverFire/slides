@@ -6,15 +6,12 @@ section.title-slide {
     background: rgba(255, 255, 255, 0.4);
 }
 
-.title-slide h1, .title-slide h2 {
-    font-size: 100% !important;
-    color: #fff !important;
-    text-shadow: 0 0 15px black !important;
+.title-slide h1 {
+    font-size: 160% !important;
 }
 
-.title-slide a {
-    color: #215bff !important;
-    text-shadow: 0 0 15px #ffffff !important;
+.title-slide h2 {
+    font-size: 140% !important;
 }
 
 .final-slide h1 {
