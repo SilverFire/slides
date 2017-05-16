@@ -70,7 +70,7 @@
                 </section>
 
                 <section>
-                    <h3>Why try to optimize?</h3>
+                    <h3>Why optimizing?</h3>
 
                     <ul>
                         <li class="fragment" data-fragment-index="1">faster response</li>
@@ -88,18 +88,18 @@
                 </section>
 
                 <section>
-                    <p>Profilers is a source of knowledge on:</p>
+                    <p>Profilers are a source of knowledge on:</p>
                     <ul>
                         <li>where</li>
                         <li>on which operations</li>
                         <li>and how much</li>
                     </ul>
-                    <p>resources are spent during application run</p>
+                    <p>resources are spent during an application run</p>
                 </section>
 
                 <section>
-                    <h4>Ha, I don't need profiler to know where a bottleneck is.</h4>
-                    <h4>I'll fix it now.</h4>
+                    <h4>Ha, I don't need profiler to know where the bottleneck is.</h4>
+                    <h4>I'll fix it right now.</h4>
 
                     <p class="fragment" data-fragment-index="1">
                         Nope. Probably nope. The whole application optimization
@@ -114,7 +114,7 @@
                         <li class="fragment" data-fragment-index="1">execution time</li>
                         <li class="fragment" data-fragment-index="2">CPU time</li>
                         <li class="fragment" data-fragment-index="3">memory usage</li>
-                        <li class="fragment" data-fragment-index="4">time of disk operations (IO)</li>
+                        <li class="fragment" data-fragment-index="4">disk operations time (IO)</li>
                         <li class="fragment" data-fragment-index="5">network time</li>
                         <li class="fragment" data-fragment-index="6">DBMS response time*</li>
                     </ul>
@@ -125,7 +125,7 @@
 
                     <ul>
                         <li>Profiler is a special C app, compiled as PHP extension</li>
-                        <li>Runs on demand or for every request and counts everything</li>
+                        <li>Runs on demand or for every request and records metrics necessary.</li>
                         <li>Records data in a profiling log</li>
                     </ul>
                 </section>
@@ -169,7 +169,7 @@
                     <h2>Why not?</h2>
                     <ul>
                         <li class="fragment" data-fragment-index="1">huge overhead (app execution time &times; 2+)</li>
-                        <li class="fragment" data-fragment-index="2">optimization for XDebug is 90% useless when it's get disabled</li>
+                        <li class="fragment" data-fragment-index="2">optimization for XDebug is 90% useless for when it gets disabled</li>
                         <li class="fragment" data-fragment-index="3">not for production server</li>
                     </ul>
                 </section>
@@ -241,7 +241,7 @@
 
                             </div>
                         </li>
-                        <li>can measure execution and CPU time and memory<span class="fragment" data-fragment-index="2">, but it's usually enough</span></li>
+                        <li>can measure execution and CPU time and memory<span class="fragment" data-fragment-index="2">, but usually it's enough</span></li>
                     </ul>
                 </section>
 
@@ -304,17 +304,17 @@ $xhprof_data = xhprof_disable();</pre>
                     <p class="fragment small" data-fragment-index="3">
                         These PHP files are available in
                         <a href="https://github.com/phacility/xhprof/tree/master/xhprof_lib/utils">XHprof repository</a>.
-                        You can either require them or put it in the project and even modify them.
+                        You can either require them or put them in the project. You can even modify them.
                     </p>
                 </section>
 
                 <section>
-                    <h3>And how to view?</h3>
+                    <h3>How to check results?</h3>
 
                     <p>
                         Take <strong>xhprof_lib</strong> and <strong>xhprof_html</strong> directories from the same
                         <a href="https://github.com/phacility/xhprof/tree/master/xhprof_lib/utils">repo</a>,
-                        put them close and start a web-server with root in <strong>xhprof_html</strong>.
+                        and start a web-server with root in <strong>xhprof_html</strong>.
                     </p>
                 </section>
 
@@ -378,7 +378,7 @@ $xhprof_data = xhprof_disable();</pre>
                 </section>
 
                 <section>
-                    <p>Drawer works on PHP and it's OpenSource so you can easily add CRU, RAM usage whatever.</p>
+                    <p>Drawer uses PHP and it's OpenSource so you can easily add CPU, RAM usage or whatever.</p>
                 </section>
 
                 <section>
@@ -392,7 +392,7 @@ $xhprof_data = xhprof_disable();</pre>
 
                 <section>
                     <ul>
-                        <li>Started as XHprof fork, but was rewritten a lot</li>
+                        <li>Started as XHprof fork, but was rewritten</li>
                         <li>Is a product of Sensio Labs</li>
                         <li>Small overhead</li>
                         <li>Can be used on production servers</li>
@@ -481,9 +481,22 @@ $xhprof_data = xhprof_disable();</pre>
                     <h4>What should we profile first?</h4>
 
                     <ul>
+                        <li>Things that are slow</li>
                         <li>Application initialization</li>
-                        <li>Main module pages</li>
-                        <li>Things that work slow</li>
+                        <li>Popular pages</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Profile analyzing</h4>
+
+                    <ul>
+                        <li>Follow the hot path</li>
+                        <li>Think what causes the result</li>
+                        <li>Find the right method to blame</li>
+                        <li>Fix it</li>
+                        <li>???</li>
+                        <li>PROFIT!</li>
                     </ul>
                 </section>
 
@@ -494,7 +507,7 @@ $xhprof_data = xhprof_disable();</pre>
                         <li>Bad/complex algorithms</li>
                         <li>Nested loops</li>
                         <li>Disk IO</li>
-                        <li>Bas SQL queries</li>
+                        <li>Bad SQL queries</li>
                         <li>Communication with the Universe</li>
                         <li>Console commands execution</li>
                     </ul>
@@ -542,6 +555,7 @@ $xhprof_data = xhprof_disable();</pre>
                     <h3>Communication with the Universe</h3>
 
                     <ul>
+                        <li>SSL handshake takes much</li>
                         <li>Be prepared, your endpoint will get down</li>
                         <li>Async where possible (AMQP, RabbitMQ)</li>
                     </ul>
@@ -558,6 +572,40 @@ $xhprof_data = xhprof_disable();</pre>
                 </section>
 
                 <section>
+                    <h3>Time for a small example</h3>
+                </section>
+
+                <section>
+                    <img src="stack1.png" style="max-height: 700px"/>
+                </section>
+
+                <section>
+                    <h3>Checking the SQL query</h3>
+
+                    <pre class="highlight">SELECT  *
+FROM    sale
+WHERE   date > '2017-04-01'::datetime
+    AND date < '2017-05-01'::datetime;</pre>
+
+                    <ul>
+                        <li class="fragment" data-fragment-index="0">No indices?</li>
+                        <li class="fragment" data-fragment-index="1">To much data to return?</li>
+                        <li class="fragment" data-fragment-index="2">Slow network connection to DBMS?</li>
+                        <li class="fragment" data-fragment-index="3">Table is locked too often?</li>
+                        <li class="fragment" data-fragment-index="4">Combination of the above?</li>
+                        <li class="fragment" data-fragment-index="5">Everything above is wrong?</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="stack1.png" />
+                </section>
+
+                <section>
+                    <img src="stack2.png" />
+                </section>
+
+                <section>
                     <h3>Profilers on production</h3>
 
                     <ul>
@@ -571,7 +619,7 @@ $xhprof_data = xhprof_disable();</pre>
 
                     <ul>
                         <li>Typical problems are already solved</li>
-                        <li>Inspiration for a good code</li>
+                        <li>Inspiration for a good code and/or performance tricks</li>
                         <li>Debug panel</li>
                     </ul>
                 </section>
@@ -612,10 +660,10 @@ $xhprof_data = xhprof_disable();</pre>
                     <h2>We should try to:</h2>
 
                     <ul>
-                        <li>Remember about architecture importance and clear code</li>
+                        <li>Remember about architecture importance and clean code</li>
                         <li>Avoid god classes and methods</li>
                         <li>Remember about algorithms complexity</li>
-                        <li class="fragment" data-fragment-index="1">Don't speed too much time on early optimization</li>
+                        <li class="fragment" data-fragment-index="1">Don't spend too much time on early optimization</li>
                     </ul>
                 </section>
 
