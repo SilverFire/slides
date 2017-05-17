@@ -6,6 +6,11 @@ section.title-slide {
     background: rgba(255, 255, 255, 0.4);
 }
 
+section.final-slide img,
+section.title-slide img {
+    vertical-align: middle;
+}
+
 .title-slide h1 {
     font-size: 160% !important;
 }
