@@ -23,7 +23,7 @@
     <body>
         <div class="reveal">
             <div class="slides">
-                <section class="title-slide" data-background="title-slide.jpg">
+                <section class="title-slide">
                     <h1>PHP profiling</h1>
                     <h2>XDebug, XHprof, Blackfire</h2>
 
@@ -711,15 +711,12 @@ WHERE   date > '2017-04-01'::datetime
         <script src="js/all.js"></script>
 
         <script>
-
-            // Full list of configuration options available here:
-            // https://github.com/hakimel/reveal.js#configuration
             Reveal.initialize({
                 controls: true,
                 progress: true,
                 history: true,
                 center: true,
-                margin: 0.05,
+                margin: 0.1,
                 slideNumber: true,
 
                 theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
@@ -736,7 +733,7 @@ WHERE   date > '2017-04-01'::datetime
                             });
                         }
                     },
-                    { src: 'js/reveal/notes/notes.js', async: true},
+                    {src: 'js/reveal/notes/notes.js', async: true}
                 ]
             });
         </script>
