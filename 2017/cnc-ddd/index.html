@@ -1,0 +1,1477 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Просто о сложном - Domain Driven Design</title>
+
+    <meta name="description" content="Слайды к презентации о применении подхода Domain Driven Design">
+    <meta name="author" content="Дмитрий Науменко">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/all.css">
+
+    <script>
+        document.write('<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+    </script>
+</head>
+
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section class="title-slide">
+            <h1>Domain Driven Design</h1>
+            <h4>просто о сложном</h4>
+
+            <br/>
+            <br/>
+            <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
+            <p>
+                <small>
+                    <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
+                </small>
+            </p>
+        </section>
+
+        <section>
+            <h3>Disclaimer</h3>
+
+            <ul>
+                <li>Тема очень глубокая, я расскажу самые базовые вещи за 40 минут</li>
+                <li>Тайминг &mdash; 20 секунд на слайд</li>
+                <li>Будет много кода</li>
+                <li>Многое упрощено для ясности</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>План на сегодня</h3>
+
+            <ul>
+                <li>Узнать о понятии DDD</li>
+                <li>Познакомиться с элементами DDD</li>
+                <li>Итеративно отрефакторить приложение</li>
+                <li>Рассмотреть преимущества и недостатки</li>
+                <li>Сделать выводы</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Сложность</h2>
+            <h4>С какой сложностью мы чаще всего сталкиваемся?</h4>
+        </section>
+
+        <section>
+            <h4>Сложность понимания &rarr; сложность поддержки</h4>
+        </section>
+
+        <section>
+            <h3>Откуда берётся сложность?</h3>
+
+            <ul>
+                <li>Сложность реального мира</li>
+                <li class="fragment" data-fragment-index="1">Гибкость программы</li>
+                <li class="fragment" data-fragment-index="2">Проблема описания поведения системы</li>
+                <li class="fragment" data-fragment-index="3">Работа над проектом с <u>изменяющимися требованиями</u></li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Как часто <u>изменяются требования</u>?</h4>
+
+            <h2 class="fragment" data-fragment-index="1">
+                <span class="fragment semi-fade-out" data-fragment-index="2">Часто</span>
+            </h2>
+            <h2 class="fragment fade-up" data-fragment-index="2">Постоянно</h2>
+        </section>
+
+        <section>
+            <p>
+                Было бы круто <span class="text-green">отображать</span> бизнес-процессы в архитектуре
+                и <span class="text-green">реагировать</span> на это без существенного увеличения <b>сложности</b>.
+            </p>
+        </section>
+
+        <section>
+            <h3>DDD &ndash; Domain Driven Design</h3>
+
+            <p>Набор подходов для организации кода в системах со сложной предметной областью</p>
+        </section>
+
+        <section>
+            <h3>Ключевые концепции:</h3>
+
+            <ul>
+                <li>Domain</li>
+                <li>Ubiquitous Language (Единый язык домена)</li>
+                <li>Model-Driven Design (Проектирование по модели)</li>
+                <li>
+                    Шаблоны проектирования:
+                    <ul style="margin: 0">
+                        <li>Entity</li>
+                        <li>Value Object</li>
+                        <li>Aggregate</li>
+                        <li>Repository</li>
+                        <li>Service</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Домен</h3>
+
+            <p>Сущности и действия реального мира, которые нужно автоматизировать</p>
+        </section>
+
+        <section>
+            <h3>Счёт на оплату</h3>
+        </section>
+
+        <section>
+            <p>Работа с доменом начинается с анализа предметной области и составления требований</p>
+        </section>
+
+        <section>
+            <h3>Domain experts</h3>
+
+            <ul>
+                <li>Знают, как работает домен и его бизнес-процессы</li>
+                <li class="fragment" data-fragment-index="1">Упускают "очевидные" детали</li>
+                <li class="fragment" data-fragment-index="2">Ничего не знают о программировании и DDD</li>
+            </ul>
+
+        </section>
+
+        <section>
+            <blockquote>Создаём счёт, добавляем в него товары и выставляем его клиенту.</blockquote>
+        </section>
+
+        <section>
+            <h3>Наши задачи:</h3>
+
+            <ul>
+                <li>Добыть знания о домене</li>
+                <li>Выделить общие случаи из частных</li>
+                <li>Понять, что из сказанного &mdash; лишнее</li>
+                <li class="fragment strike" data-fragment-index="1">Научить <b>их</b> изъясняться на <u>нашем</u> языке
+                </li>
+                <li class="fragment" data-fragment-index="1">Научиться изъясняться на <u>их</u> языке</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Единый язык домена</h2>
+
+            <p>Набор терминов, применяемых в модели домена для объяснения связей и действий</p>
+        </section>
+
+        <section>
+            <h2>Зачем?</h2>
+
+            <ul>
+                <li>называть вещи своими именами</li>
+                <li>иметь в команде единую терминологию</li>
+            </ul>
+        </section>
+
+        <section>
+            <blockquote>
+                <i>Создаём</i> <u>счёт</u>, <i>добавляем</i> в него <u>товары</u> и <i>выставляем</i> его <u>клиенту</u>.
+            </blockquote>
+
+            <h3>Извлечение скрытого смысла</h3>
+
+            <ul>
+                <li>Какие есть характеристики счёта?</li>
+                <li>Что может быть товаром?</li>
+                <li>Какие характеристики товара важны?</li>
+                <li>Что значит "выставить счёт"?</li>
+                <li>Что мы знаем о клиенте?</li>
+                <li>...</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="bill_product_client_0.png">
+        </section>
+
+        <section>
+            <img src="mvc.png" />
+        </section>
+
+        <section>
+            <h3>Начнём по-простому</h3>
+
+            <pre class="highlight php">
+class BillController
+{
+    public function actionCreate($client_id, array $item_ids)
+    {
+        $client = Client::find()-&gt;byId($client_id)-&gt;one();
+        if (!$client) { throw new NotFoundException(&apos;No client&apos;); }
+
+        $bill = new Bill();
+        $bill-&gt;client = $client;
+        $bill-&gt;status = &apos;new&apos;;
+
+        $items = Item::find()-&gt;byId($item_ids)-&gt;all();
+        if (!$items) { throw new NotFoundException(&apos;No items&apos;); }
+
+        $bill-&gt;items = $items;
+        foreach ($bill-&gt;items as $item) {
+            $bill-&gt;sum += $item-&gt;price;
+        }
+        $bill-&gt;save();
+        $this-&gt;notifyBillCreated($client-&gt;email, $bill);
+        $this-&gt;log-&gt;info(&apos;Created bill &apos; . $bill-&gt;id);
+
+        return $this-&gt;render(&apos;bill&apos;, [&apos;bill&apos; =&gt; $bill]);
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <blockquote>Само собой, товары в счёт можно добавлять и удалять, если счёт еще не выставлен</blockquote>
+        </section>
+
+        <section>
+                    <pre class="highlight php">
+class BillController
+{
+    public function actionAddItem($bill_id, $item_id = null)
+    {
+        $bill = Bill::find()-&gt;byId($bill_id)-&gt;one();
+        if (!$bill) { throw new NotFoundException(&apos;No bill&apos;); }
+        if ($bill-&gt;status !== &apos;new&apos;) { throw new HttpException(403); }
+
+        $item = Item::find()-&gt;byId($item_id)-&gt;one();
+        if (!$item) { throw new NotFoundException(&apos;No item&apos;); }
+
+        $bill-&gt;items[] = $item;
+        $bill-&gt;calculateSum();
+
+        $this-&gt;log-&gt;info(&apos;Updated bill &apos; . $bill-&gt;id);
+
+        $bill-&gt;save();
+
+        return $this-&gt;render(&apos;bill&apos;, [&apos;bill&apos; =&gt; $bill]);
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h3>Ок :)</h3>
+
+            <img src="i_v_prod.jpg" alt="">
+        </section>
+
+        <section>
+            <h3>Преимущества:</h3>
+
+            <ul>
+                <li>Вся логика рядом, легко понять что происходит</li>
+                <li>Нет ничего лишнего</li>
+                <li>Низкий входной порог</li>
+                <li>Легко дописать еще пару-тройку if-ов</li>
+                <li class="fragment" data-fragment-index="1">Это &ndash; паттерн <a
+                        href="https://martinfowler.com/eaaCatalog/transactionScript.html">Transaction script</a> :)
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Недостатки:</h3>
+
+            <ul>
+                <li>Всё перемешано</li>
+                <li>Сложно переиспользовать</li>
+                <li>Тесты? Лолшто?</li>
+                <li>Дописать еще пару if'ов и будет месиво</li>
+            </ul>
+        </section>
+
+        <section>
+            Может вынести логику из контроллера в модель <strong>Bill</strong>?
+        </section>
+
+        <section>
+            <h3>Fat controller & Slim model</h3>
+            <h4>VS</h4>
+            <h3>Slim controller & Fat model</h3>
+        </section>
+
+        <section>
+            <h3>Table Driven Domain model</h3>
+
+            <ul>
+                <li>Модель домена = модель данных</li>
+                <li>Каждый объект модели представлен таблицей</li>
+                <li>Объекты описывают связи БД</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>a.k.a</h4>
+            <h2>ActiveRecord</h2>
+        </section>
+
+        <section>
+            <h3>Плюсы:</h3>
+
+            <ul>
+                <li>Нужно минимум для старта</li>
+                <li>Волшебно простой интерфейс</li>
+                <li>Низкий порог вхождения</li>
+                <li>Нет лишних преобразований</li>
+                <li>Хорош для простого CRUD</li>
+                <li>Легкая работа со связями (relations)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Минусы:</h3>
+
+            <ul>
+                <li>Жесткая связь с таблицей в БД</li>
+                <li>Изменение таблицы &rarr; изменение кода</li>
+                <li>Привязка типов данных к типам столбцов</li>
+                <li>Сложность использования разных источников данных</li>
+                <li>Нарушение Single Responsibility</li>
+                <li>Больше логики &mdash; сложнее поддерживать</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>MVC</h2>
+            <h3>M &ne; Модель ActiveRecord</h3>
+
+            <h3>M &mdash; это целый Мир!</h3>
+        </section>
+
+        <section>
+            <h4>We need to go deeper</h4>
+
+            <h3>Забудем на время о контроллерах</h3>
+        </section>
+
+        <section>
+            <img src="layers.png">
+        </section>
+
+        <section>
+            <h2>Domain Layer</h2>
+
+            <ul>
+                <li>Является представлением предметной области в коде</li>
+                <li>Ничего не знает о БД или фреймворке</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Entity</h2>
+
+            <ul>
+                <li>Описывает индивидуально существующие элементы домена</li>
+                <li>Определяется по идентификатору, а не по значению атрибутов</li>
+                <li>Непрерывно и однозначно определяется на всём протяжении существования</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="item_client.png" alt="">
+        </section>
+
+        <section>
+            <pre class="highlight php">
+class Client
+{
+    private $id;
+    private $name;
+    private $address;
+    private $phone;
+
+    public function __construct($id, $name, $address, $phone)
+    {
+        if (!preg_match(&apos;/\+\d+/&apos;, $phone)) {
+            throw new ValidationException($phone);
+        }
+        $this-&gt;phone = $phone;
+
+        // ... name, address
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+new Client(
+    UUID::create(),
+    &apos;Фамилия Имя Отчество&apos;,
+    &apos;ул. Кодеров, д. 0xFF&apos;,
+    &apos;+380441234567&apos;
+);
+</pre>
+        </section>
+
+        <section>
+            <h4>Name, address, phone</h4>
+            <ul>
+                <li>Целостность</li>
+                <li data-fragment-index="1" class="fragment">Валидация</li>
+                <li data-fragment-index="2" class="fragment">Типизация</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Value Object</h2>
+
+            <ul>
+                <li>Не обладает идентификатором</li>
+                <li>Описывает элементы домена, полностью определяемые свойствами</li>
+                <li>Неизменяемый после создания</li>
+                <li>Используется для типизации и структурирования данных</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="address.png"/>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+class Address
+{
+    private $country;
+    private $city;
+    private $zip;
+    private $lines;
+
+    public function __construct($country, $city, $zip, $lines)
+    {
+        $this-&gt;country = $this-&gt;validateCountry($country);
+        $this-&gt;city = $this-&gt;validateCity($city);
+        $this-&gt;zip = $this-&gt;validatePhone($zip);
+        $this-&gt;lines = $this-&gt;validateLines($lines);
+    }
+
+    private function validateZip($zip)
+    {
+        if (!preg_match(&apos;/^\d+$/&apos;, $zip) {
+            throw new ZipValidationException($zip);
+        }
+
+        return $zip;
+    }
+
+    // ...
+}
+</pre>
+        </section>
+
+        <section>
+            <img src="client_vo.png" alt="">
+        </section>
+
+        <section>
+            <pre class="highlight php">
+new Client(
+    UUID::create(),
+    new Name('Фамилия', 'Имя', 'Отчество'),
+    new Address('Украина', 'Киев', '01001', ['ул. Кодеров, д. 0xFF']),
+    new Phone('380', '44', '1234567')
+);
+</pre>
+        </section>
+
+        <section>
+            <h3>Entity vs Value Object</h3>
+
+            <img src="uah.jpg" class="fragment" data-fragment-index="1" />
+        </section>
+
+        <section>
+            <h3>Нужно ли отличать две купюры одного номинала?</h3>
+
+            <ul class="fragment" data-fragment-index="1">
+                <li>Кассиру не нужно &mdash; Value Object</li>
+                <li>Эксперту-криминалисту нужно &mdash; Entity</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Aggregate</h3>
+
+            <ul>
+                <li>Собирательная сущность которая считается единым целым</li>
+                <li>Состоит из VO и Entity</li>
+                <li>Определяется по идентификатору</li>
+                <li>Является границей транзакции при изменении данных</li>
+                <li>Другие элементы домена не могут ссылаться на внутренности агрегата</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Агрегат &mdash; это граница уникальности для Entity</h4>
+
+            <ul>
+                <li>Один Entity не может быть в двух агрегатах одновременно</li>
+                <li class="fragment" data-fragment-index="1">Такой Entity должен стать агрегатом</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Client &mdash; это Aggregate</h3>
+
+            <img src="client_vo.png" alt="">
+        </section>
+
+        <section>
+            <img src="bill.png" alt="">
+        </section>
+
+        <section>
+            <blockquote>Каждого товара может быть больше чем 1 единица в счёте!</blockquote>
+            <br /><br />
+            <h3>Уточняем детали:</h3>
+            <ul>
+                <li>Нужно учитывать валюту?</li>
+                <li>Меньше целой единицы можно?</li>
+                <li>Единицы измерения &mdash; шт, метры, литры?</li>
+                <li>...</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="bill_w_vo.png" />
+        </section>
+
+        <section>
+            <h4>Агрегат &ndash; Item</h4>
+
+            <pre class="highlight php">
+class Item {
+    private $id;
+    private $name;
+    private $description;
+    private $price;
+
+    public function __construct($id, $name, Money $price) {
+        $this-&gt;id = $id;
+        $this-&gt;name = $name;
+        $this-&gt;price = $price;
+    }
+
+    public function getId() {};
+
+    public function getDescription() {};
+    public function setDescription($description) {};
+
+    public function getPrice() {};
+    public function setPrice(Money $price) {};
+
+    public function getName() {};
+    public function setName() {};
+}
+</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">
+$item = new Item(UUID::create(), &apos;Silver bullet&apos;, Money::USD(1000));
+$item->setDescription('This bullet is a killing feature!');
+</pre>
+        </section>
+
+        <section>
+            <h3>Good practices</h3>
+
+            <ul>
+                <li>В конструкторе обязательные свойства</li>
+                <li>Необязательные &mdash; в сеттеры</li>
+                <li>Закрыто для изменения всё, что не изменяется по логике домена</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Entity &ndash; Position</h4>
+
+        <pre class="highlight php">
+class Position
+{
+    protected $item;
+    protected $quantity;
+
+    public function __construct(Item $item, $quantity = 1) {
+        $this-&gt;item = $item;
+        $this-&gt;quantity = $quantity;
+    }
+
+    public function getItem() {}
+
+    public function getQuantity() {}
+    public function setQuantity($quantity) {}
+
+    public function getPrice() {}
+    public function getAmount() {}
+}
+</pre>
+        </section>
+
+        <section>
+            <h4>Агрегат &ndash; Bill</h4>
+
+            <pre class="highlight php">
+class Bill
+{
+    protected $id;
+    protected $client;
+    protected $positions;
+    protected $status;
+
+    public function __construct($id, Client $client)
+    {
+        $this-&gt;id = $id;
+        $this-&gt;client = $client;
+    }
+
+    public function getId() {}
+    public function getClient() {}
+
+    public function getPositions() {}
+    public function setPositions() {}
+
+    public function getStatus() {}
+    public function setStatus($status) {}
+}      </pre>
+        </section>
+
+        <section>
+<pre class="highlight php">
+$item = new Item(UUID::create(), &apos;Silver bullet&apos;, Money::USD(1000));
+$quantity = 2;
+
+$bill = new Bill(UUID::create(), $client);
+$bill->setStatus('new');
+$bill->setPositions([new Position($item, $quantity)]);
+</pre>
+
+<pre class="highlight php fragment" data-fragment-index="1">
+// Заменим позицию в счёте
+$anotherPosition = new Position(
+    new Item(UUID::create(), &apos;Rage cup&apos;, Money::USD(500))
+);
+$bill->setPositions([$anotherPosition]);
+</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+$bill->setPositions([$anotherPosition]);
+$bill->setStatus('processing');
+
+// VS
+
+$bill->positions = [$anotherPosition];
+$bill->status = 'processing';</pre>
+        </section>
+
+        <section>
+            <h1>???</h1>
+        </section>
+
+        <section>
+            <h3>Анемия модели</h3>
+
+            <ul>
+                <li>Модель отображает связи</li>
+                <li>В модели есть геттеры и сеттеры для свойств</li>
+                <li>Модель не описывает действий и логики домена</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Value Object &ndash; Status</h4>
+
+            <pre class="highlight php">abstract class Status {
+    protected $name;
+    public function getName() {
+        return $this-&gt;name;
+    }
+
+    protected $next = [];
+    public function canBeChangedTo(self $status) {
+        return in_array(get_class($status), $this-&gt;next, true);
+    }
+
+    public function allowsModification() {
+        return true;
+    }
+}</pre>
+
+            <pre class="highlight php">class NewStatus extends Status {
+    protected $name = 'new';
+    protected $next = [ProcessingStatus::class, RejectedStatus::class];
+}
+</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+class Bill
+{
+    public function changeStatus(Status $status) {
+        if (!$this-&gt;status-&gt;canBeChangedTo($status)) {
+            throw new WrongStatusChangeDirection();
+        }
+
+        $this-&gt;status = $status;
+    }
+
+    public function addPosition(Position $position) {
+        if (!$this-&gt;status-&gt;allowsModification()) {
+            throw new ModificationProhibitedException();
+        }
+
+        $this-&gt;positions-&gt;push($position);
+    }
+
+    public function removePosition(Position $position) {
+        // ...
+    }
+}
+            </pre>
+        </section>
+
+        <section>
+<pre class="highlight php">abstract class Status
+{
+    // ...
+
+    public function ensureCanBeChangedTo(self $status)
+    {
+        if (!$this-&gt;canBeChangedTo($status)) {
+            throw new WrongStatusChangeDirectionException();
+        }
+    }
+
+    public function ensureAllowsModification()
+    {
+        if (!$this-&gt;allowsModification()) {
+            throw new ModificationProhibitedException();
+        }
+    }
+}</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class Bill
+{
+    public function changeStatus(Status $status)
+    {
+        $this-&gt;status-&gt;ensureCanBeChangedTo($status);
+        $this-&gt;status = $status;
+    }
+
+    public function addPosition(Position $position)
+    {
+        $this-&gt;status-&gt;ensureAllowsModification();
+        $this-&gt;positions-&gt;push($position);
+    }
+
+    public function removePosition(Position $position)
+    {
+        $this-&gt;status-&gt;ensureAllowsModification();
+        // ...
+    }
+}</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+$bill = new Bill(UUID::create(), $client);
+
+$bill->addPosition(new Position($item, $quantity));
+$bill->addPosition($anotherPosition);
+$bill->changeStatus(new ProcessingStatus());
+// save...
+</pre>
+        </section>
+
+        <section>
+            <h3>Как это всё связать с БД?</h3>
+        </section>
+
+        <section>
+            <h3>ActiveRecord || DDD way?</h3>
+        </section>
+
+        <section>
+            <h2>Repository</h2>
+
+            <h3>Плюсы:</h3>
+            <ul>
+                <li>Описывается интерфейсом</li>
+                <li>Объекты не зависят от структуры БД и типов полей</li>
+                <li>В рамках доменного слоя реализация не важна</li>
+                <li>Может быть реализован для разных хранилищ</li>
+                <li>Удобно тестировать</li>
+                <li>Хорошо ложится в DDD</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Repository</h2>
+
+            <h3>Минусы:</h3>
+            <ul>
+                <li>Сложно со старта</li>
+                <li>Входной порог существенно выше</li>
+                <li>Придётся писать гидраторы</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="domain_filled.png" />
+        </section>
+
+        <section>
+            <h3>Repository Interface Level</h3>
+
+            <ul>
+                <li>Только интерфейсы репозиториев без реализаций</li>
+                <li>Репозитории создаются только для агрегатов</li>
+            </ul>
+        </section>
+
+        <section>
+<pre class="highlight php">
+interface BillRepositoryInterface
+{
+    /** @throws BillNotFoundException when no bill exists */
+    public function findById($id);
+    public function findByStatus(Status $status);
+    public function insert(Bill $bill);
+    public function update(Bill $bill);
+}
+</pre>
+        </section>
+
+        <section>
+            <h4>Реализация BillRepositoryInterface</h4>
+
+            <ul>
+                <li>Относится к инфраструктурному слою</li>
+                <li>Описывает работу с хранилищем</li>
+                <li>Реализацией может быть несколько</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+class SqlBillRepository implements BillRepositoryInterface
+{
+    public function __construct(Connection $db) {
+        $this-&gt;db = $db;
+    }
+
+    public function create(Bill $bill) {
+        $this-&gt;db-&gt;transactionBegin();
+
+        $this-&gt;db-&gt;insert(&apos;bill&apos;, [
+            &apos;id&apos; =&gt; $bill-&gt;getId(),
+            &apos;client_id&apos; =&gt; $bill-&gt;getClient()-&gt;getId(),
+            &apos;status&apos; =&gt; $bill-&gt;getStatus()
+        ]);
+
+        foreach ($bill-&gt;getPositions() as $position) {
+            $this-&gt;db-&gt;insert(&apos;bill_position&apos;, [
+                &apos;item_id&apos; =&gt; $position-&gt;getItem()-&gt;getId(),
+                &apos;quantity&apos; =&gt; $position-&gt;getQuantity(),
+            ]);
+        }
+
+        $this-&gt;db-&gt;transactionCommit();
+    }
+}
+</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillController
+{
+    public function actionCreate($client_id)
+    {
+        $client = $this->clientRepository->findById($client_id);
+        $bill = new Bill(UUID::create(), $client);
+        $bill->changeStatus(new NewStatus());
+        $this-&gt;billRepository-&gt;create($bill);
+
+        $this->sendEmail(...);
+
+        return $bill-&gt;getId();
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h4>Есть некоторые проблемы:</h4>
+
+            <ul>
+                <li>Мы перепрыгнули через несколько слоев</li>
+                <li>В контроллере всё еще есть логика</li>
+                <li>Что если будет несколько точек входа?</li>
+                <li>Тесты?</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="repository_filled.png">
+        </section>
+
+        <section>
+            <h3>Domain Services Interfaces</h3>
+
+            <ul>
+                <li>Сервисы предоставляют приложению интерфейсы для работы с доменом</li>
+                <li>Содержат методы, описывающие операции домена</li>
+                <li>Не содержат состояния</li>
+                <li>Могут обращаться к репозиториям и другим сервисам</li>
+                <li>Уносят логику из контроллеров</li>
+            </ul>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillServiceInterface
+{
+    public function create($clientId);
+    public function addPosition($id, $itemId, $quantity);
+    public function reject($id);
+    public function process($id);
+    // ...
+}</pre>
+        </section>
+
+        <section>
+            <img src="service_filled.png" />
+        </section>
+
+        <section>
+            <h3>Инфраструктурный слой</h3>
+
+            <ul>
+                <li>Содержит реализации репозиториев и сервисов</li>
+                <li>Знает о БД</li>
+                <li>Работает с IoC контейнером</li>
+            </ul>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillService
+{
+    public function __construct(
+        ClientRepositoryInterface $clientRepository,
+        BillRepositoryInterface $billRepository
+    ) {
+        $this-&gt;clientRepository = $clientRepository;
+        $this-&gt;billRepository = $billRepository;
+    }
+
+    public function create($clientId)
+    {
+        $client = $this-&gt;clientRepository-&gt;findById($clientId);
+
+        $bill = new Bill(UUID::create(), $client);
+        $bill-&gt;changeStatus(new NewStatus());
+
+        $this-&gt;billRepository-&gt;create($bill);
+
+        return $bill-&gt;getId();
+    }
+}</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillController
+{
+    public function actionCreate($client_id)
+    {
+        $billId = $this->billService->create($client_id);
+
+        return $billId;
+    }
+}</pre>
+        </section>
+
+        <section>
+            <p>Что если метод сервиса получается  сложным?</p>
+
+<pre class="highlight php">class BillService
+{
+    public function addPosition($billId, $itemId, $quantity)
+    {
+        $bill = $this-&gt;billRepository-&gt;findById($billId);
+        $item = $this-&gt;itemRepository-&gt;findById($itemId);
+
+        $bill-&gt;addPosition($item, $quantity);
+
+        foreach ($bill-&gt;getPositions() as $position) {
+            // Merge positions of the same item
+        }
+
+        $this-&gt;billRepository-&gt;update($bill);
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h4>Можно создавать более специализированные сервисы</h4>
+
+<pre class="highlight php">class BillOptimizerService
+{
+    public function mergePositions($bill)
+    {
+        $this->findSimilarPositions($bill);
+    }
+
+    private function findSimilarPositions($bill)
+    {
+        // ...
+    }
+}</pre>
+        </section>
+
+        <section>
+            <p>Что если метод сервиса получается  сложным?</p>
+
+<pre class="highlight php">class BillService
+{
+    public function addPosition($billId, $itemId, $quantity)
+    {
+        $bill = $this-&gt;billRepository-&gt;findById($billId);
+        $item = $this-&gt;itemRepository-&gt;findById($itemId);
+
+        $bill-&gt;addPosition($item, $quantity);
+        $this->billOptimizerService->mergePositions($bill);
+
+        $this-&gt;billRepository-&gt;update($bill);
+    }
+}
+</pre>
+    </section>
+
+        <section>
+            <h4>Или отдельные классы, которые хранят состояние для выполнения задачи</h4>
+
+<pre class="highlight php">class BillPositionsMerger
+{
+    public function __construct(Bill $bill)
+    {
+        $this-&gt;bill = $bill;
+    }
+
+    public function run()
+    {
+        while ($pairs = $this-&gt;findSimilarPositions()) {
+            foreach ($pairs as $pair) {
+                $this-&gt;mergePositions($pair);
+            }
+        }
+    }
+
+    private function findSimilarPositions() { ... }
+    private function mergePositions($pair) { ... }
+}
+</pre>
+        </section>
+
+        <section>
+            <p>Что если метод сервиса получается  сложным?</p>
+
+            <pre class="highlight php">class BillService
+{
+    public function addPosition($billId, $itemId, $quantity)
+    {
+        $bill = $this-&gt;billRepository-&gt;findById($billId);
+        $item = $this-&gt;itemRepository-&gt;findById($itemId);
+
+        $bill-&gt;addPosition($item, $quantity);
+        (new BillPositionMerger($bill))->run();
+
+        $this-&gt;billRepository-&gt;update($bill);
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h4>Добавим немного проверок в BillService</h4>
+
+<pre class="highlight php">class BillService
+{
+    public function reject($billId)
+    {
+        if (($bill = $this-&gt;billRepository->findById($id)) === null) {
+            return null;
+        }
+
+        $bill-&gt;changeStatus(new RejectedStatus());
+
+        if ($this-&gt;billRepository-&gt;update($bill) !== false) {
+            // аккуратно, там ^^ в случае ошибки возвращается false!
+            return null;
+        }
+
+        return true;
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h2>Exceptions</h2>
+
+            <ul>
+                <li>Метод либо выполняет работу, либо бросает исключение</li>
+                <li>Не забывать предупреждать об исключениях в PHPDoc</li>
+                <li>Название класса исключения максимально ясно описывает проблему</li>
+            </ul>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillService
+{
+    function reject()
+    {
+        $bill = $this-&gt;billRepository-&gt;findById($id);
+        $bill-&gt;changeStatus(new ProcessingStatus());
+
+        $this-&gt;billRepository-&gt;update($bill);
+
+        return true;
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h3>Реакция на смену статуса &mdash; отправка письма</h3>
+        </section>
+
+        <section>
+            <h4>Смена статуса как событие</h4>
+
+<pre class="highlight php">class Bill {
+    public function changeStatus(Status $status) {
+        $this-&gt;status-&gt;ensureCanBeChangedTo($status);
+        $this-&gt;status = $status;
+
+        $this-&gt;registerEvent(
+            new BillStatusWasChangedEvent($bill, $status)
+        );
+    }
+
+    public function registerEvent($event) { // TODO: можно вынести в trait
+        $this-&gt;events[] = $event;
+    }
+
+    public function releaseEvents() {
+        $events = $this-&gt;events;
+        $this-&gt;events = [];
+
+        return $events;
+    }
+}
+</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class BillService
+{
+    public function reject($id)
+    {
+        $bill = $this-&gt;billRepository-&gt;findById($id);
+        $bill-&gt;changeStatus(new ProcessingStatus());
+
+        $this-&gt;billRepository-&gt;update($bill);
+
+        $this->dispatcher->dispatchEvents($bill->releaseEvents());
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h3>Что если действие требует много параметров?</h3>
+        </section>
+
+        <section>
+            <pre class="highlight php">class ClientService
+{
+    public function changeAddress($id, $country, $city, $zip, $lines)
+    {
+        $client = $this-&gt;clientRepository-&gt;findById($id);
+
+        $address = new Address($country, $city, $zip, $lines);
+        $client-&gt;changeAddress($address);
+
+        $this-&gt;clientRepository-&gt;update($client);
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h4>Параметров уже многовато</h4>
+            <h5>Что делать?</h5>
+
+            <ul>
+                <li class="fragment strike" data-fragment-index="1">Создавать объект Address в контролере</li>
+                <li class="fragment strike" data-fragment-index="2">Передавать массив свойств</li>
+                <li>Написать еще один класс</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>DTO</h2>
+            <h3>Data Transfer Object</h3>
+        </section>
+        
+        <section>
+            <h3>Data Transfer Object</h3>
+
+            <ul>
+                <li>Для передачи данных между частями приложения</li>
+                <li>Не содержит логики</li>
+                <li>Типизирует набор данных</li>
+            </ul>
+        </section>
+
+        <section>
+        <pre class="highlight php">class AddressDto
+{
+    public $country;
+    public $city;
+    public $zip;
+    public $lines = [];
+
+    public function load($data)
+    {
+        $this->country = $data['country'];
+        // ...
+    }
+
+    public static function fromRequest($request)
+    {
+        return (new self())->load($request->post());
+    }
+}
+</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class ClientController
+{
+    public function actionChangeAddress($client_id)
+    {
+        $dto = AddressDto::fromRequest($this-&gt;request);
+        $this-&gt;clientRepository-&gt;changeAddress($client_id, $dto);
+
+        return $client_id;
+    }
+}</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">class ClientService
+{
+    public function changeAddress($id, AddressDto $dto)
+    {
+        $client = $this-&gt;clientRepository-&gt;findById($id);
+
+        $address = new Address(
+            $dto-&gt;country,
+            $dto-&gt;city,
+            $dto-&gt;zip,
+            $dto-&gt;lines
+        );
+        $client-&gt;changeAddress($address);
+
+        $this-&gt;clientRepository-&gt;update($client);
+    }
+}</pre>
+        </section>
+        
+        <section>
+            <img src="infrastructure_filled.png">
+        </section>
+        
+        <section>
+            <h4>Что остаётся для Application?</h4>
+
+            <ul>
+                <li>Маршрутизация запросов</li>
+                <li>Конфигурация приложения</li>
+                <li>Конфигурация инфраструктурного слоя</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Что у нас получилось?</h4>
+
+            <ul>
+                <li>Приложение разделено на независимые слои</li>
+                <li>Нет завязанности на БД, фреймворке</li>
+                <li>Код более выразительный</li>
+                <li>Чистое ООП</li>
+                <li>Каждый слой легко тестируется</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Всё ли так хорошо?</h3>
+        </section>
+
+        <section>
+            <h4>Конечно, есть и проблемы</h4>
+
+            <ul>
+                <li>Сложно понять &mdash; входной порог выше</li>
+                <li>Работа с данными описывается сложнее</li>
+                <li>Есть много нюансов реализации</li>
+                <li>Cross-cutting concerns</li>
+                <li>Оверхед для простой бизнес-логики</li>
+                <li>Переабстрагирование</li>
+                <li>Сложно натянуть на "бедную" процессами модель</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="chart.png" alt="">
+        </section>
+
+        <section>
+            <img src="chart_42.png" alt="">
+        </section>
+
+        <section>
+            <h4>DDD на 90% проектов &mdash; оверхед, который не стоит потраченных усилий</h4>
+
+            <h3 class="fragment" data-fragment-index="1">Но это не повод не учиться.</h3>
+        </section>
+
+        <section>
+            <h4>Think first. DDD &mdash; это рекомендации, а не правила.</h4>
+        </section>
+
+        <section>
+            <h3>Идеи из DDD можно использовать по кусочкам</h3>
+
+            <h4 class="fragment" data-fragment-index="1">Даже c ActiveRecord</h4>
+
+            <ul>
+                <li class="fragment" data-fragment-index="2">Entity, Aggregate &mdash; модель ActiveRecord с ясными методами</li>
+                <li class="fragment" data-fragment-index="3">DTO &mdash; формы</li>
+                <li class="fragment" data-fragment-index="4">Services &mdash; уносят сложность из контроллеров и моделей</li>
+                <li class="fragment" data-fragment-index="5">Repository &mdash; можно заменить ActiveQuery с методами, которые ясно описыают условия</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Начните с малого. И еще раз think first.</h4>
+        </section>
+
+        <section>
+            <h3>Почитать</h3>
+
+            <ul>
+                <li><a href="https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software-ebook/dp/B00794TAUG">Eric Evans &mdash; Domain-Driven Design: Tackling Complexity in the Heart of Software</a></li>
+                <li><a href="https://www.dogearpublishing.net/wordpress/domain-driven-design-reference-definitions-and-pattern-summaries-by-eric-evans/">Domain-Driven Design Reference: Definitions and Pattern Summaries Eric Evans</a></li>
+                <li><a href="https://github.com/PhpFriendsOfDdd">github.com/PhpFriendsOfDdd</a></li>
+            </ul>
+        </section>
+
+        <section data-state="hide-slide-number">
+            <h3>Время вопросов</h3>
+
+            <table>
+                <tr>
+                    <td style="width: 30%"><img src="qr.svg" style="width: 15em;" /></td>
+                    <td style="vertical-align: top;">
+                        <ul>
+                            <li><a href="https://github.com/SilverFire">SilverFire@GitHub</a></li>
+                            <li><a href="http://www.yiiframework.com/">Yii Framework</a></li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </section>
+    </div>
+</div>
+
+<script src="js/all.js"></script>
+
+<script>
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        margin: 0.1,
+        slideNumber: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            {
+                src: 'js/reveal/highlight/highlight.js',
+                async: true,
+                callback: function () {
+                    [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                        hljs.highlightBlock(v);
+                    });
+                }
+            },
+            {src: 'js/reveal/notes/notes.js', async: true}
+        ]
+    });
+</script>
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter37501675 = new Ya.Metrika({
+                id: 37501675,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/watch.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript>
+</body>
+</html>
