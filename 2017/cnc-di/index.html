@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <title>Dependency Injection, Container и Service Locator</title>
+
+        <meta name="description" content="Слайды к презентации об использовании Dependency Injection, Container и Service Locator">
+        <meta name="author" content="Дмитрий Науменко">
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="css/all.css">
+
+        <script>
+            document.write( '<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+        </script>
+    </head>
+
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section class="title-slide">
+                    <h1>Dependency Injection, DIC и Service Locator</h1>
+
+                    <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
+                    <p>
+                        <small>
+                            <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
+                        </small>
+                    </p>
+                </section>
+
+                <section>
+                    <h3>Темы на сегодня:</h3>
+                    <ul>
+                        <li>Зависимости</li>
+                        <li>Dependency Injection (DI)</li>
+                        <li>Dependency Injection Container (DIC)</li>
+                        <li>Service Locator</li>
+                        <li>Использование DI в Yii</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Будет очень много кода</h3>
+                </section>
+
+                <section>
+                    <h2>Зависимости</h2>
+
+                    <p class="big fragment" data-fragment-index="1">
+                        Класс <span class="text-green bold">A</span>
+                        <span class="bold">зависит от</span>
+                        класса <span class="text-blue bold">B</span>
+                        <br/>
+                        <img src="a_uses_b.png">
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Просто, как двери</h2>
+
+                    <p>Двери с электронным замком и кнопка открытия</p>
+
+                    <ul>
+                        <li>Кнопка обращается к приложению по HTTP</li>
+                        <li>Открываем замок, если это разрешено</li>
+                        <li>Выводим сообщение на дисплей</li>
+                    </ul>
+                </section>
+
+                <section data-background-image="cupcake.jpg" class="inverted">
+                    <h3 class="shaded">Ща запилим, будет торт!</h3>
+
+                    <!-- https://www.flickr.com/photos/zigazou76/5846249822/ -->
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+public function actionOpen() {
+    $result = false;
+    <span class="fragment highlight-current-tomato" data-fragment-index="1">$canBeOpened = HourSettings::find()->select('can_be_opened')
+                        ->where(<span class="fragment highlight-current-tomato" data-fragment-index="3">['hour' => date('H')]</span>)->scalar();</span>
+
+    <span class="fragment highlight-current-tomato" data-fragment-index="3">if ($canBeOpened) {</span>
+        <span class="fragment highlight-current-tomato" data-fragment-index="2">$fd = dio_open('<span class="fragment highlight-current-tomato" data-fragment-index="4">/dev/ttyS0</span>', O_RDWR | O_NOCTTY | O_NONBLOCK);
+        dio_fcntl($fd, F_SETFL, O_SYNC);
+        dio_tcsetattr($fd, <span class="fragment highlight-current-tomato" data-fragment-index="4">['baud' => 9600, 'bits' => 8]</span>);
+        dio_write($fd, "OPEN\n");
+        $result = dio_read($fd, 3) === "1\n";
+        dio_close($fd);</span>
+    <span class="fragment highlight-current-tomato" data-fragment-index="3">}</span>
+
+    <span class="fragment highlight-current-tomato" data-fragment-index="5">return $this->render('open', ['result' => $result]);</span>
+}
+</pre>
+
+                    <ul>
+                        <li class="fragment" data-fragment-index="1">данные</li>
+                        <li class="fragment" data-fragment-index="2">логика предметной области</li>
+                        <li class="fragment" data-fragment-index="3">бизнес-логика</li>
+                        <li class="fragment" data-fragment-index="4">конфигурация</li>
+                        <li class="fragment" data-fragment-index="5">представление</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="poopcake.jpg" />
+
+                    <!-- https://www.flickr.com/photos/sarahcb21/13070419435/ -->
+                </section>
+
+                <section>
+                    <h3>Проблемы:</h3>
+
+                    <ul>
+                        <li>Всё перемешано</li>
+                        <li>Нет архитектуры</li>
+                        <li>Тестировать крайне сложно</li>
+                        <li>В будущем &ndash; копипаста, баги, боль</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Будем трансформировать!</h3>
+                </section>
+
+                <section>
+                    <h3>Разделяем</h3>
+
+                    <pre class="highlight php">
+class DoorManager
+{
+    public function open()
+    {
+        $door = new Door();
+        return $door->open();
+    }
+}</pre>
+                    <pre class="highlight php">
+public function actionOpen()
+{
+    $doorManager = new DoorManager();
+    return $doorManager->open();
+}</pre>
+
+                    <p class="fragment" data-fragment-index="1">
+                        <span class="text-red">actionOpen()</span> зависит от <span class="text-green">DoorManager</span>
+                    </p>
+                    <p class="fragment" data-fragment-index="1">
+                        <span class="text-green">DoorManager</span> зависит от <span class="text-blue">Door</span>
+                    </p>
+                </section>
+
+                <section>
+                    <h3>Связи:</h3>
+
+                    <img src="relations.png" style="height: 500px" />
+
+                    <ul>
+                        <li>High Cohesion</li>
+                        <li>Low Coupling</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Кнопка &mdash; неактуально!</h3>
+                    <p>Выдать всем RFID и сделать логирование!</p>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+class DoorManager
+{
+    public function open(RfidKey $rfid)
+    {
+        $door = new Door();
+        $log = new EmailAccessLogger('alert@superdoors.com');
+        $auth = new RfidAuthenticator($rfid, [
+            'users' => User::find()->where(['active' => 1])->all()
+        ]);
+
+        if ($auth->canOpenDoor($door)) {
+            $log->accessGranted($door, $rfid);
+            return $door->open();
+        } else {
+            $log->accessDenied($door, $rfid);
+            return false;
+        }
+    }
+}</pre>
+                </section>
+
+                <section>
+                    <h2>Создано множество зависимостей</h2>
+
+                    <img src="door_manager.png" />
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>задача решена</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>метод open() божественный</li>
+                                    <li>порождён High Coupling</li>
+                                    <li>смешан сбор данных, бизнес-логика и конфигурация</li>
+                                    <li>убита возможность тестировать</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <h4 class="fragment" data-fragment-index="1">Ах да, двери нужно еще уметь принудительно закрывать...</h4>
+                </section>
+
+                <section data-background-image="pain.jpg" class="inverted">
+                    <h3 class="shaded">Бизнес всегда порождает
+                        <span class="fragment strike semi-fade-out" data-fragment-index="1">боль</span>
+                        <span class="fragment fade-up" data-fragment-index="1">
+                            <span class="text-green">новые требования</span>
+                        </span>
+                    </h3>
+                    <br />
+                    <br />
+                    <h3 class="fragment" data-fragment-index="2">
+                        <span style="text-decoration: underline">Плохой код</span> порождает <span class="text-red">боль</span>
+                    </h3>
+                </section>
+
+                <section>
+                    <h3>Эволюция управления зависимостями</h3>
+                </section>
+
+                <section>
+                    <h4>Инициализация в конструкторах</h4>
+
+                    <pre class="highlight php">
+class DoorManager {
+    private $door; // key, auth, log
+
+    public function __construct(RfidKey $key) {
+        $this->key = $key;
+        $this->door = new Door();
+        $this->log = new EmailAccessLogger('alert@superdoors.com');
+        $this->auth = new RfidAuthenticator($this->key, [
+            'users' => User::find()->where(['active' => 1])->all()
+        ]);
+    }
+
+    public function open() {
+        if ($this->auth->canOpenDoor($this->door)) {
+            $this->log->accessGranted($this->door, $this->rfid);
+            $this->door->open();
+        } else {
+            $this->log->accessDenied($this->door, $this->rfid);
+        }
+    }
+
+    public function close() { } // implementation
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>задача решена</li>
+                                    <li>разгрузили божественный метод </li>
+                                    <li>метод <code>close()</code> не будет копи-пастой <code>open()</code></li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>божественный конструктор класса</li>
+                                    <li>все еще смешан сбор данных, бизнес-логика и конфигурация</li>
+                                    <li>тот же High Coupling</li>
+                                    <li>возможности тестировать нет</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h4>Часть дверей переводится на магнитные замки.</h4>
+                    <h5>Протокол управления отличается.</h5>
+                </section>
+
+                <section>
+                    <h4>Возможные решения:</h4>
+
+                    <ul>
+                        <li>добавить <code>if</code> внутри объекта <code>Door()</code></li>
+                        <li>добавить <code>if</code> перед созданием объекта <code>Door()</code></li>
+                        <li>разделить проект на две ветки: <code>master</code> и <code>magnet-door-master</code></li>
+                        <li>написать <code>MagnetDoorManager</code></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Нужна инверсия управления!</h3>
+                </section>
+
+                <section>
+                    <p>
+                        <strong>Inversion of Control</strong> — принцип объектно-ориентированного программирования,
+                        используемый для уменьшения связанности в компьютерных программах
+                    </p>
+                </section>
+
+                <section>
+                    <h4>Идеи:</h4>
+                    <ul>
+                        <li>Модули верхнего уровня не зависят от модулей нижнего уровня &mdash; и те, и другие зависят от абстракций</li>
+                        <li>Абстракции не зависят от деталей &mdash; детали зависят от абстракций</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Создаём интерфейсы</h3>
+
+                    <pre class="highlight php">
+interface DoorInterface {
+    public function open();
+    public function close();
+}
+
+class Door implements DoorInterface {
+    public function open() { } // implementation
+    public function close() { } // implementation
+}
+
+class MagnetDoor implements DoorInterface {
+    public function open() { } // implementation
+    public function close() { } // implementation
+}
+
+class FakeDoor implements DoorInterface { // for testing purpose
+    public function open() { return true; }
+    public function close() { return true; }
+}</pre>
+                </section>
+
+                <section>
+                    <h3>Делаем фабрики</h3>
+
+                    <pre class="highlight php">
+abstract class AbstractDoorFactory
+{
+   /** @return DoorInterface */
+   abstract public function build();
+}
+
+class DoorFactory extends AbstractDoorFactory
+{
+   public function build() {
+      return new Door();
+   }
+}
+
+class MagnetDoorFactory extends AbstractDoorFactory
+{
+   public function build() {
+      return new MagnetDoor();
+   }
+}</pre>
+                </section>
+
+                <section>
+                    <h3>Изменяем конструктор</h3>
+                    <pre class="highlight php">
+class DoorManager {
+    private $door; // key, auth, log
+
+    public function __construct(DoorInterface $door, RfidKey $key) {
+        $this->door = $door;
+        $this->key = $key;
+        $this->log = new EmailAccessLogger('alert@superdoors.com');
+        $this->auth = new RfidAuthenticator($this->key, [
+            'users' => User::find()->where(['active' => 1])->all()
+        ]);
+    }
+}</pre>
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $key = new RfidKey($keySecret);
+    $door = (new MagnetDoorFactory())->build();
+
+    $doorManager = new DoorManager($door, $key);
+    return $doorManager->open();
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>задача решена</li>
+                                    <li>конструктор теперь не создаёт объект <code>Door</code></li>
+                                    <li>код стал независим от реализации <code>DoorInterface</code></li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>появилась зависимость на фабрику</li>
+                                    <li>конструктор всё еще божественный</li>
+                                    <li>всё еще смешаны сбор данных, бизнес-логика и конфигурация</li>
+                                    <li>усложнилось создание <code>DoorManager</code></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <p>
+                        <strong>Dependency Injection</strong>
+                        &mdash; это <span class="fragment highlight-blue" data-fragment-index="1">набор практик</span>,
+                        который помогает строить приложения с низким уровнем связанности между компонентами.
+                    </p>
+
+                    <table class="fragment current-visible" data-fragment-index="1">
+                        <tr>
+                            <td>
+                                <span class="text-red">это НЕ только</span>:
+                                <ul>
+                                    <li>паттерн</li>
+                                    <li>фича фреймворка</li>
+                                    <li>библиотека</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-green">это</span>:
+                                <ul>
+                                    <li>общие рекомендации</li>
+                                    <li>способ построения архитектуры кода</li>
+                                    <li>способ мышления</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h1>Варианты DI</h1>
+                </section>
+
+                <section>
+                    <h3>DI через сеттеры</h3>
+
+                    <pre class="highlight php">
+class DoorManager {
+    private $door;
+    private $key;
+    private $auth;
+    private $log;
+
+    public function __construct(DoorInterface $door) { }
+
+    public function setKey(KeyInterface $key) { }
+    public function setAuth(AuthManagerInterface $auth) { }
+    public function setLog(LoggerInterface $log) { }
+}</pre>
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $door = $this->getDoor();
+    $doorManager = new DoorManager($door);
+    $doorManager->setKey(new RfidKey($keySecret));
+    // ...
+    return $doorManager->open();
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>нет божественных методов</li>
+                                    <li><code>DoorManager</code> стал независим от реализаций</li>
+                                    <li>все зависимости &ndash; опциональны</li>
+                                    <li>стало реальным тестирование</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>сильно усложнилась инициализация <code>DoorManager</code></li>
+                                    <li>все зависимости &ndash; опциональны</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h4 class="fragment strike semi-fade-out" data-fragment-index="1">Все зависимости &ndash; опциональны</h4>
+
+                    <pre class="highlight php fragment semi-fade-out" data-fragment-index="1">
+public function open()
+{
+    if ($this->log !== null) {
+        $this->log->accessGranted($this->door, $this->key);
+    }
+}</pre>
+                    <h4 class="fragment fade-down" data-fragment-index="2">Опциональные зависимости не нужны</h4>
+
+                    <pre class="highlight php fragment fade-down" data-fragment-index="3">
+class FakeLogger implements LoggerInterface
+{
+    public function accessGranted(DoorInterface $door, KeyInterface $key)
+    {
+        return true;
+    }
+}</pre>
+                </section>
+
+                <section>
+                    <h4>DI через конструктор</h4>
+
+                    <pre class="highlight php">
+class DoorManager {
+    private $door; // key, auth, log
+
+    public function __construct(
+        KeyInterface $key,              DoorInterface $door,
+        AuthManagerInterface $auth,     LoggerInterface $log,
+    ) {
+        $this->door = $door; // key, auth, log
+    }
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>все зависимости обязательны</li>
+                                    <li>убрали сеттеры, которые могут дать неопределенное состояние</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>инициализация <code>DoorManager</code> всё еще сложная</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h4>Как мы сейчас создаём зависимости?</h4>
+
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $key = new RfidKey($keySecret);
+    $door = new MagnetDoor('some-door-id');
+
+    $users = User::find()->active()->all();
+    $auth = new RfidAuthenticator($key, $users);
+    $log = new EmailAccessLogger('alert@superdoors.com');
+
+    $doorManager = new DoorManager($key, $door, $auth, $log);
+    return $doorManager->open();
+}</pre>
+
+                    <ul class="fragment" data-fragment-index="1">
+                        <li>Создание зависимостей за пределами класса</li>
+                        <li class="fragment" data-fragment-index="2">Сделали новый божественный метод - <code>actionOpen</code></li>
+                        <li class="fragment" data-fragment-index="3">Теперь повторить то же самое в <code>actionClose</code>?...</li>
+                    </ul>
+                </section>
+
+                <section data-background="way_to_nowhere.jpg" class="inverted">
+                    <h3>Похоже на путь в никуда</h3>
+
+                    <!-- http://flic.kr/p/MdU6ff -->
+                </section>
+
+                <section data-background="containers.jpg" class="inverted">
+                    <h1 class="shaded">DiC!</h1>
+                    <h4 class="shaded">Dependency injection Container</h4>
+
+                    <!-- https://flic.kr/p/ahGVdG -->
+                </section>
+
+                <section>
+                    <p>
+                        <span class="text-green">Dependency Injection Container</span> &mdash; класс, управляющий
+                        созданием объектов других классов.
+                    </p>
+                </section>
+
+                <section>
+                    <h3>Наш <code>actionOpen()</code></h3>
+
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $key = new RfidKey($keySecret);
+    $door = new MagnetDoor('some-door-id');
+
+    $users = User::find()->active()->all();
+    $auth = new RfidAuthenticator($key, $users);
+    $log = new EmailAccessLogger('alert@superdoors.com');
+
+    $doorManager = new DoorManager($key, $door, $auth, $log);
+    return $doorManager->open();
+}</pre>
+                </section>
+
+                <section>
+                    <h4>DIC на коленке</h4>
+
+                    <pre class="highlight php">
+class Container {
+    /** @return KeyInterface */
+    public function getKey($keySecret) {
+        return new RfidKey($keySecret);
+    }
+    /** @return AuthManagerInterface */
+    public function getAuthenticator($key, $users) {
+        return new RfidAuthenticator($key, $users);
+    }
+    /** @return LoggerInterface */
+    public function getLogger() {
+        return new EmailAccessLogger('alert@superdoors.com');
+    }
+    /** @return DoorInterface */
+    public function getDoor() {
+        return new MagnetDoor('some-door-id');
+    }
+    /** @return DoorManagerInterface */
+    public function getDoorManager($keySecret, $users) {
+        $key = $this->getKey($keySecret);
+        $door = $this->getDoor();
+        $auth = $this->getAuthenticator($key, $users);
+        $logger = $this->getLogger();
+
+        return new DoorManager($key, $door, $auth, $logger);
+    }
+}</pre>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $container = new Container();
+
+    $users = User::find()->active()->all();
+    $doorManager = $container->getDoorManager($keySecret, $users);
+
+    return $doorManager->open();
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>контроллер без явных зависимостей на наши классы</li>
+                                    <li>есть единая точка разрешения зависимостей</li>
+                                    <li>легко тестировать</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>слишком императивное описание</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <p>Зачем мы каждый раз создаём объекты, которые не изменятся в контексте запроса?...</p>
+                </section>
+
+                <section>
+                    <h3>Контейнер может хранить объект после создания:</h3>
+
+                    <pre class="highlight php">
+class Container {
+    private $logger;
+
+    /** @return LoggerInterface */
+    public function getLogger()
+    {
+        if (!isset($this->logger)) {
+            $this->logger = new EmailAccessLogger('alert@superdoors.com')
+        }
+        return $this->logger;
+    }
+}
+}</pre>
+                </section>
+
+                <section>
+                    <h3>Объект может быть сохранён после создания, если:</h3>
+
+                    <ul>
+                        <li>Он может быть предварительно сконфигурирован</li>
+                        <li>Он актуален в течение всего runtime</li>
+                        <li>Хочется сделать singleton</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Классические примеры:</h3>
+
+                    <ul>
+                        <li>Logger</li>
+                        <li>Mailer</li>
+                        <li>Cache</li>
+                        <li>Session</li>
+                        <li>DB</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Service Locator</h2>
+
+                    <ul>
+                        <li>Содержит описание компонентов (сервисов) приложения</li>
+                        <li>Хранит созданные объекты компонентов</li>
+                        <li>Не занимается удовлетворением зависимостей классов</li>
+                        <li>Может использоваться вместе с DI</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <p>Используя <strong class="text-green">Service Locator</strong>, мы <span class="text-blue">явно запрашиваем</span> зависимости и зависимы от самого локатора.</p>
+                    <hr />
+                    <p>Используя <strong class="text-green">DiC</strong>, что-то <span class="text-blue">даёт</span> зависимости в конструктор и нам всё равно, что это.</p>
+                </section>
+
+                <section>
+                    <h4>Автоматическая инъекция и рефлексия</h4>
+
+                    <pre class="highlight php fragment" data-fragment-index="1">
+function getDependencies($class)
+{
+    $dependencies = [];
+    $reflection = new ReflectionClass($class);
+
+    $constructor = $reflection->getConstructor();
+    if ($constructor !== null) {
+        foreach ($constructor->getParameters() as $param) {
+            $c = $param->getClass();
+            if ($c instanceof \ReflectionClass) {
+                $dependencies[] = $c->getName();
+            }
+        }
+    }
+
+    return $dependencies;
+}</pre>
+                </section>
+
+
+                <section data-background-image="implementations.jpg" class="inverted">
+                    <h4 class="shaded">Разные реализации DI:</h4>
+
+                    <ul class="shaded">
+                        <li><a href="http://www.yiiframework.com/doc-2.0/guide-concept-di-container.html">Yii DI</a></li>
+                        <li><a href="http://php-di.org/">PHP-DI</a></li>
+                        <li><a href="http://pimple.sensiolabs.org/">Pimple</a></li>
+                        <li><a href="https://github.com/illuminate/container">Illuminate\Container</a></li>
+                        <li><a href="http://container.thephpleague.com/">league\container</a></li>
+                        <li><a href="http://symfony.com/doc/current/components/dependency_injection.html">Symfony\DependencyInjection</a></li>
+                        <li><a href="https://zendframework.github.io/zend-di/">zend-di</a></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Допилим двери?</h3>
+
+                    <p>Конфигурируем DiC</p>
+                    <pre class="highlight php">
+$c = Yii::$container;
+
+// interface to concrete implementation
+$c->set(KeyInterface::class, RfidKey::class);
+$c->set(AuthManagerInterface::class, RfidAuthenticator::class);
+
+// interface to component from Service Locator
+$c->set(LoggerInterface::class, function () {
+    return Yii::$app->get('log');
+});
+$c->set(DoorInterface::class, function () {
+    return Yii::$app->get('door');
+});
+
+// interface to concrete implementation - complex initialisation
+$c->set(DoorManagerInterface::class, function ($cont, $params, $config) {
+    // DoorManager constructor params order:
+    // 0 - Key, 1 - Door, 2 - Auth, 3 - Logger
+    $params[2] = $cont->get(AuthManagerInterface::class, [$params[0]]);
+
+    return $cont->get(DoorManager::class, $params, $config);
+});
+</pre>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $container = $this->container;
+
+    $key = $container->get(KeyInterface::class, [$keySecret]);
+    $doorManager = $container->get(DoorManagerInterface::class, [$key]);
+
+    return $doorManager->open();
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="80%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>красивый код</li>
+                                    <li>нет божественных методов</li>
+                                    <li>Low Coupling</li>
+                                    <li>взаимодействие по интерфейсам</li>
+                                    <li>нет <code class="highlight php">new Something()</code> &rarr; тестируемо в изоляции</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>чуть сложновато :)</li>
+                                    <li>на уровне контроллера появилась зависимость на </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h3>Где не стоит использовать DiC?</h3>
+
+                    <ul>
+                        <li>Внутри модуля</li>
+                        <li>В коде, который не должен зависить от самого контейнера</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Общие рекомендации:</h2>
+                </section>
+
+                <section data-background="hdmi.jpg" class="inverted">
+                    <h3 class="shaded">Ожидайте <span class="text-green">интерфейсы</span>, а не реализации</h3>
+                </section>
+
+                <section data-background="no_data.jpg" class="inverted">
+                    <h3 class="shaded">Не храните в DiC данные</h3>
+                </section>
+
+                <section data-background="minions.jpg" class="inverted">
+                    <h3 class="shaded">Не бойтесь создавать много маленьких классов</h3>
+                </section>
+
+                <section data-background="yoga.jpg" class="inverted">
+                    <h3 class="shaded">Не увлекайтесь абстракциями. Плата за гибкость &mdash; сложность</h3>
+                </section>
+
+                <section data-background="inspiration.jpg" class="inverted">
+                    <h3 class="shaded">Развивайтесь, делитесь опытом и делайте крутые вещи!</h3>
+                </section>
+
+                <section class="final-slide" data-background="title-slide.png">
+                    <h1>Вопросы?</h1>
+
+                    <table>
+                        <tr>
+                            <td style="width: 30%"><img src="qr.svg" /></td>
+                            <td style="vertical-align: top;">
+                                <ul>
+                                    <li><a href="https://github.com/SilverFire">SilverFire@GitHub</a></li>
+                                    <li><a href="http://www.yiiframework.com/">Yii Framework</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+            </div>
+
+        </div>
+
+        <script src="js/all.js"></script>
+
+        <script>
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+                margin: 0.1,
+                slideNumber: true,
+
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    {
+                        src: 'js/reveal/highlight/highlight.js',
+                        async: true,
+                        callback: function () {
+                            [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                                hljs.highlightBlock(v);
+                            });
+                        }
+                    },
+                    { src: 'js/reveal/notes/notes.js', async: true}
+                ]
+            });
+        </script>
+    <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    </body>
+</html>
