@@ -1879,10 +1879,7 @@ html.hide-slide-number div.slide-number {
 }
 
 .reveal .slide-background {
-    background-position: left center;
-    background-image: url(../slide_background.png);
-    background-size: auto 100%;
-    background-repeat: repeat-x;
+    background-repeat: no-repeat;
 }
 
 section.title-slide {
@@ -1941,6 +1938,7 @@ section.title-slide {
 }
 
 .reveal .slide-number {
+    display: none !important;
     position: absolute;
     top: .75em;
     right: 2em;
@@ -2018,6 +2016,15 @@ span.comment {
 
 .reveal .slides section .fragment.underline.visible {
     text-decoration: underline;
+}
+
+.reveal .slides section .fragment.mark-current {
+    opacity: 1;
+    visibility: visible;
+}
+
+.reveal .slides section .fragment.mark-current.current-fragment {
+    background-color: #90bc7a;
 }
 
 .reveal pre.highlight {
