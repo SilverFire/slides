@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Domain Driven Design &mdash; просто о сложном?</title>
+
+    <meta name="description" content="Слайды к презентации о применении подхода Domain Driven Design">
+    <meta name="author" content="Дмитрий Науменко">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/all.css">
+
+    <script>
+        document.write('<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+    </script>
+</head>
+
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section class="title-slide" data-background="title-slide.png">
+            <h1>Domain Driven Design</h1>
+            <h4>просто о сложном</h4>
+
+            <br/>
+            <br/>
+            <p><a href="https://github.com/SilverFire">Дмитрий Науменко</a></p>
+            <p>
+                <small>
+                    <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
+                </small>
+            </p>
+        </section>
+
+        <section>
+            <h3>Disclaimer</h3>
+
+            <ul>
+                <li>Тема очень глубокая, я расскажу базовые вещи за 40 минут</li>
+                <li>Будет много кусочков кода</li>
+                <li>Многое упрощено для ясности</li>
+                <li>Тайминг &mdash; 20 секунд на слайд</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Domain</h3>
+
+            <p>Сущности и действия реального мира, которые нужно автоматизировать</p>
+        </section>
+
+        <section>
+            <h3>Счёт на оплату</h3>
+        </section>
+
+        <section>
+            <h3>Domain Driven Design</h3>
+
+            <p>Набор подходов для перенесения знаний о домене в код</p>
+        </section>
+
+        <section>
+            <p>Работа с доменом начинается с анализа предметной области и составления требований</p>
+        </section>
+
+        <section>
+            <h3>Domain experts</h3>
+
+            <ul>
+                <li>Знают, как работает домен и его бизнес-процессы</li>
+                <li class="fragment" data-fragment-index="1">Могут упускать "очевидные" детали</li>
+                <li class="fragment" data-fragment-index="2">Могут не быть техническими специалистами</li>
+            </ul>
+
+        </section>
+
+        <section>
+            <blockquote>Создаём счёт, добавляем в него товары и выставляем его клиенту.</blockquote>
+        </section>
+
+        <section>
+            <h3>Наши задачи:</h3>
+
+            <ul>
+                <li>Добыть знания о домене</li>
+                <li>Выделить общие случаи из частных</li>
+                <li>Понять, что из сказанного &mdash; лишнее</li>
+                <li class="fragment strike" data-fragment-index="1">Научить <b>их</b> изъясняться на <u>нашем</u> языке
+                </li>
+                <li class="fragment" data-fragment-index="1">Научиться изъясняться на <u>их</u> языке</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Единый язык домена</h2>
+
+            <p>Набор терминов, применяемых в модели домена для объяснения связей и действий</p>
+        </section>
+
+        <section>
+            <h2>Зачем?</h2>
+
+            <ul>
+                <li>называть вещи своими именами</li>
+                <li>иметь в команде единую терминологию</li>
+            </ul>
+        </section>
+
+        <section>
+            <blockquote>
+                <i>Создаём</i> <u>счёт</u>, <i>добавляем</i> в него <u>товары</u> и <i>выставляем</i> его <u>клиенту</u>.
+            </blockquote>
+
+            <h3>Извлечение скрытого смысла</h3>
+
+            <ul>
+                <li>Какие есть характеристики счёта?</li>
+                <li>Что может быть товаром?</li>
+                <li>Какие характеристики товара важны?</li>
+                <li>Что значит "выставить счёт"?</li>
+                <li>Что мы знаем о клиенте?</li>
+                <li>...</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="bill_product_client_0.png">
+        </section>
+
+        <section>
+            <img src="mvc.png" />
+        </section>
+
+        <section>
+            <h3>Начнём по-простому</h3>
+
+            <pre class="highlight php">
+class InvoiceController
+{
+    public function actionCreate($client_id, array $item_ids)
+    {
+<span class="fragment mark-current" data-fragment-index="1">        $client = Client::find()-&gt;byId($client_id)-&gt;one();
+        if (!$client) { throw new NotFoundException(&apos;No client&apos;); }
+
+        $items = Item::find()-&gt;byId($item_ids)-&gt;all();
+        if (!$items) { throw new NotFoundException(&apos;No items&apos;); }</span>
+
+<span class="fragment mark-current" data-fragment-index="2">        $invoice = new Invoice();
+        $invoice-&gt;client = $client;
+        $invoice-&gt;status = &apos;new&apos;;
+        $invoice-&gt;items = $items;
+        $invoice-&gt;save();</span>
+
+<span class="fragment mark-current" data-fragment-index="3">        $this-&gt;notifyInvoiceCreated($client-&gt;email, $invoice);</span>
+
+        return $this-&gt;render(&apos;invoice&apos;, compact('invoice')]);
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <blockquote>Само собой, товары в счёт можно добавлять и удалять, если счёт еще не выставлен</blockquote>
+        </section>
+
+        <section>
+                    <pre class="highlight php">
+class InvoiceController
+{
+    public function actionAddItem($invoice_id, $item_id = null)
+    {
+<span class="fragment mark-current" data-fragment-index="1">        $invoice = Invoice::find()-&gt;byId($invoice_id)-&gt;one();
+        if (!$invoice) { throw new NotFoundException(&apos;No invoice&apos;); }
+
+        $item = Item::find()-&gt;byId($item_id)-&gt;one();
+        if (!$item) { throw new NotFoundException(&apos;No item&apos;); }</span>
+
+<span class="fragment mark-current" data-fragment-index="2">        if ($invoice-&gt;status !== &apos;new&apos;) { throw new HttpException(403); }</span>
+
+<span class="fragment mark-current" data-fragment-index="3">        $invoice-&gt;items[] = $item;
+        $invoice-&gt;save();</span>
+
+        return $this-&gt;render(&apos;invoice&apos;, [&apos;invoice&apos; =&gt; $invoice]);
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h3>Ок :)</h3>
+
+            <img src="i_v_prod.jpg" alt="">
+        </section>
+
+        <section>
+            <h3>Преимущества</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Вся логика рядом, легко понять что происходит</li>
+                <li class="fragment" data-fragment-index="2">Нет ничего лишнего</li>
+                <li class="fragment" data-fragment-index="3">Низкий входной порог</li>
+                <li class="fragment" data-fragment-index="4">Легко дописать еще пару-тройку if-ов</li>
+                <li class="fragment" data-fragment-index="5">Это &ndash; паттерн <a
+                        href="https://martinfowler.com/eaaCatalog/transactionScript.html">Transaction script</a> :)
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Недостатки</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Всё перемешано</li>
+                <li class="fragment" data-fragment-index="2">Сложно переиспользовать</li>
+                <li class="fragment" data-fragment-index="3">Тесты? Лолшто?</li>
+                <li class="fragment" data-fragment-index="4">Дописать еще пару if'ов и будет месиво</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Fat controller & Slim model</h3>
+            <h4>VS</h4>
+            <h3>Slim controller & Fat model</h3>
+
+            <aside class="notes">Может вынести логику из контроллера в модель <strong>Invoice</strong></aside>
+        </section>
+
+        <section>
+            <h3>Table Driven Domain model</h3>
+
+            <ul>
+                <li>Модель домена = модель данных</li>
+                <li class="fragment" data-fragment-index="1">Каждый объект модели представлен таблицей</li>
+                <li class="fragment" data-fragment-index="2">Объекты описывают связи БД</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>a.k.a</h4>
+            <h2>ActiveRecord</h2>
+        </section>
+
+        <section>
+            <h3>Плюсы:</h3>
+
+            <ul>
+                <li>Нужно минимум для старта</li>
+                <li class="fragment" data-fragment-index="1">Волшебно простой интерфейс</li>
+                <li class="fragment" data-fragment-index="2">Низкий порог вхождения</li>
+                <li class="fragment" data-fragment-index="3">Нет лишних преобразований</li>
+                <li class="fragment" data-fragment-index="4">Хорош для простого CRUD</li>
+                <li class="fragment" data-fragment-index="5">Легкая работа со связями (relations)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Минусы:</h3>
+
+            <ul>
+                <li>Жесткая связь с таблицей в БД</li>
+                <li class="fragment" data-fragment-index="1">Изменение таблицы &rarr; изменение кода</li>
+                <li class="fragment" data-fragment-index="2">Привязка типов данных к типам столбцов</li>
+                <li class="fragment" data-fragment-index="3">Сложность использования разных источников данных</li>
+                <li class="fragment" data-fragment-index="4">Больше логики &mdash; сложнее поддерживать</li>
+                <li class="fragment" data-fragment-index="5">Нарушение Single Responsibility</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>MVC</h2>
+            <h3>M &ne; Модель ActiveRecord</h3>
+
+            <h3 class="fragment" data-fragment-index="1">M &mdash; это целый Мир!</h3>
+        </section>
+
+        <section>
+            <h4>We need to go deeper</h4>
+
+            <h3>Забудем на время о контроллерах и БД</h3>
+        </section>
+
+        <section>
+            <h3>Domain Driven Design</h3>
+
+            <p>Набор подходов для перенесения знаний о домене в код</p>
+        </section>
+
+        <section>
+            <img src="evans.jpg" style="max-height: 600px">
+        </section>
+
+        <section>
+            <h3>Описанные концепции:</h3>
+
+            <ul>
+                <li>Domain</li>
+                <li>Ubiquitous Language</li>
+                <li>Domain Experts</li>
+                <li>...</li>
+                <li>
+                    Шаблоны проектирования:
+                    <ul style="margin: 0">
+                        <li>Entity</li>
+                        <li>Value Object</li>
+                        <li>Aggregate</li>
+                        <li>Repository</li>
+                        <li>Service</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <aside class="notes">
+                Bounded context, invariant
+            </aside>
+        </section>
+<!-- 13 минут 31 слайд -->
+
+        <section>
+            <h4>Сначала объекты и их взаимодействие.</h4>
+
+            <h4 class="fragment" data-fragment-index="1">БД будет потом.</h4>
+        </section>
+
+        <section>
+            <h3>Onion architecture</h3>
+
+            <img src="layers.png">
+        </section>
+
+        <section>
+            <h2>Domain Layer</h2>
+
+            <ul>
+                <li>Является представлением предметной области в коде</li>
+                <li>Ничего не знает о БД или фреймворке</li>
+            </ul>
+
+            <aside class="notes">
+                Поговорим о Domain model
+            </aside>
+        </section>
+
+        <section>
+            <h2>Entity</h2>
+
+            <ul>
+                <li>Описывает индивидуально существующие элементы домена</li>
+                <li class="fragment" data-fragment-index="1">Определяется по идентификатору, а не по значению атрибутов</li>
+                <li class="fragment" data-fragment-index="2">Непрерывно и однозначно определяется на всём протяжении существования</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="item_client.png" alt="">
+        </section>
+
+        <section>
+            <pre class="highlight php">
+class Client
+{
+<span class="fragment mark-current" data-fragment-index="1">    private $id;
+    private $name;
+    private $address;
+    private $phone;</span>
+
+    public function __construct(<span class="fragment mark-current" data-fragment-index="2">$id, $name, $address, $phone</span>)
+    {
+<span class="fragment mark-current" data-fragment-index="3">        if (!preg_match(&apos;/^\d+$/&apos;, $phone)) {
+            throw new ValidationException($phone);
+        }
+        $this-&gt;phone = $phone;</span>
+
+        // ... name, address
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+new Client(
+    UUID::create(),
+    &apos;Фамилия Имя Отчество&apos;,
+    &apos;ул. Кодеров, д. 0xFF&apos;,
+    &apos;380441234567&apos;
+);
+</pre>
+        </section>
+
+        <section>
+            <h4>Name, address, phone</h4>
+            <ul>
+                <li>Целостность</li>
+                <li data-fragment-index="1" class="fragment">Валидация</li>
+                <li data-fragment-index="2" class="fragment">Типизация</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Value Object</h2>
+
+            <ul>
+                <li>Не обладает идентификатором</li>
+                <li class="fragment" data-fragment-index="1">Описывает элементы домена, полностью определяемые свойствами</li>
+                <li class="fragment" data-fragment-index="2">Неизменяемый после создания</li>
+                <li class="fragment" data-fragment-index="3">Используется для типизации и структурирования данных</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="address.png"/>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+class Address
+{
+<span class="fragment mark-current" data-fragment-index="1">    private $country;
+    private $city;
+    private $zip;
+    private $lines;</span>
+
+    public function __construct($country, $city, $zip, $lines)
+    {
+<span class="fragment mark-current" data-fragment-index="2">        $this-&gt;zip = $this-&gt;validateZip($zip);</span>
+        // TODO: city, zip, lines
+    }
+
+    private function validateZip($zip)
+    {
+        if (!preg_match(&apos;/^\d+$/&apos;, $zip) {
+            throw new ZipValidationException($zip);
+        }
+
+<span class="fragment mark-current" data-fragment-index="3">        return $zip;</span>
+    }
+}
+</pre>
+        </section>
+<!-- 42 слайд 18 минут -->
+        <section>
+            <img src="client_vo.png" alt="">
+        </section>
+
+        <section>
+            <pre class="highlight php">
+new Client(
+    UUID::create(),
+    new Name('Фамилия', 'Имя', 'Отчество'),
+    new Address('Украина', 'Киев', '01001', ['ул. Кодеров, д. 0xFF']),
+    new Phone('380', '44', '1234567')
+);
+</pre>
+        </section>
+
+        <section>
+            <h3>Entity vs Value Object</h3>
+
+            <img src="uah.jpg" class="fragment" data-fragment-index="1" />
+        </section>
+
+        <section>
+            <h3>Нужно ли отличать две купюры одного номинала?</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Кассиру не нужно &mdash; Value Object</li>
+                <li class="fragment" data-fragment-index="2">Эксперту-криминалисту нужно &mdash; Entity</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Aggregate</h3>
+
+            <ul>
+                <li>Собирательная сущность которая считается единым целым</li>
+                <li class="fragment" data-fragment-index="1">Состоит из VO и Entity</li>
+                <li class="fragment" data-fragment-index="2">Определяется по идентификатору</li>
+                <li class="fragment" data-fragment-index="3">Является границей транзакции при изменении данных</li>
+                <li class="fragment" data-fragment-index="4">Другие элементы домена не могут ссылаться на внутренности агрегата</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Агрегат &mdash; это граница уникальности для Entity</h4>
+
+            <ul>
+                <li>Один Entity не может быть в двух агрегатах одновременно</li>
+                <li class="fragment" data-fragment-index="1">Такой Entity должен стать агрегатом</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Client &mdash; это Aggregate</h3>
+
+            <img src="client_vo.png" alt="">
+        </section>
+
+        <section>
+            <img src="invoice.png" alt="">
+        </section>
+
+        <section>
+            <blockquote>Каждого товара может быть больше чем 1 единица в счёте!</blockquote>
+            <br /><br />
+            <h3>Уточняем детали:</h3>
+            <ul>
+                <li>Нужно учитывать валюту?</li>
+                <li>Меньше целой единицы можно?</li>
+                <li>Единицы измерения &mdash; шт, метры, литры?</li>
+                <li>...</li>
+            </ul>
+        </section>
+<!-- 52 слайд 20 минут -->
+        <section>
+            <img src="bill_w_vo.png" />
+        </section>
+
+        <section>
+            <h4>Агрегат &ndash; Item</h4>
+
+            <pre class="highlight php">
+class Item
+{
+<span class="fragment mark-current" data-fragment-index="1">    private $id;
+    private $name;
+    private $description;
+    private $price;</span>
+
+    public function __construct($id, $name, Money $price) {
+<span class="fragment mark-current" data-fragment-index="2">        $this-&gt;id = $id;
+        $this-&gt;name = $name;
+        $this-&gt;price = $price;</span>
+    }
+<span class="fragment mark-current" data-fragment-index="3">
+    // TODO: Getters and setters</span>
+}
+</pre>
+            <aside class="notes">
+                <ul>
+                    <li>В конструкторе обязательные свойства</li>
+                    <li>Необязательные &mdash; в сеттеры</li>
+                    <li>Закрыто для изменения всё, что не изменяется по логике домена</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+<pre class="highlight php">
+$item = new Item(UUID::create(), &apos;Silver bullet&apos;, Money::USD(1000));
+$item->setDescription('This bullet is a killing feature!');
+</pre>
+        </section>
+
+        <section>
+            <h4>Value Object &mdash; LineItem</h4>
+
+        <pre class="highlight php">
+class LineItem
+{
+<span class="fragment mark-current" data-fragment-index="1">    protected $item;
+    protected $quantity;</span>
+
+<span class="fragment mark-current" data-fragment-index="2">    public function __construct(Item $item, $quantity = 1) {
+        $this-&gt;item = $item;
+        $this-&gt;quantity = $quantity;
+    }</span>
+
+    // TODO: Getters (no setters in VO)
+}
+</pre>
+        </section>
+
+        <section>
+            <h4>Агрегат &ndash; Invoice</h4>
+
+            <pre class="highlight php">
+class Invoice
+{
+<span class="fragment mark-current" data-fragment-index="1">    protected $id;
+    protected $client;
+    protected $lineItems = [];
+    protected $status;</span>
+
+    public function __construct(<span class="fragment mark-current" data-fragment-index="2">$id, Client $client</span>)
+    {
+        $this-&gt;id = $id;
+        $this-&gt;client = $client;
+    }
+
+<span class="fragment mark-current" data-fragment-index="3">    public function getId() {}
+    public function getClient() {}</span>
+
+<span class="fragment mark-current" data-fragment-index="4">    public function getLineItems() {}
+    public function setLineItems() {}</span>
+
+<span class="fragment mark-current" data-fragment-index="5">    public function getStatus() {}
+    public function setStatus($status) {}</span>
+}      </pre>
+        </section>
+
+        <section>
+<pre class="highlight php">
+<span class="fragment mark-current" data-fragment-index="1">$item = new Item(UUID::create(), &apos;Silver bullet&apos;, Money::USD(1000));
+$quantity = 2;</span>
+
+<span class="fragment mark-current" data-fragment-index="2">$invoice = new Invoice(UUID::create(), $client);</span>
+<span class="fragment mark-current" data-fragment-index="3">$invoice->setStatus('new');</span>
+<span class="fragment mark-current" data-fragment-index="4">$invoice->setLineItems([new LineItem($item, $quantity)]);</span>
+</pre>
+
+<pre class="highlight php fragment" data-fragment-index="5">
+// Заменим позицию в счёте
+$anotherLine = new LineItem(
+    new Item(UUID::create(), &apos;Rage cup&apos;, Money::USD(500))
+);
+
+$invoice->setLineItems([$anotherLine]);
+</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+<span class="fragment mark-current" data-fragment-index="1">$invoice->setLineItems([$anotherLineItem]);</span>
+<span class="fragment mark-current" data-fragment-index="2">$invoice->setStatus('processing');</span>
+
+// VS
+
+<span class="fragment mark-current" data-fragment-index="1">$invoice->lineItems = [$anotherLineItem];</span>
+<span class="fragment mark-current" data-fragment-index="2">$invoice->status = 'processing';</span></pre>
+        </section>
+
+        <section>
+            <h1>???</h1>
+        </section>
+
+        <section>
+            <h3>Анемия модели</h3>
+
+            <ul>
+                <li>Модель отображает связи</li>
+                <li class="fragment" data-fragment-index="1">В модели есть геттеры и сеттеры для свойств</li>
+                <li class="fragment" data-fragment-index="2">Модель не описывает действий и логики домена</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Value Object &ndash; Status</h4>
+
+            <pre class="highlight php">abstract class Status
+{
+<span class="fragment mark-current" data-fragment-index="1">    /**
+     * @property array Class names of next possible statuses
+     */
+    protected $next = [];</span>
+
+<span class="fragment mark-current" data-fragment-index="2">    public function canBeChangedTo(self $status): bool
+    {
+        $className = get_class($status);
+
+        return in_array($className, $this-&gt;next, true);
+    }</span>
+
+<span class="fragment mark-current" data-fragment-index="3">    public function allowsModification(): bool
+    {
+        return true;
+    }</span>
+}</pre>
+            <aside class="notes">25 минут</aside>
+        </section>
+
+        <section>
+            <pre class="highlight php">class NewStatus extends Status
+{
+    protected $next = [ProcessingStatus::class, RejectedStatus::class];
+}
+</pre>
+
+            <pre class="highlight php fragment" data-fragment-index="1">
+class Invoice
+{
+    public function changeStatus(<span class="fragment mark-current" data-fragment-index="2">Status $status</span>)
+    {
+        if (<span class="fragment mark-current" data-fragment-index="3">!$this-&gt;status-&gt;canBeChangedTo($status)</span>) {
+            <span class="fragment mark-current" data-fragment-index="4">throw new WrongStatusChangeDirectionException();</span>
+        }
+
+        <span class="fragment mark-current" data-fragment-index="5">$this-&gt;status = $status;</span>
+    }
+}</pre>
+        </section>
+
+       <section>
+            <pre class="highlight php">
+class Invoice
+{
+    public function addLineItem(LineItem $line)
+    {
+        if (<span class="fragment mark-current" data-fragment-index="1">!$this-&gt;status-&gt;allowsModification()</span>) {
+            <span class="fragment mark-current" data-fragment-index="2">throw new ModificationProhibitedException();</span>
+        }
+
+        <span class="fragment mark-current" data-fragment-index="3">$this-&gt;line-&gt;push($line);</span>
+    }
+
+    public function removeLineItem(LineItem $line)
+    {
+        <span class="fragment mark-current" data-fragment-index="4">// Copy-paste status check?</span>
+    }
+}</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">abstract class <span class="fragment mark-current" data-fragment-index="1">Status</span>
+{
+    public function <span class="fragment mark-current" data-fragment-index="2">ensureCanBeChangedTo(self $status)</span>: void
+    {
+        if (!$this-&gt;canBeChangedTo($status)) {
+            throw new WrongStatusChangeDirectionException();
+        }
+    }
+
+    public function <span class="fragment mark-current" data-fragment-index="3">ensureAllowsModification()</span>: void
+    {
+        if (!$this-&gt;allowsModification()) {
+            throw new ModificationProhibitedException();
+        }
+    }
+}</pre>
+
+        </section>
+
+        <section>
+<pre class="highlight php">class Invoice
+{
+    public function changeStatus(Status $status)
+    {
+        <span class="fragment mark-current" data-fragment-index="1">$this-&gt;status-&gt;ensureCanBeChangedTo($status);</span>
+        $this-&gt;status = $status;
+    }
+
+    public function addLineItem(LineItem $lineItem)
+    {
+        <span class="fragment mark-current" data-fragment-index="2">$this-&gt;status-&gt;ensureAllowsModification();</span>
+        $this-&gt;lineItmes-&gt;push($lineItem);
+    }
+
+    public function removeLineItem(LineItem $lineItem)
+    {
+        <span class="fragment mark-current" data-fragment-index="3">$this-&gt;status-&gt;ensureAllowsModification();</span>
+        // ...
+    }
+}</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+$invoice = new Invoice(UUID::create(), $client);
+
+$invoice->addLineItem(new LineItem($item, $quantity));
+$invoice->changeStatus(new NewStatus());
+
+// save...?
+</pre>
+        </section>
+
+        <section>
+            <h3>Как это всё связать с БД?</h3>
+        </section>
+
+        <section>
+            <h3>ActiveRecord || DDD way?</h3>
+        </section>
+
+        <section>
+            <h2>Repository</h2>
+
+            <h3>Плюсы:</h3>
+            <ul>
+                <li>Описан интерфейсом</li>
+                <li class="fragment" data-fragment-index="1">Интерфейс независим от БД</li>
+                <li class="fragment" data-fragment-index="2">Удобно тестировать</li>
+                <li class="fragment" data-fragment-index="3">Хорошо ложится в DDD</li>
+            </ul>
+
+            <aside class="notes">
+                <ul>
+                    <li>Реализация не важна</li>
+                    <li>Структура БД тоже</li>
+                    <li>Может быть реализован для разных хранилищ</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+            <h2>Repository</h2>
+
+            <h3>Минусы:</h3>
+            <ul>
+                <li>Со старта сложнее</li>
+                <li class="fragment" data-fragment-index="1">Входной порог существенно выше</li>
+                <li class="fragment" data-fragment-index="2">Нужно думать о гидрации</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="domain_filled.png" />
+        </section>
+
+        <section>
+            <h3>Repository Interface Level</h3>
+
+            <ul>
+                <li>Только интерфейсы репозиториев без реализаций</li>
+                <li>Репозитории создаются только для агрегатов</li>
+            </ul>
+        </section>
+
+        <section>
+<pre class="highlight php">
+interface InvoiceRepositoryInterface
+{
+    /** @throws InvoiceNotFoundException when no invoice exists */
+    public function findById($id);
+    public function add(Invoice $invoice);
+    public function update(Invoice $invoice);
+}
+</pre>
+        </section>
+
+        <section>
+            <h4>Реализация InvoiceRepositoryInterface</h4>
+
+            <ul>
+                <li>На инфраструктурном слое</li>
+                <li class="fragment" data-fragment-index="1">Реализация работы с БД</li>
+                <li class="fragment" data-fragment-index="2">Реализацией может быть несколько</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+class <span class="fragment mark-current" data-fragment-index="1">SqlInvoiceRepository implements InvoiceRepositoryInterface</span>
+{
+    public function __construct(<span class="fragment mark-current" data-fragment-index="2">Connection $db</span>) {
+        $this-&gt;db = $db;
+    }
+
+    public function create(Invoice $invoice)
+    {
+        <span class="fragment mark-current" data-fragment-index="3">$this-&gt;db-&gt;transactionBegin();</span>
+
+<span class="fragment mark-current" data-fragment-index="4">        $this-&gt;db-&gt;insert(&apos;invoice&apos;, [
+            &apos;id&apos; =&gt; $invoice-&gt;getId(),
+            &apos;client_id&apos; =&gt; $invoice-&gt;getClient()-&gt;getId(),
+            &apos;status&apos; =&gt; $invoice-&gt;getStatus()
+        ]);</span>
+
+<span class="fragment mark-current" data-fragment-index="5">        foreach ($invoice-&gt;getLineItems() as $lineItem) {
+            $this-&gt;db-&gt;insert(&apos;invoice_lines&apos;, [
+                'invoice_id' => $invoice->getId(),
+                &apos;item_id&apos; =&gt; $lineItem-&gt;getItem()-&gt;getId(),
+                &apos;quantity&apos; =&gt; $lineItem-&gt;getQuantity(),
+            ]);
+        }</span>
+
+        <span class="fragment mark-current" data-fragment-index="3">$this-&gt;db-&gt;transactionCommit();</span>
+    }
+}
+</pre>
+
+            <aside class="notes">30 мин</aside>
+        </section>
+
+        <section>
+<pre class="highlight php">class InvoiceController
+{
+    public function actionCreate($client_id)
+    {
+<span class="fragment mark-current" data-fragment-index="1">        $client = $this->clientRepository->findById($client_id);</span>
+
+<span class="fragment mark-current" data-fragment-index="2">        $invoice = new Invoice(UUID::create(), $client);
+        $invoice->changeStatus(new NewStatus());</span>
+<span class="fragment mark-current" data-fragment-index="3">        $this-&gt;invoiceRepository-&gt;add($invoice);</span>
+
+        return $invoice-&gt;getId();
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h3>Есть некоторые проблемы</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Мы перепрыгнули через несколько слоев</li>
+                <li class="fragment" data-fragment-index="2">В контроллере всё еще есть логика</li>
+                <li class="fragment" data-fragment-index="3">Что если будет несколько точек входа?</li>
+                <li class="fragment" data-fragment-index="4">Тесты?</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="repository_filled.png">
+        </section>
+
+        <section>
+            <h3>Domain Services Interfaces</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Интерфейсы для операций над моделью домена</li>
+                <li class="fragment" data-fragment-index="2">Stateless</li>
+                <li class="fragment" data-fragment-index="3">Могут обращаться к репозиториям и другим сервисам</li>
+                <li class="fragment" data-fragment-index="4">Уносят логику из контроллеров</li>
+            </ul>
+        </section>
+
+        <section>
+<pre class="highlight php">class InvoiceServiceInterface
+{
+    public function create($clientId);
+    public function addLineItem($id, $itemId, $quantity);
+    public function reject($id);
+    public function process($id);
+}</pre>
+        </section>
+
+        <section>
+            <img src="service_filled.png" />
+        </section>
+
+        <section>
+            <h3>Инфраструктурный слой</h3>
+
+            <ul>
+                <li>Реализации репозиториев и сервисов</li>
+                <li class="fragment" data-fragment-index="1">Инфраструктурная логика</li>
+                <li class="fragment" data-fragment-index="2">Работа с БД, IoC контейнером</li>
+            </ul>
+        </section>
+
+        <section>
+<pre class="highlight php">class <span class="fragment mark-current" data-fragment-index="1">InvoiceService implements InvoiceServiceInterface</span>
+{
+    public function __construct(
+<span class="fragment mark-current" data-fragment-index="2">        ClientRepositoryInterface $clientRepository,
+        InvoiceRepositoryInterface $invoiceRepository</span>
+    ) {
+        $this-&gt;clientRepository = $clientRepository;
+        $this-&gt;invoiceRepository = $invoiceRepository;
+    }
+
+    public function <span class="fragment mark-current" data-fragment-index="3">create($clientId)</span>
+    {
+        <span class="fragment mark-current" data-fragment-index="4">$client = $this-&gt;clientRepository-&gt;findById($clientId);</span>
+
+<span class="fragment mark-current" data-fragment-index="5">        $invoice = new Invoice(UUID::create(), $client);
+        $invoice-&gt;changeStatus(new NewStatus());</span>
+
+        <span class="fragment mark-current" data-fragment-index="6">$this-&gt;invoiceRepository-&gt;create($invoice);</span>
+
+        return $invoice-&gt;getId();
+    }
+}</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class InvoiceController
+{
+    public function actionCreate($client_id)
+    {
+        $invoiceId = $this->invoiceService->add($client_id);
+
+        return $invoiceId;
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h4>Добавим немного проверок в InvoiceService</h4>
+
+<pre class="highlight php">class InvoiceService
+{
+    public function reject($invoiceId)
+    {
+<span class="fragment mark-current" data-fragment-index="1">        $invoice = $this-&gt;invoiceRepository->findById($id);
+        if ($invoice === null) {
+            return null;
+        }</span>
+
+<span class="fragment mark-current" data-fragment-index="2">        $invoice-&gt;changeStatus(new RejectedStatus());</span>
+
+        if (<span class="fragment mark-current" data-fragment-index="3">$this-&gt;invoiceRepository-&gt;update($invoice) === false</span>) {
+            return null;
+        }
+
+        return true;
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h2>Exceptions</h2>
+
+            <ul>
+                <li>Сделай работу, либо брось исключение</li>
+                <li class="fragment" data-fragment-index="1">Не забывать предупреждать в PHPDoc</li>
+                <li class="fragment" data-fragment-index="2">Название класса описывает проблему</li>
+            </ul>
+
+            <aside class="notes">35 мин</aside>
+        </section>
+
+        <section>
+<pre class="highlight php">class InvoiceService
+{
+    function reject()
+    {
+        $invoice = $this-&gt;invoiceRepository-&gt;findById($id);
+        $invoice-&gt;changeStatus(new ProcessingStatus());
+
+        $this-&gt;invoiceRepository-&gt;update($invoice);
+
+        return true;
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h3>Реакция на смену статуса &mdash; отправка письма</h3>
+
+            <ul>
+                <li>Записать событие при изменении модели</li>
+                <li>Событие &mdash; класс</li>
+                <li>Обработать события после сохранения изменений</li>
+            </ul>
+        </section>
+
+        <section>
+<pre class="highlight php">
+trait EventTrait
+{
+    private $events = [];
+
+    public function registerEvent($event)
+    {
+        $this-&gt;events[] = $event;
+    }
+
+    public function releaseEvents()
+    {
+        $events = $this-&gt;events;
+        $this-&gt;events = [];
+
+        return $events;
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h4>Смена статуса как событие</h4>
+
+<pre class="highlight php">class <span class="fragment mark-current" data-fragment-index="1">Invoice</span>
+{
+    use EventTrait;
+
+    public function changeStatus(Status $status)
+    {
+        $this-&gt;status-&gt;ensureCanBeChangedTo($status);
+        $this-&gt;status = $status;<span class="fragment mark-current" data-fragment-index="2"></span>
+
+        <span class="fragment mark-current" data-fragment-index="3">$this-&gt;registerEvent(
+            new InvoiceStatusWasChangedEvent($this, $status)
+        );</span>
+    }
+}
+</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class <span class="fragment mark-current" data-fragment-index="1">InvoiceService</span> implements InvoiceServiceInterface
+{
+    public function reject($id)
+    {
+        $invoice = $this-&gt;invoiceRepository-&gt;findById($id);
+        $invoice-&gt;changeStatus(new RejectedStatus());
+
+        <span class="fragment mark-current" data-fragment-index="2">$this-&gt;invoiceRepository-&gt;update($invoice);</span>
+
+        <span class="fragment mark-current" data-fragment-index="3">$this->dispatcher->dispatchEvents($invoice->releaseEvents());</span>
+    }
+}
+</pre>
+        </section>
+
+        <section>
+            <h3>Что если действие требует много параметров?</h3>
+        </section>
+
+        <section>
+<pre class="highlight php">class <span class="fragment mark-current" data-fragment-index="1">ClientService</span> implements ClientServiceInterface
+{
+    public function changeAddress(<span class="fragment mark-current" data-fragment-index="2">$id, $country, $city, $zip, $lines</span>)
+    {
+        $client = $this-&gt;clientRepository-&gt;findById($id);
+
+        $address = new Address(<span class="fragment mark-current" data-fragment-index="3">$country, $city, $zip, $lines</span>);
+        $client-&gt;changeAddress($address);
+
+        $this-&gt;clientRepository-&gt;update($client);
+    }
+}</pre>
+        </section>
+
+        <section>
+            <h4>Параметров многовато</h4>
+            <h5>Что делать?</h5>
+
+            <ul>
+                <li class="fragment strike" data-fragment-index="1">Создавать объект Address в контролере</li>
+                <li class="fragment strike" data-fragment-index="2">Передавать массив свойств</li>
+                <li>Написать еще один класс</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>DTO</h2>
+            <h3>Data Transfer Object</h3>
+        </section>
+        
+        <section>
+            <h3>Data Transfer Object</h3>
+
+            <ul>
+                <li>Для передачи данных между слоями приложения</li>
+                <li class="fragment" data-fragment-index="1">Не содержит логики</li>
+                <li class="fragment" data-fragment-index="2">Типизирует набор данных</li>
+            </ul>
+        </section>
+
+        <section>
+        <pre class="highlight php">class AddressDto
+{
+<span class="fragment mark-current" data-fragment-index="1">    public $country;
+    public $city;
+    public $zip;
+    public $lines = [];</span><span class="fragment mark-current" data-fragment-index="2"></span>
+
+    public static function fromArray($data)
+    {
+        $self = new self();
+
+        $self->country = $data['country'];
+        $self->city = $data['city'];
+        $self->zip = $data['zip'];
+        $self->lines = $data['lines'];
+
+        return $self;
+    }
+}
+</pre>
+        </section>
+
+        <section>
+<pre class="highlight php">class ClientController
+{
+    public function actionChangeAddress($client_id)
+    {
+        <span class="fragment mark-current" data-fragment-index="1">$dto = AddressDto::fromRequest($this-&gt;request->post());</span>
+        $this-&gt;clientService-&gt;changeAddress($client_id, <span class="fragment mark-current" data-fragment-index="1">$dto</span>);
+
+        return $client_id;
+    }
+}</pre>
+        </section>
+
+        <section>
+            <pre class="highlight php">class ClientService implements ClientServiceInterface
+{
+    public function changeAddress($id, <span class="fragment mark-current" data-fragment-index="1">AddressDto $dto</span>)
+    {
+        $client = $this-&gt;clientRepository-&gt;findById($id);
+
+        $address = new Address(
+            <span class="fragment mark-current" data-fragment-index="2">$dto-&gt;country,
+            $dto-&gt;city,
+            $dto-&gt;zip,
+            $dto-&gt;lines</span>
+        );
+        $client-&gt;changeAddress($address);
+
+        $this-&gt;clientRepository-&gt;update($client);
+    }
+}</pre>
+        </section>
+        
+        <section>
+            <img src="infrastructure_filled.png">
+        </section>
+        
+        <section>
+            <h4>Что остаётся для Application?</h4>
+
+            <ul>
+                <li>Маршрутизация запросов</li>
+                <li>Конфигурация приложения</li>
+                <li>Конфигурация инфраструктурного слоя</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Что у нас получилось?</h4>
+
+            <ul>
+                <li>Приложение разделено на слои</li>
+                <li>Модель домена не зависит от БД, фреймворка</li>
+                <li>Код выразительный</li>
+                <li>ООП</li>
+                <li>Каждый слои легко тестируется</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Всё ли так хорошо?</h3>
+        </section>
+
+        <section>
+            <h4>Конечно, есть и проблемы</h4>
+
+            <ul>
+                <li>Сложно понять &mdash; входной порог выше</li>
+                <li>Работа с данными &mdash; сложнее</li>
+                <li>Есть много нюансов реализации</li>
+                <li>Cross-cutting concerns</li>
+                <li>Оверхед для простой бизнес-логики</li>
+                <li>Переабстрагирование</li>
+                <li>Сложно натянуть на "бедную" процессами модель</li>
+            </ul>
+        </section>
+
+        <section>
+            <img src="chart.png" alt="">
+        </section>
+
+        <section>
+            <img src="chart_42.png" alt="">
+        </section>
+
+        <section>
+            <h4>Каноничный DDD на 80% проектов &mdash; оверхед, который не стоит потраченных усилий</h4>
+
+            <h3 class="fragment" data-fragment-index="1">Но это не повод не учиться.</h3>
+        </section>
+
+        <section>
+            <h4>Think first. DDD &mdash; это рекомендации, а не правила.</h4>
+        </section>
+
+        <section>
+            <h4>Не бойтесь создавать много маленьких классов!</h4>
+        </section>
+
+        <section>
+            <h3>Идеи из DDD можно использовать по кусочкам</h3>
+
+            <h4 class="fragment" data-fragment-index="1">Даже c ActiveRecord</h4>
+
+            <ul>
+                <li class="fragment" data-fragment-index="2">Entity, Aggregate &mdash; модель ActiveRecord с ясными методами</li>
+                <li class="fragment" data-fragment-index="3">DTO &mdash; формы</li>
+                <li class="fragment" data-fragment-index="4">Services &mdash; уносят сложность из контроллеров и моделей</li>
+                <li class="fragment" data-fragment-index="5">Repository &mdash; можно заменить ActiveQuery с методами, которые ясно описыают условия</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Начните с малого. И еще раз think first.</h4>
+        </section>
+
+        <section>
+            <h3>Почитать</h3>
+
+            <ul>
+                <li><a href="https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software-ebook/dp/B00794TAUG">Eric Evans &mdash; Domain-Driven Design: Tackling Complexity in the Heart of Software</a></li>
+                <li><a href="https://www.dogearpublishing.net/wordpress/domain-driven-design-reference-definitions-and-pattern-summaries-by-eric-evans/">Domain-Driven Design Reference: Definitions and Pattern Summaries Eric Evans</a></li>
+                <li><a href="https://github.com/PhpFriendsOfDdd">github.com/PhpFriendsOfDdd</a></li>
+            </ul>
+        </section>
+
+        <section data-background="title-slide.png">
+            <h3>Время вопросов</h3>
+
+            <table>
+                <tr>
+                    <td style="width: 30%"><img src="qr.png" /></td>
+                    <td style="vertical-align: top;">
+                        <ul>
+                            <li><a href="https://github.com/SilverFire">SilverFire@GitHub</a></li>
+                            <li><a href="http://www.yiiframework.com/">Yii Framework</a>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </section>
+    </div>
+</div>
+
+<script src="js/all.js"></script>
+
+<script>
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        margin: 0.1,
+        slideNumber: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            {
+                src: 'js/reveal/highlight/highlight.js',
+                async: true,
+                callback: function () {
+                    [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                        hljs.highlightBlock(v);
+                    });
+                }
+            },
+            {src: 'js/reveal/notes/notes.js', async: true}
+        ]
+    });
+</script>
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter37501675 = new Ya.Metrika({
+                id: 37501675,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/watch.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript>
+</body>
+</html>
