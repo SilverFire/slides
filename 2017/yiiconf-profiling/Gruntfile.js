@@ -42,6 +42,18 @@ module.exports = function (grunt) {
                 src: ['**'],
                 dest: 'js/reveal/notes'
             },
+            revealMux: {
+                expand: true,
+                cwd: 'node_modules/reveal.js/plugin/multiplex/',
+                src: ['**'],
+                dest: 'js/reveal/multiplex'
+            },
+            revealMuxNotes: {
+                expand: true,
+                cwd: 'node_modules/reveal.js/plugin/notes-server/',
+                src: ['**'],
+                dest: 'js/reveal/notes-server'
+            },
             revealHighlight: {
                 expand: true,
                 cwd: 'node_modules/reveal.js/plugin/highlight/',
