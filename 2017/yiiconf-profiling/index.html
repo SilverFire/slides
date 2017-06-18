@@ -722,7 +722,7 @@ WHERE   date > '2017-04-01'::datetime
                 dependencies: [
                     { src: 'https://cdn.socket.io/socket.io-1.3.5.js', async: true },
                     {
-                        src: location.protocol === 'file'
+                        src: location.protocol === 'file:'
                             ? 'js/reveal/multiplex/master.js'
                             : 'js/reveal/multiplex/client.js',
                         async: true
