@@ -24,6 +24,7 @@
         <div class="reveal">
             <div class="slides">
                 <section class="title-slide" data-background-image="title-slide.png">
+                    <div style="position: absolute; top: -6em; left: 40%"><img src="qr.png" /></div>
                     <h1>PHP profiling</h1>
                     <h2>XDebug, XHprof, Blackfire</h2>
 
@@ -720,7 +721,12 @@ WHERE   date > '2017-04-01'::datetime
                 // Optional libraries used to extend on reveal.js
                 dependencies: [
                     { src: 'https://cdn.socket.io/socket.io-1.3.5.js', async: true },
-                    { src: 'js/reveal/multiplex/client.js', async: true },
+                    {
+                        src: location.protocol === 'file'
+                            ? 'js/reveal/multiplex/master.js'
+                            : 'js/reveal/multiplex/client.js',
+                        async: true
+                    },
                     {
                         src: 'js/reveal/highlight/highlight.js',
                         async: true,
@@ -731,7 +737,6 @@ WHERE   date > '2017-04-01'::datetime
                         }
                     },
                     {src: 'js/reveal/notes/notes.js', async: true},
-                    {src: 'js/reveal/notes-server/client.js', async: true}
                 ]
             });
         </script>
