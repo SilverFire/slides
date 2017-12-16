@@ -1,0 +1,193 @@
+.reveal {
+  font-family: "Bandera Pro Medium";
+  color: #353535;
+}
+p.todo {
+  color: red;
+}
+section.title-slide {
+  background: rgba(0, 0, 0, 0);
+}
+.title-slide h1,
+.title-slide h2 {
+  font-size: 100% !important;
+}
+.final-slide h1 {
+  font-size: 160% !important;
+}
+.final-slide table {
+  margin: 0;
+  width: 100%;
+}
+.final-slide table a {
+  font-size: 0.8em;
+}
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  font-family: "Bandera Pro Heavy";
+  line-height: 1.2em;
+}
+.reveal .inverted.bg {
+  background-color: #293133;
+}
+.reveal .inverted h1,
+.reveal .inverted h2,
+.reveal .inverted h3,
+.reveal .inverted h4,
+.reveal .inverted h5,
+.reveal .inverted h6,
+.reveal .inverted p,
+.reveal .inverted ul li {
+  color: #fff;
+}
+.reveal .inverted a {
+  color: #e8ff8e;
+}
+.reveal blockquote {
+  display: block;
+  background: #fff;
+  padding: 15px 20px 15px 60px;
+  position: relative;
+  /*Font*/
+  font-family: Georgia, serif;
+  line-height: 1.2;
+  color: #666;
+  text-align: justify;
+  /*Borders - (Optional)*/
+  font-size: 1em;
+  border-left: 15px solid #c76c0c;
+  border-right: 2px solid #c76c0c;
+  /*Box Shadow - (Optional)*/
+  -moz-box-shadow: 2px 2px 15px #ccc;
+  -webkit-box-shadow: 2px 2px 15px #ccc;
+  box-shadow: 2px 2px 15px #ccc;
+}
+.reveal blockquote::before {
+  content: "\201C";
+  /*Unicode for Left Double Quote*/
+  /*Font*/
+  font-family: Georgia, serif;
+  font-size: 60px;
+  font-weight: bold;
+  color: #999;
+  /*Positioning*/
+  position: absolute;
+  left: 10px;
+  top: 5px;
+}
+.reveal blockquote::after {
+  /*Reset to make sure*/
+  content: "";
+}
+.reveal blockquote a {
+  text-decoration: none;
+  background: #eee;
+  cursor: pointer;
+  padding: 0 3px;
+  color: #c76c0c;
+}
+.reveal blockquote a:hover {
+  color: #666;
+}
+.reveal blockquote em {
+  font-style: italic;
+}
+.copyright {
+  position: absolute;
+  width: 100%;
+  height: 2em;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  bottom: 0;
+  left: 0;
+}
+.shaded {
+  text-shadow: 3px 3px 5px #000 !important;
+}
+.reveal .slide-number {
+  position: absolute;
+  top: .5em;
+  right: .5em;
+  bottom: inherit;
+  background: rgba(255, 255, 255, 0.3);
+  font-size: 200%;
+  color: #00BCD4;
+  text-shadow: #607D8B 1px 1px;
+}
+.title-slide a {
+  padding: 8px 16px;
+}
+.text-blue {
+  color: #0029bc;
+}
+.text-green {
+  color: #00bc36;
+}
+.text-red {
+  color: #f90000;
+}
+.bold {
+  font-weight: bold !important;
+}
+p.small,
+ul.small {
+  font-size: 60%;
+}
+p.big {
+  font-size: 130%;
+}
+div.inline {
+  display: inline-block;
+}
+span.comment::before {
+  content: '(';
+}
+span.comment::after {
+  content: ')';
+}
+span.comment {
+  color: red;
+  font-size: 50%;
+}
+.reveal .slides section .fragment.highlight-tomato,
+.reveal .slides section .fragment.highlight-current-tomato {
+  opacity: 1;
+  visibility: visible;
+}
+.reveal .slides section .fragment.highlight-tomato.visible {
+  color: #ff6347;
+}
+.reveal .slides section .fragment.highlight-current-tomato.current-fragment,
+.reveal .slides section .fragment.highlight-current-tomato.current-fragment * {
+  color: #ff6347;
+}
+.reveal pre.highlight {
+  padding: 5px;
+}
+.reveal code {
+  display: inline;
+}
+.reveal pre code {
+  max-height: 650px;
+}
+@font-face {
+  font-family: 'Bandera Pro';
+  src: url("../fonts/BanderaPro.otf") format("opentype");
+}
+@font-face {
+  font-family: 'Bandera Pro';
+  font-weight: bold;
+  src: url("../fonts/BanderaPro-Bold.otf") format("opentype");
+}
+@font-face {
+  font-family: 'Bandera Pro Heavy';
+  src: url("../fonts/BanderaProHeavy.otf") format("opentype");
+}
+@font-face {
+  font-family: 'Bandera Pro Medium';
+  src: url("../fonts/BanderaProMedium.otf") format("opentype");
+}
