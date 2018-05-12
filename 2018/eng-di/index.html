@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+    <head>
+        <meta charset="utf-8">
+
+        <title>Dependency Injection</title>
+
+        <meta name="description" content="Slides for Dependency Injection presentation">
+        <meta name="author" content="Dmytro Naumenko">
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="css/all.css">
+
+        <script>
+            document.write( '<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+        </script>
+    </head>
+
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section class="title-slide">
+                    <h1>Dependency Inversion <br /> and Injection Container</h1>
+
+                    <p><a href="https://github.com/SilverFire">Dmytro Naumenko</a></p>
+                    <p>
+                        <small>
+                            <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
+                        </small>
+                    </p>
+                </section>
+
+                <section class="inverted bg">
+                    <h3>OOP, DI, DiP, IoC, DIC, SOLID</h3>
+                </section>
+
+                <section>
+                    <h2>Dependencies</h2>
+
+                    <p class="big fragment" data-fragment-index="1">
+                        Class <span class="text-green bold">A</span>
+                        <span class="bold">depends on</span>
+                        class <span class="text-blue bold">B</span>
+                        <br/>
+                        <img src="a_uses_b.png">
+                    </p>
+                </section>
+
+                <section>
+                    <h3>Doors with electric lock</h3>
+
+                    <ul>
+                        <li>Web-page with a button. Send "open" request on click.</li>
+                        <li>Open lock when it's allowed.</li>
+                        <li>Result on screen.</li>
+                    </ul>
+                </section>
+
+                <section data-background-image="cupcake.jpg" class="inverted">
+                    <h3 class="shaded">Easy-peasy!</h3>
+                    <h3 class="shaded">It will be a cake!</h3>
+
+                    <!-- https://www.flickr.com/photos/zigazou76/5846249822/ -->
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+public function actionOpen() {
+    $result = false;
+    <span class="fragment highlight-current-tomato" data-fragment-index="1">$canBeOpened = HourSettings::find()->select('can_be_opened')
+                        ->where(<span class="fragment highlight-current-tomato" data-fragment-index="3">['hour' => date('H')]</span>)->scalar();</span>
+
+    <span class="fragment highlight-current-tomato" data-fragment-index="3">if ($canBeOpened) {</span>
+        <span class="fragment highlight-current-tomato" data-fragment-index="2">$fd = dio_open('<span class="fragment highlight-current-tomato" data-fragment-index="4">/dev/ttyS0</span>', O_RDWR | O_NOCTTY | O_NONBLOCK);
+        dio_fcntl($fd, F_SETFL, O_SYNC);
+        dio_tcsetattr($fd, <span class="fragment highlight-current-tomato" data-fragment-index="4">['baud' => 9600, 'bits' => 8]</span>);
+        dio_write($fd, "OPEN\n");
+        $result = dio_read($fd, 3) === "1\n";
+        dio_close($fd);</span>
+    <span class="fragment highlight-current-tomato" data-fragment-index="3">}</span>
+
+    <span class="fragment highlight-current-tomato" data-fragment-index="5">return $this->render('open', ['result' => $result]);</span>
+}
+</pre>
+
+                    <ul>
+                        <li class="fragment" data-fragment-index="1">Data</li>
+                        <li class="fragment" data-fragment-index="2">Domain logic</li>
+                        <li class="fragment" data-fragment-index="3">Business logic</li>
+                        <li class="fragment" data-fragment-index="4">Configuration</li>
+                        <li class="fragment" data-fragment-index="5">Layout</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="poopcake.jpg" />
+
+                    <!-- https://www.flickr.com/photos/sarahcb21/13070419435/ -->
+                </section>
+
+                <section>
+                    <h3>Problems:</h3>
+
+                    <ul>
+                        <li>No architecture</li>
+                        <li>Everything is mixed up</li>
+                        <li>No way to test</li>
+                        <li>In future &mdash; copy-paste, bugs and pains</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Let's make it better from the scratch</h3>
+                </section>
+
+                <section>
+                    <h1><span class="fragment highlight-tomato" data-fragment-index="1">S</span>OLID</h1>
+
+                    <h3 class="fragment" data-fragment-index="1">The Single Responsibility Principle</h3>
+                </section>
+
+                <section>
+                    <h3>Separate</h3>
+
+                    <pre class="highlight php">
+class DoorManager
+{
+    public function open()
+    {
+        $door = new Door();
+        return $door->open();
+    }
+}</pre>
+                    <pre class="highlight php">
+public function actionOpen()
+{
+    $doorManager = new DoorManager();
+    return $doorManager->open();
+}</pre>
+
+                    <p class="fragment" data-fragment-index="1">
+                        <span class="text-red">actionOpen()</span> depends on <span class="text-green">DoorManager</span>
+                    </p>
+                    <p class="fragment" data-fragment-index="1">
+                        <span class="text-green">DoorManager</span> depends on <span class="text-blue">Door</span>
+                    </p>
+                </section>
+
+                <section>
+                    <h3>Relations:</h3>
+
+                    <img src="relations.png" style="height: 500px" />
+
+                    <ul>
+                        <li>High Cohesion</li>
+                        <li>Low Coupling</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <blockquote>
+                        Button is not secure!
+                        <br>
+                        Go give RFID for everyone and make some logging!
+                    </blockquote>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+class DoorManager
+{
+    public function open(RfidKey $rfid)
+    {
+        $door = new Door();
+        $log = new EmailAccessLogger('alert@superdoors.com');
+        $auth = new RfidAuthenticator($rfid, [
+            'users' => User::find()->where(['active' => 1])->all()
+        ]);
+
+        if ($auth->canOpenDoor($door)) {
+            $log->accessGranted($door, $rfid);
+            return $door->open();
+        } else {
+            $log->accessDenied($door, $rfid);
+            return false;
+        }
+    }
+}</pre>
+                </section>
+
+                <section>
+                    <h2>More dependencies</h2>
+
+                    <img src="door_manager.png" />
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>task solved</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>The <code>open()</code> method is &ndash; godlike</li>
+                                    <li>Introduced High Coupling</li>
+                                    <li>Data, business logic and configuration are mixed up</li>
+                                    <li>No way to test</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <blockquote>Hey, we also need a button to lock a door...</blockquote>
+                </section>
+
+                <section data-background-image="pain.jpg" class="inverted">
+                    <h3 class="shaded">Business always brings
+                        <span class="fragment strike semi-fade-out" data-fragment-index="1">pain</span><br />
+                        <span class="fragment fade-up" data-fragment-index="1">
+                            <span class="text-green">new requirements</span>
+                        </span>
+                    </h3>
+                    <br />
+                    <br />
+                    <h3 class="fragment" data-fragment-index="2">
+                        <span style="text-decoration: underline">Bad code</span> brings <span class="text-red">pain</span>
+                    </h3>
+                </section>
+
+                <section>
+                    <small>Applications architecture.<br />How to pretend it was meant to be like this.</small>
+                    <img src="book.png" alt="">
+                </section>
+
+                <section>
+                    <h3>Evolution of dependencies management</h3>
+                </section>
+
+                <section>
+                    <h4>Initialization in constructors</h4>
+
+                    <pre class="highlight php">
+class DoorManager {
+    private $door; // key, auth, log
+
+    public function __construct(RfidKey $key) {
+        $this->key = $key;
+        $this->door = new Door();
+        $this->log = new EmailAccessLogger('alert@superdoors.com');
+        $this->auth = new RfidAuthenticator($this->key, [
+            'users' => User::find()->where(['active' => 1])->all()
+        ]);
+    }
+
+    public function open() {
+        if ($this->auth->canOpenDoor($this->door)) {
+            $this->log->accessGranted($this->door, $this->rfid);
+            $this->door->open();
+        } else {
+            $this->log->accessDenied($this->door, $this->rfid);
+        }
+    }
+
+    public function close() { } // implementation
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>Task solved</li>
+                                    <li><code>open()</code> method is not godlike</li>
+                                    <li><code>close()</code> method will not be a copy-paste of <code>open()</code></li>
+                                    <li>Can be tested by mocking objects in class properties</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>Constructor is now godlike</li>
+                                    <li>Data, business logic and configuration are mixed up</li>
+                                    <li>High Coupling</li>
+                                    <li>Testable, but not convenient</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <blockquote>
+                        <br /> Magnetic lock will be installed on part of the doors.
+                        <br /> Almost everything is the same.
+                        <br />
+                        <small style="display: block; text-align: right;"><span class="fragment" data-fragment-index="1">* only the protocol differs</span></small>
+                    </blockquote>
+                </section>
+
+                <section>
+                    <h4>Possible solutions:</h4>
+
+                    <ul>
+                        <li>Add <code>if</code> condition inside <code>Door</code> class</li>
+                        <li>Add <code>if</code> before <code>Door()</code> object creation</li>
+                        <li>Create two code branches: <code>master</code> and <code>magnet-door-master</code></li>
+                        <li>Create something like <code>MagnetDoorManager</code></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h1>SOLI<span class="fragment highlight-tomato" data-fragment-index="1">D</span></h1>
+
+                    <h3 class="fragment" data-fragment-index="1">The Dependency Inversion Principle</h3>
+                </section>
+
+                <section>
+                    <p>
+                        <strong>Dependency Inversion Principle</strong> &mdash; principle in object-oriented
+                        development, used to reduce coupling in programs.
+                    </p>
+                </section>
+
+                <section>
+                    <h4>Ideas:</h4>
+
+                    <ul>
+                        <li>High-level modules should not depend on low-level modules. Both should depend on abstractions.</li>
+                        <li>Abstractions should not depend on details. Details should depend on abstractions.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Without DI:</h3>
+                    <p>The object itself creates objects that it needs, then it can use them.</p>
+                </section>
+
+                <section>
+                    <h3>With DI:</h3>
+                    <p>Objects get dependencies from outside and uses them.</p>
+                </section>
+
+                <section>
+                    <h3>Create abstractions</h3>
+
+                    <pre class="highlight php">
+interface DoorInterface {
+    public function open();
+    public function close();
+}
+
+class Door implements DoorInterface {
+    public function open() { } // implementation
+    public function close() { } // implementation
+}
+
+class MagnetDoor implements DoorInterface {
+    public function open() { } // implementation
+    public function close() { } // implementation
+}
+
+class FakeDoor implements DoorInterface { // for testing purpose
+    public function open() { return true; }
+    public function close() { return true; }
+}</pre>
+                </section>
+
+                <section>
+                    <h3>Change constructor</h3>
+
+                    <pre class="highlight php">
+class DoorManager {
+    private $door; // key, auth, log
+
+    public function __construct(DoorInterface $door, RfidKey $key) {
+        $this->door = $door;
+        $this->key = $key;
+        $this->log = new EmailAccessLogger('alert@superdoors.com');
+        $this->auth = new RfidAuthenticator($this->key, [
+            'users' => User::find()->where(['active' => 1])->all()
+        ]);
+    }
+}</pre>
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $key = new RfidKey($keySecret);
+    $door = new MagnetDoor();
+
+    $doorManager = new DoorManager($door, $key);
+    return $doorManager->open();
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>Task solved</li>
+                                    <li>Constructor does not create <code>Door</code> code anymore.</li>
+                                    <li>Code does not depend on <code>DoorInterface</code> implementation.</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>Constructor is still godlike.</li>
+                                    <li>Data, business logic and configuration are still mixed up.</li>
+                                    <li><code>DoorManager</code> creation is more complex now.</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <p>
+                        <strong>Dependency Injection</strong>
+                        &mdash; is a <span class="fragment highlight-blue" data-fragment-index="1">set of practices</span>,
+                        that helps to build applications with low coupling.
+                    </p>
+
+                    <table class="fragment current-visible" data-fragment-index="1">
+                        <tr>
+                            <td>
+                                <span class="text-red">it's not only a</span>:
+                                <ul>
+                                    <li>pattern</li>
+                                    <li>library</li>
+                                    <li>framework feature</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-green">it's</span>:
+                                <ul>
+                                    <li>recommendation</li>
+                                    <li>a way how to design code</li>
+                                    <li>a way of thinking</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h1>DI variations</h1>
+                </section>
+
+                <section>
+                    <h3>DI through setters</h3>
+
+                    <pre class="highlight php">
+class DoorManager {
+    private $door;
+    private $key;
+    private $auth;
+    private $log;
+
+    public function __construct(DoorInterface $door) { }
+
+    public function setKey(KeyInterface $key) { }
+    public function setAuth(AuthManagerInterface $auth) { }
+    public function setLog(LoggerInterface $log) { }
+}</pre>
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $door = $this->getDoor();
+    $doorManager = new DoorManager($door);
+    $doorManager->setKey(new RfidKey($keySecret));
+    // ...
+    return $doorManager->open();
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>No godlike methods</li>
+                                    <li><code>DoorManager</code> does not depend on implementations</li>
+                                    <li>Dependencies are optional</li>
+                                    <li>Oh, it's easier to write tests</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li><code>DoorManager</code> initialisation complicated a lot</li>
+                                    <li>Dependencies are optional</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h4 class="fragment strike semi-fade-out" data-fragment-index="1">Dependencies are optional</h4>
+
+                    <pre class="highlight php fragment semi-fade-out" data-fragment-index="1">
+public function open()
+{
+    if ($this->log !== null) {
+        $this->log->accessGranted($this->door, $this->key);
+    }
+}</pre>
+                    <h4 class="fragment fade-down" data-fragment-index="2">You don't need optional dependencies!</h4>
+
+                    <pre class="highlight php fragment fade-down" data-fragment-index="3">
+class FakeLogger implements LoggerInterface
+{
+    public function accessGranted(DoorInterface $door, KeyInterface $key)
+    {
+        return true;
+    }
+}</pre>
+                </section>
+
+                <section>
+                    <h4>DI through constructor</h4>
+
+                    <pre class="highlight php">
+class DoorManager {
+    private $door; // key, auth, log
+
+    public function __construct(
+        KeyInterface $key,              DoorInterface $door,
+        AuthManagerInterface $auth,     LoggerInterface $log,
+    ) {
+        $this->door = $door; // key, auth, log
+    }
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>removed setters, that can give undefined state</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li><code>DoorManager</code> initialisation is still complex</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h4>How do we create DoorManager now?</h4>
+
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $key = new RfidKey($keySecret);
+    $door = new MagnetDoor('some-door-id');
+
+    $users = User::find()->active()->all();
+    $auth = new RfidAuthenticator($key, $users);
+    $log = new EmailAccessLogger('alert@superdoors.com');
+
+    $doorManager = new DoorManager($key, $door, $auth, $log);
+    return $doorManager->open();
+}</pre>
+
+                    <ul class="fragment" data-fragment-index="1">
+                        <li>Dependencies are being created outside of the class</li>
+                        <li class="fragment" data-fragment-index="2"><code>actionOpen</code> method is godlike again</li>
+                        <li class="fragment" data-fragment-index="3">Should we copy-paste it in <code>actionClose</code>?...</li>
+                    </ul>
+                </section>
+
+                <section data-background="way_to_nowhere.jpg" class="inverted">
+                    <h3>Looks like a way to nowhere</h3>
+
+                    <!-- http://flic.kr/p/MdU6ff -->
+                </section>
+
+                <section data-background="containers.jpg" class="inverted">
+                    <h1 class="shaded">DiC!</h1>
+                    <h4 class="shaded">Dependency injection Container</h4>
+
+                    <!-- https://flic.kr/p/ahGVdG -->
+                </section>
+
+                <section>
+                    <p>
+                        <span class="text-green">Dependency Injection Container</span> &mdash; class that manages other objects creation.
+                    </p>
+                </section>
+
+                <section>
+                    <h3>Our <code>actionOpen()</code></h3>
+
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $key = new RfidKey($keySecret);
+    $door = new MagnetDoor('some-door-id');
+
+    $users = User::find()->active()->all();
+    $auth = new RfidAuthenticator($key, $users);
+    $log = new EmailAccessLogger('alert@superdoors.com');
+
+    $doorManager = new DoorManager($key, $door, $auth, $log);
+    return $doorManager->open();
+}</pre>
+                </section>
+
+                <section>
+                    <h4>Handmade DIC</h4>
+
+                    <pre class="highlight php">
+class Container {
+    /** @return KeyInterface */
+    public function getKey($keySecret) {
+        return new RfidKey($keySecret);
+    }
+    /** @return AuthManagerInterface */
+    public function getAuthenticator($key, $users) {
+        return new RfidAuthenticator($key, $users);
+    }
+    /** @return LoggerInterface */
+    public function getLogger() {
+        return new EmailAccessLogger('alert@superdoors.com');
+    }
+    /** @return DoorInterface */
+    public function getDoor() {
+        return new MagnetDoor('some-door-id');
+    }
+    /** @return DoorManagerInterface */
+    public function getDoorManager($keySecret, $users) {
+        $key = $this->getKey($keySecret);
+        $door = $this->getDoor();
+        $auth = $this->getAuthenticator($key, $users);
+        $logger = $this->getLogger();
+
+        return new DoorManager($key, $door, $auth, $logger);
+    }
+}</pre>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $container = new Container();
+
+    $users = User::find()->active()->all();
+    $doorManager = $container->getDoorManager($keySecret, $users);
+
+    return $doorManager->open();
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="50%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>Controller does not depend on implementations</li>
+                                    <li>Single point of dependencies management and configuration</li>
+                                    <li>Easier to test</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>Definition is too imperative</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <p>Why do we always re-create objects, that will not be changed in the query context?</p>
+                </section>
+
+                <section>
+                    <h3>Container can store object after creation:</h3>
+
+                    <pre class="highlight php">
+class Container {
+    private $logger;
+
+    /** @return LoggerInterface */
+    public function getLogger()
+    {
+        if (!isset($this->logger)) {
+            $this->logger = new EmailAccessLogger('alert@superdoors.com')
+        }
+        return $this->logger;
+    }
+}
+}</pre>
+                </section>
+
+                <section>
+                    <h3>Object can be saved after creation if:</h3>
+
+                    <ul>
+                        <li>In can be pre-configured</li>
+                        <li>It is valid during runtime</li>
+                        <li>If you want to make a singleton</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Classical examples:</h3>
+
+                    <ul>
+                        <li>Logger</li>
+                        <li>Mailer</li>
+                        <li>Cache</li>
+                        <li>Session</li>
+                        <li>DB</li>
+                        <li>...</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Reflection</h3>
+
+                    <img src="reflection.JPG" />
+                </section>
+
+                <section>
+                    <pre class="highlight php" >
+function getDependencies($class)
+{
+    $dependencies = [];
+    $reflection = new ReflectionClass($class);
+
+    $constructor = $reflection->getConstructor();
+    if ($constructor !== null) {
+        foreach ($constructor->getParameters() as $param) {
+            $c = $param->getClass();
+            if ($c instanceof \ReflectionClass) {
+                $dependencies[] = $c->getName();
+            }
+        }
+    }
+
+    return $dependencies;
+}</pre>
+                </section>
+
+
+                <section data-background-image="implementations.jpg" class="inverted">
+                    <h4 class="shaded">Different DI implementations:</h4>
+
+                    <ul class="shaded">
+                        <li><a href="http://www.yiiframework.com/doc-2.0/guide-concept-di-container.html">Yii DI</a></li>
+                        <li><a href="http://php-di.org/">PHP-DI</a></li>
+                        <li><a href="http://pimple.sensiolabs.org/">Pimple</a></li>
+                        <li><a href="https://github.com/illuminate/container">Illuminate\Container</a></li>
+                        <li><a href="http://container.thephpleague.com/">league\container</a></li>
+                        <li><a href="http://symfony.com/doc/current/components/dependency_injection.html">Symfony\DependencyInjection</a></li>
+                        <li><a href="https://zendframework.github.io/zend-di/">zend-di</a></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>So let's finish our example</h3>
+
+                    <p>Configure DiC</p>
+                    <pre class="highlight php">
+$c = new Container;
+
+// interface to concrete implementation
+$c->set(KeyInterface::class, RfidKey::class);
+$c->set(AuthManagerInterface::class, RfidAuthenticator::class);
+// same for Logger, Door
+
+// interface to concrete implementation - with complex initialisation
+$c->set(DoorManagerInterface::class, function ($cont, $params) {
+    // DoorManager constructor params order:
+    // 0 - Key, 1 - Door, 2 - Auth, 3 - Logger
+    $params[2] = $cont->get(AuthManagerInterface::class, [$params[0]]);
+
+    return $cont->get(DoorManager::class, $params);
+});
+</pre>
+                </section>
+
+                <section>
+                    <pre class="highlight php">
+public function actionOpen($keySecret)
+{
+    $container = $this->container;
+
+    $key = $container->get(KeyInterface::class, [$keySecret]);
+    $doorManager = $container->get(DoorManagerInterface::class, [$key]);
+
+    return $doorManager->open();
+}</pre>
+                </section>
+
+                <section>
+                    <table>
+                        <tr>
+                            <td width="80%">
+                                <span class="text-green">Win:</span>
+
+                                <ul>
+                                    <li>No godlike methods (finally)</li>
+                                    <li>Low Coupling</li>
+                                    <li>Interaction with abstractions</li>
+                                    <li>No <code class="highlight php">new Something()</code> &rarr; testable in isolation</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <span class="text-red">Lose:</span>
+
+                                <ul>
+                                    <li>A bit complex :)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h3>DiC &mdash; root of composition in your application.</h3>
+
+                    <h4>Don't use DiC in modules, that implement specific tasks.</h4>
+                </section>
+
+                <section data-background="hdmi.jpg" class="inverted">
+                    <h3 class="shaded">Expect <span class="text-green">interfaces</span>, not implementations.</h3>
+                </section>
+
+                <section data-background="no_data.jpg" class="inverted">
+                    <h3 class="shaded">Don't store data in DiC.</h3>
+                </section>
+
+                <section data-background="minions.jpg" class="inverted">
+                    <h3 class="shaded">Don't be afraid to create many small classes.</h3>
+                </section>
+
+                <section data-background="yoga.jpg" class="inverted">
+                    <h3 class="shaded">Don't be carried away with abstractions. You always pay with complexity for flexibility.</h3>
+                </section>
+
+                <section data-background="inspiration.jpg" class="inverted">
+                    <h3 class="shaded">Learn, share experience and make great things!</h3>
+                </section>
+
+                <section class="final-slide">
+                    <h1>Questions?</h1>
+
+                    <table>
+                        <tr>
+                            <td style="width: 30%"><img src="qr.svg" /></td>
+                            <td style="vertical-align: top;">
+                                <ul>
+                                    <li><a href="https://github.com/SilverFire">SilverFire@GitHub</a></li>
+                                    <li><a href="http://www.yiiframework.com/">Yii Framework</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+            </div>
+
+        </div>
+
+        <script src="js/all.js"></script>
+
+        <script>
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+                margin: 0.1,
+                slideNumber: true,
+
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    {
+                        src: 'js/reveal/highlight/highlight.js',
+                        async: true,
+                        callback: function () {
+                            [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                                hljs.highlightBlock(v);
+                            });
+                        },
+                    },
+                    { src: 'js/reveal/notes/notes.js', async: true},
+                ],
+            });
+        </script>
+    <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    </body>
+</html>
