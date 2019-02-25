@@ -72,10 +72,29 @@ a:not(.image):hover {
 a.youtube:before {
     content: ' ';
     background: url(../img/YouTube-icon-dark.png) no-repeat;
+    filter: brightness(200%);
     width: 28px;
     height: 22px;
     background-size: contain;
     display: inline-block;
     vertical-align: middle;
     margin: 0 2px;
+}
+a.youtube:hover:before {
+    filter: brightness(100%);
+}
+
+a.joindin:before {
+    content: ' ';
+    background: url(../img/joindin.png) no-repeat;
+    width: 28px;
+    height: 22px;
+    background-size: contain;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 2px;
+}
+
+a.joindin:hover:before {
+    filter: brightness(110%);
 }
