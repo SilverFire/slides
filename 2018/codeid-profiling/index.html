@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <title>PHP profiling using XDebug, XHprof, Blackfire</title>
+
+        <meta name="description" content="PHP profiling using XDebug, XHprof, Blackfire">
+        <meta name="author" content="Dmytro Naumenko">
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="css/all.css">
+
+        <script>
+            document.write( '<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+        </script>
+    </head>
+
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section class="title-slide">
+                    <h1>PHP profiling</h1>
+                    <h2>XDebug, XHprof, Blackfire</h2>
+
+                    <p><a href="https://github.com/SilverFire">Dmytro Naumenko</a></p>
+                    <p>
+                        <small>
+                            <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
+                        </small>
+                    </p>
+                </section>
+
+                <section>
+                    <h3>Today we'll cover:</h3>
+                    <ul>
+                        <li>What is profiling and why do we need it?</li>
+                        <li>How to profile?</li>
+                        <li>How to view and analyze profiling results?</li>
+                        <li>What are common bottlenecks in our code?</li>
+                        <li>How to maintain performance?</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Why profile if application works fast?</h3>
+                </section>
+
+                <section>
+                    <h2>Fast?</h2>
+                    <h2>How fast?</h2>
+                </section>
+
+                <section>
+                    <h4>0.5 second &mdash; is it fast enough?</h4>
+                </section>
+
+                <section>
+                    <h2>«Everything is relative»</h2>
+                    <h4 style="text-align: right; color: #8F8F8F">Albert Einstein</h4>
+
+                    <aside class="notes">
+                        Trends, expectations, requirements.<br />
+                        Everyone decides for himself
+                    </aside>
+                </section>
+
+                <section>
+                    <h3>Why optimizing?</h3>
+
+                    <ul>
+                        <li class="fragment" data-fragment-index="1">faster response</li>
+                        <li class="fragment" data-fragment-index="2">more RPS</li>
+                        <li class="fragment" data-fragment-index="3">save resources → money</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Profiling</h2>
+                    <p>
+                        &mdash; is the process of application runtime characteristics measurement
+                        for performance analysis and optimization
+                    </p>
+                </section>
+
+                <section>
+                    <p>Profilers are a source of knowledge on:</p>
+                    <ul>
+                        <li>where</li>
+                        <li>on which operations</li>
+                        <li>and how much</li>
+                    </ul>
+                    <p>resources are spent during an application run</p>
+                </section>
+
+                <section>
+                    <h4>Ha, I don't need profiler to know where the bottleneck is.</h4>
+                    <h4>I'll fix it right now.</h4>
+
+                    <p class="fragment" data-fragment-index="1">
+                        Nope. Probably nope. The whole application optimization
+                        without profiling is a shooting in the dark.
+                    </p>
+                </section>
+
+                <section>
+                    <h4>What application parameters might be of interest?</h4>
+
+                    <ul>
+                        <li class="fragment" data-fragment-index="1">execution time</li>
+                        <li class="fragment" data-fragment-index="2">CPU time</li>
+                        <li class="fragment" data-fragment-index="3">memory usage</li>
+                        <li class="fragment" data-fragment-index="4">disk operations time (IO)</li>
+                        <li class="fragment" data-fragment-index="5">network time</li>
+                        <li class="fragment" data-fragment-index="6">DBMS response time*</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>How it works?</h3>
+
+                    <ul>
+                        <li>Profiler is a special C app, compiled as PHP extension</li>
+                        <li>Runs on demand or for every request and records metrics necessary.</li>
+                        <li>Records data in a profiling log</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>How to profile in PHP?</h2>
+
+                    <ul class="fragment" data-fragment-index="1">
+                        <li>PHP itself</li>
+                        <li>XDebug</li>
+                        <li>XHprof</li>
+                        <li>Blackfire</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>PHP itself</h2>
+
+                    <pre class="highlight php">
+
+  $start = microtime(true);
+  $this->check();
+  $time = microtime(true) - $start;
+                    </pre>
+                </section>
+
+                <section>
+                    <h1>XDebug</h1>
+                    <ul>
+                        <li><a href="https://xdebug.org/">xdebug.org</a></li>
+                        <li><a href="https://xdebug.org/docs/">docs</a></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Not a profiler.</h2>
+                    <h4 class="fragment" data-fragment-index="1">Debugger with a profile function</h4>
+                </section>
+
+                <section>
+                    <h2>Why not?</h2>
+                    <ul>
+                        <li class="fragment" data-fragment-index="1">huge overhead (app execution time &times; 2+)</li>
+                        <li class="fragment" data-fragment-index="2">optimization for XDebug is 90% useless for when it gets disabled</li>
+                        <li class="fragment" data-fragment-index="3">not for production server</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>But if you still debug with print...</h2>
+                </section>
+
+                <section>
+                    <h3>Must have for debug!</h3>
+                    <h4>Supported by:</h4>
+                    <ul>
+                        <li><a href="https://www.jetbrains.com/help/phpstorm/2017.1/configuring-xdebug.html">PHPStorm</a></li>
+                        <li><a href="https://netbeans.org/kb/docs/php/debugging.html">NetBeans</a></li>
+                        <li><a href="https://atom.io/packages/php-debug">Atom</a></li>
+                        <li><a href="https://github.com/martomo/SublimeTextXdebug">Sublime Text</a></li>
+                        <li><a href="https://c9.io/blog/debug-your-php-code-with-xdebug-and-cloud9/">Cloud9</a></li>
+                        <li><a href="https://github.com/joonty/vdebug">vim</a></li>
+                        <li>...</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Step-by-step debug</h3>
+
+                    <img src="xdebug_breakpoint.png" />
+                </section>
+
+                <section>
+                    <h2>Stacktrace</h2>
+
+                    <img src="xdebug_stacktrace.png" />
+                </section>
+
+                <section>
+                    <h4>View & modify variables in scope</h4>
+                    <img src="xdebug.png" />
+                </section>
+
+                <section>
+                    <h1>XHprof</h1>
+                    <ul>
+                        <li><a href="https://pecl.php.net/package/xhprof">XHprof on PECL</a></li>
+                        <li><a href="http://php.net/xhprof">Docs on PHP.net</a></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Advantages:</h3>
+
+                    <ul>
+                        <li>minimal overhead (~10%)</li>
+                        <li>may be used on production</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Disadvantages:</h3>
+
+                    <ul>
+                        <li>
+                            does not support PHP 7 officially.
+                            <div style="display: inline;" class="fragment" data-fragment-index="1">
+                                Forks do:
+                                <ul style="margin: 0;">
+                                    <li><a href="https://tideways.io/profiler/xhprof-for-php7-php5.6">Tideways.io</a></li>
+                                    <li><a href="https://github.com/RustJason/xhprof">RustJason/xhprof</a></li>
+                                </ul>
+
+                            </div>
+                        </li>
+                        <li>can measure execution and CPU time and memory<span class="fragment" data-fragment-index="2">, but usually it's enough</span></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Easy to start!</h4>
+
+                    <p>Configure your php.ini</p>
+                    <pre class="highlight apache">
+[xhprof]
+extension=xhprof.so
+xhprof.output_dir="/tmp/xhprof"</pre>
+
+                    <p>Enable in application entry script</p>
+                    <pre class="highlight php">
+&lt;?php
+
+xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
+(new Application())->run();
+$xhprof_data = xhprof_disable();</pre>
+                </section>
+
+                <section>
+                    <h4>xhprof_disable() returns array of calls</h4>
+                    <pre class="highlight">
+["yii\base\Module::runAction==>yii\base\Controller::runAction"] =>
+    array(5) {
+        ["ct"] => int(1)
+        ["wt"] => int(6718)
+        ["cpu"] => int(6720)
+        ["mu"] => int(617624)
+        ["pmu"] => int(672904)
+    }</pre>
+                    <hr class="fragment" data-fragment-index="1" />
+                    <ul class="fragment" data-fragment-index="1">
+                        <li><em>ct</em> &ndash; called times</li>
+                        <li><em>wt</em> &ndash; wall time, microseconds</li>
+                        <li><em>cpu</em> &ndash; CPU time, microseconds</li>
+                        <li><em>mu</em> &ndash; memory usage, bytes</li>
+                        <li><em>pmu</em> &ndash; peak memory usage, bytes</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>So what's next?</h4>
+                    <h3 class="fragment" data-fragment-index="1">Save!</h3>
+
+                    <pre class="highlight smaller fragment" data-fragment-index="2">
+    &lt;?php
+    xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
+    (new Application())->run();
+    $xhprof_data = xhprof_disable();
+
+    $XHPROF_LIB_ROOT = "/opt/xhprof/xhprof_lib";
+    include_once $XHPROF_LIB_ROOT . "/utils/xhprof_lib.php";
+    include_once $XHPROF_LIB_ROOT . "/utils/xhprof_runs.php";
+
+    $xhprof_runs = new XHProfRuns_Default();
+    $run_id = $xhprof_runs->save_run($xhprof_data, 'my_application');</pre>
+
+                    <p class="fragment small" data-fragment-index="3">
+                        These PHP files are available in
+                        <a href="https://github.com/phacility/xhprof/tree/master/xhprof_lib/utils">XHprof repository</a>.
+                        You can either require them or put them in the project. You can even modify them.
+                    </p>
+                </section>
+
+                <section>
+                    <h3>How to check results?</h3>
+
+                    <p>
+                        Take <strong>xhprof_lib</strong> and <strong>xhprof_html</strong> directories from the same
+                        <a href="https://github.com/phacility/xhprof/tree/master/xhprof_lib/utils">repo</a>,
+                        and start a web-server with root in <strong>xhprof_html</strong>.
+                    </p>
+                </section>
+
+                <section>
+                    <img src="xhprof_default_ui.png">
+                </section>
+
+                <section>
+                    <p>Knowing profile IDs you can compare two of them:</p>
+                    <pre class="highlight smaller">http://xhprof.localhost/index.php?run1=__ID1__&run2=__ID2__</pre>
+                </section>
+
+                <section>
+                    <img src="xhprof_diff_1.png" />
+
+                    <img src="xhprof_diff_2.png" />
+                </section>
+
+                <section>
+                    <h3>Em... Not cool.</h3>
+                    <h4>Is there something fancy?</h4>
+                </section>
+
+                <section>
+                    <h3>Ofc! Get graphviz:</h3>
+                    <pre class="highlight">apt-get install graphviz</pre>
+                </section>
+
+                <section>
+                    <p>
+                        Then click <span style="color: darkblue">[View Full Callgraph]</span>
+                        on the profile page and get...
+                    </p>
+                </section>
+
+                <section>
+                    <img src="xhprof_view_callgraph.png" />
+                </section>
+
+                <section data-background="xhprof_default_ui_graph_all.png"></section>
+
+                <section data-background="xhprof_cat.jpg"></section>
+
+                <section>
+                    <h5>Keep calm and read:</h5>
+                    <p><img src="xhprof_default_ui_graph_small.png" /></p>
+                    <ul>
+                        <li>Class and method name</li>
+                        <li>Execution time including calls from this method</li>
+                        <li>Execution time excluding calls from this method</li>
+                        <li>Method calls number</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="xhprof_callgraph_zoomed.png" />
+                </section>
+
+                <section>
+                    <h3>Can we get even more information?</h3>
+                </section>
+
+                <section>
+                    <p>Drawer uses PHP and it's OpenSource so you can easily add CPU, RAM usage or whatever.</p>
+                </section>
+
+                <section>
+                    <img src="blackfire-io_primary_square.png" style="max-width: 350px;"/>
+                    <h1>Blackfire</h1>
+                    <ul>
+                        <li><a href="https://blackfire.io">blackfire.io</a></li>
+                        <li><a href="https://blackfire.io/docs/introduction">Docs</a></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <ul>
+                        <li>Started as XHprof fork, but was rewritten</li>
+                        <li>Is a product of Sensio Labs</li>
+                        <li>Small overhead</li>
+                        <li>Can be used on production servers</li>
+                        <li>Linux, FreeBSD, Windows, MacOS support</li>
+                        <li>PHP 7 support</li>
+                        <li>It's freemium. Wall time and memory usage for free. CPU, IO, network and other features starts from 19,90€</li>
+                        <li>Quite good documentation</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>How to install?</h2>
+                    <ul>
+                        <li>Described very well in <a href="https://blackfire.io/docs/up-and-running/installation">the manual</a></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Blackfire consists of</h4>
+                    <ul>
+                        <li>Website to view and analyze saved profiles</li>
+                        <li>PHP extension</li>
+                        <li>Agent to send saved profiles to the website</li>
+                        <li>Chrome extension</li>
+                        <li>CLI tools</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Turns on by trigger</h3>
+
+                    <img src="blackfire_chrome.png" />
+
+                    <img src="blackfire_topbar.png" class="fragment" data-fragment-index="1" />
+                </section>
+
+                <section>
+                    <img src="blackfire_profile.png" />
+                </section>
+
+                <section>
+                    <img src="blackfire_details.png" />
+                </section>
+
+                <section>
+                    <img src="blackfire_expand.png" />
+                </section>
+
+                <section>
+                    <h4>Profiles comparision</h4>
+                    <img src="blackfile_compare.png" />
+                </section>
+
+                <section>
+                    <h4>How had I reached 10x speedup?</h4>
+                    <p class="fragment" data-fragment-index="2" style="text-align: left; -webkit-transform: rotate(180deg);-moz-transform: rotate(180deg);-ms-transform: rotate(180deg);-o-transform: rotate(180deg);transform: rotate(180deg);;">Disabled xDebug</p>
+                </section>
+
+                <section>
+                    <h4>Blackfire has many interesting features:</h4>
+
+                    <ul>
+                        <li>
+                            <a href="https://blackfire.io/docs/reference-guide/uploading-profiles">Manual XHprof profiles upload</a>
+                        </li>
+                        <li>
+                            <a href="https://blackfire.io/docs/integrations/phpunit">Metrics testing in PHPUnit</a>
+                        </li>
+                        <li>
+                            <a href="https://blackfire.io/docs/integrations/travis">Build profiling in Travis or Jenkins</a>
+                        </li>
+                        <li>
+                            <a href="https://blackfire.io/docs/reference-guide/notifiers">Notifications on GitHub, Gitlab, Slack, HipChat, e-mail</a>
+                        </li>
+                        <li>Average profile of N executions <pre><code class="bash">blackfire --samples 10 run php my-script.php</code></pre></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Now we know how to draw, but how to make the app faster?</h4>
+
+                    <h3 class="fragment" data-fragment-index="1">Analyze!</h3>
+                </section>
+
+                <section>
+                    <h4>What should we profile first?</h4>
+
+                    <ul>
+                        <li>Things that are slow</li>
+                        <li>Application initialization</li>
+                        <li>Popular pages</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Profile analyzing</h4>
+
+                    <ul>
+                        <li>Follow the hot path</li>
+                        <li>Think what causes the result</li>
+                        <li>Find the right method to blame</li>
+                        <li>Fix it</li>
+                        <li>???</li>
+                        <li>PROFIT!</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Popular bottlenecks</h3>
+
+                    <ul>
+                        <li>Bad/complex algorithms</li>
+                        <li>Nested loops</li>
+                        <li>Disk IO</li>
+                        <li>Bad SQL queries</li>
+                        <li>Communication with the Universe</li>
+                        <li>Console commands execution</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>How to deal with it?</h3>
+                </section>
+
+                <section>
+                    <h3>Bad/complex algorithms</h3>
+
+                    <ul>
+                        <li>Profile, analyze, optimize</li>
+                        <li>Look for a different solution</li>
+                        <li>Make async if possible</li>
+                        <li>Cache</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Disk IO</h3>
+
+                    <ul>
+                        <li>Lazy loading</li>
+                        <li>SSD</li>
+                        <li>Tune realpath cache</li>
+                        <li>Tune opcache</li>
+                        <li>Use faster storages (Memcache, Redis)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Bad SQL queries</h3>
+
+                    <ul>
+                        <li>Analyze query EXPLAIN and optimize</li>
+                        <li>Configure indexes</li>
+                        <li>Tune your DBMS</li>
+                        <li>Avoid complex queries</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Communication with the Universe</h3>
+
+                    <ul>
+                        <li>SSL handshake takes much</li>
+                        <li>Be prepared, your endpoint will get down</li>
+                        <li>Async where possible (AMQP, RabbitMQ)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Console commands execution</h3>
+
+                    <ul>
+                        <li>Async where possible</li>
+                        <li>Minimize</li>
+                        <li>Cache</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Time for a small example</h3>
+                </section>
+
+                <section>
+                    <img src="stack1.png" style="max-height: 700px"/>
+                </section>
+
+                <section>
+                    <h3>Checking the SQL query</h3>
+
+                    <pre class="highlight">SELECT  *
+FROM    sale
+WHERE   date > '2017-04-01'::datetime
+    AND date < '2017-05-01'::datetime;</pre>
+
+                    <ul>
+                        <li class="fragment" data-fragment-index="0">No indices?</li>
+                        <li class="fragment" data-fragment-index="1">To much data to return?</li>
+                        <li class="fragment" data-fragment-index="2">Slow network connection to DBMS?</li>
+                        <li class="fragment" data-fragment-index="3">Table is locked too often?</li>
+                        <li class="fragment" data-fragment-index="4">Combination of the above?</li>
+                        <li class="fragment" data-fragment-index="5">Everything above is wrong?</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="stack1.png" />
+                </section>
+
+                <section>
+                    <img src="stack2.png" />
+                </section>
+
+                <section>
+                    <h3>Profilers on production</h3>
+
+                    <ul>
+                        <li>Use triggers to activate</li>
+                        <li>Remember, that profiles take disk space</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Frameworks' help in application performance</h4>
+
+                    <ul>
+                        <li>Typical problems are already solved</li>
+                        <li>Inspiration for a good code and/or performance tricks</li>
+                        <li>Debug panel</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <img src="yii.png" alt="Yii Framework" />
+                </section>
+
+                <section>
+                    <h3>Debug panel</h3>
+                </section>
+
+                <section>
+                    <h3>Application logs</h3>
+
+                    <img src="yii_debug_log.png" />
+                </section>
+
+                <section>
+                    <h3>SQL queries logs</h3>
+
+                    <img src="yii_debug_db.png" />
+                </section>
+
+                <section>
+                    <h4>Fast profiling</h4>
+
+                    <pre><code class="php">
+    Yii::beginProfile('Checking my new algo');
+    $system->compute();
+    Yii::endProfile('Checking my new algo');
+                    </code></pre>
+
+                    <img src="yii_debug_profiling.png" />
+                </section>
+
+                <section>
+                    <h2>We should try to:</h2>
+
+                    <ul>
+                        <li>Remember about architecture importance and clean code</li>
+                        <li>Avoid god classes and methods</li>
+                        <li>Remember about algorithms complexity</li>
+                        <li class="fragment" data-fragment-index="1">Don't spend too much time on early optimization</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>And don't forget to:</h2>
+
+                    <ul>
+                        <li>Upgrade to PHP 7 (up to +40%) or PHP 7.2 (up to 30% on top)</li>
+                        <li>Configure your caches (Opcache, Realpath cache)</li>
+                        <li>Think about what you do :)</li>
+                    </ul>
+                </section>
+
+                <section class="final-slide">
+                    <h1>Questions?</h1>
+
+                    <table>
+                        <tr>
+                            <td style="width: 30%"><img src="qr.svg" /></td>
+                            <td style="vertical-align: top;">
+                                <ul>
+                                    <li><a href="http://slides.silverfire.me/2017/phptour-profiling">slides.silverfire.me/2017/phptour-profiling</a></li>
+                                    <li><a href="https://joind.in/talk/69e23">joind.in/talk/69e23</a></li>
+                                    <li><a href="http://phpbench.com/">phpbench.com</a> - The PHP Benchmark</li>
+                                    <li><a href="https://blackfire.io/docs/24-days/index">24 Days of Blackfire</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+            </div>
+
+        </div>
+
+        <script src="js/all.js"></script>
+
+        <script>
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+                margin: 0.1,
+                slideNumber: true,
+
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    {
+                        src: 'js/reveal/highlight/highlight.js',
+                        async: true,
+                        callback: function () {
+                            [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                                hljs.highlightBlock(v);
+                            });
+                        }
+                    },
+                    {src: 'js/reveal/notes/notes.js', async: true}
+                ]
+            });
+        </script>
+    <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter37501675 = new Ya.Metrika({ id:37501675, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    </body>
+</html>
