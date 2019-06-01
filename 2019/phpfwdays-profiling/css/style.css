@@ -1,0 +1,111 @@
+.reveal {
+    font-family: "Bandera Pro Medium";
+}
+
+section.title-slide {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+section.final-slide img,
+section.title-slide img {
+    vertical-align: middle;
+}
+
+.title-slide h1 {
+    font-size: 160% !important;
+}
+
+.title-slide h2 {
+    font-size: 140% !important;
+}
+
+.final-slide h1 {
+    font-size: 160% !important;
+}
+
+.final-slide table {
+    margin: 0;
+    width: 100%;
+}
+
+.final-slide table a {
+    font-size: 0.8em;
+}
+
+.reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+    font-family: "Bandera Pro Heavy";
+    line-height: 1.2em;
+}
+
+.reveal .slide-number {
+    position: absolute;
+    top: .5em;
+    right: .5em;
+    bottom: inherit;
+    background: rgba(255, 255, 255, 0.3);
+    font-size: 200%;
+    color: #00BCD4;
+    text-shadow: #607D8B 1px 1px;
+}
+
+.title-slide a {
+    padding: 8px 16px;
+}
+
+p.small {
+    font-size: 60%;
+}
+
+div.inline {
+    display: inline-block;
+}
+
+span.comment::before {
+    content: '(';
+}
+
+span.comment::after {
+    content: ')';
+}
+span.comment {
+    color: red;
+    font-size: 50%
+}
+
+.reveal pre.highlight {
+    padding: 5px;
+    font-size: 0.75em;
+}
+
+.reveal pre.highlight.smaller {
+    font-size: 0.6em;
+}
+
+.reveal code {
+    display: inline;
+}
+
+.reveal pre code {
+    max-height: 650px;
+}
+
+@font-face {
+    font-family: 'Bandera Pro';
+    src: url("../fonts/BanderaPro.otf") format("opentype");
+}
+
+@font-face {
+    font-family: 'Bandera Pro';
+    font-weight: bold;
+    src: url("../fonts/BanderaPro-Bold.otf") format("opentype");
+}
+
+@font-face {
+    font-family: 'Bandera Pro Heavy';
+    src: url("../fonts/BanderaProHeavy.otf") format("opentype");
+}
+
+@font-face {
+    font-family: 'Bandera Pro Medium';
+    src: url("../fonts/BanderaProMedium.otf") format("opentype");
+}
