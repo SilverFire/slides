@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+
+    <title>Docker for beginners</title>
+
+    <meta name="description" content="Slides for Docker for beginners presentation">
+    <meta name="author" content="Dmytro Naumenko">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/all.css">
+
+    <script>
+        document.write('<link rel="stylesheet" href="node_modules/reveal.js/css/print/' + (window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper') + '.css" type="text/css" media="print">');
+    </script>
+</head>
+
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section class="title-slide">
+            <h1>First steps with Docker</h1>
+
+            <p><a href="https://github.com/SilverFire">Dmytro Naumenko</a></p>
+            <p>
+                <small>
+                    <a href="http://www.yiiframework.com/">Yii core team, </a><a href="http://hiqdev.com/">HiQDev</a>
+                </small>
+            </p>
+        </section>
+
+        <section>
+            <h2>I'm a Dev<span class="fragment strike semi-fade-out" data-fragment-index="1">Ops</span></h2>
+
+            <aside class="notes">
+                Ask: who uses docker (dev, prod?), any devops?
+            </aside>
+        </section>
+
+        <section>
+            <h4>Overview</h4>
+
+            <ul>
+                <li>Why do we need something else?</li>
+                <li>What is Docker?</li>
+                <li>Trying it out</li>
+                <li>Tips and tricks</li>
+            </ul>
+        </section>
+
+        <section class="chat">
+            <div class="message">
+                <div class="avatar blue"></div>
+                <div class="body">
+                    <div class="name">Заказчик Анатолий</div>
+                    Снова нифига не работает! 😡
+                </div>
+            </div>
+            <div class="message fragment" data-fragment-index="1">
+                <div class="avatar red"></div>
+                <div class="body">
+                    <div class="name">Петр Быстрокодин</div>
+                    <img src="can-not-reproduce.png" />
+                </div>
+            </div>
+            <div class="message fragment" data-fragment-index="2">
+                <div class="avatar red"></div>
+                <div class="body">
+                    <div class="name">Петр Быстрокодин</div>
+                    <img src="works-locally.png" />
+                </div>
+            </div>
+            <div class="message fragment" data-fragment-index="3">
+                <div class="avatar blue"></div>
+                <div class="body">
+                    <div class="name">Заказчик Анатолий</div>
+                    <img src="php-govno.png">
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h3>Dependencies</h3>
+        </section>
+
+        <section>
+            <h3>Software does not work in vacuum</h3>
+
+            <h5 class="fragment" data-fragment-index="1">Except you are in space</h5>
+            <h2 class="fragment" data-fragment-index="1">🛰</h2>
+        </section>
+
+        <section>
+            <h3>Your basic web app requires:</h3>
+
+            <ul>
+                <li>Web server (Nginx, Apache)</li>
+                <li>PHP</li>
+                <li>SQL DBMS (PostgreSQL, MySQL)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>A few steps forward add:</h3>
+
+            <ul>
+                <li>NoSQL DBMS (ElasticSearch, Redis)</li>
+                <li>Message broker (RabbitMQ)</li>
+                <li>Cache</li>
+                <li>WebSocket</li>
+            </ul>
+        </section>
+
+        <section class="bloodyhell">
+            <h2>Dependencies! 😡</h2>
+        </section>
+
+
+        <section>
+            <h3>You develop 2 projects.<br /> They require:</h3>
+
+            <ul>
+                <li>different configurations of the same dependency</li>
+                <li>different versions of the same dependency</li>
+            </ul>
+
+            <aside class="notes">You rely on something you don't know at all</aside>
+        </section>
+
+        <section>
+            <h3>It steals your time!</h3>
+
+            <h5 class="fragment" data-fragment-index="1">Estimate the price of adding new PHP extension</h5>
+
+            <aside class="notes">
+                <ul>
+                    <li>10 minutes to install &times; 30 devs = 5 spent hours = $100+</li>
+                    <li>Imagine how expensive will be adding completely new dependency.</li>
+                    <li>Then you will write dependencies in a different way</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+            <h3>Deployment and scaling</h3>
+        </section>
+
+        <section>
+            <h3>It would be good to have</h3>
+
+            <ul>
+                <li>Ubiquitous dev, staging and prod environment</li>
+                <li>Persistent environment configuration shipping</li>
+                <li>Fast deploy</li>
+                <li>Easy manage</li>
+            </ul>
+        </section>
+
+        <section>
+            <table>
+                <tr>
+                    <td width="50%"><img src="old-shipping-2.jpg" alt=""></td>
+                    <td width="50%"><img src="old-shipping-1.jpg" alt=""></td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <table>
+                <tr>
+                    <td width="50%"><img src="old-shipping-3.jpg" alt=""></td>
+                    <td width="50%"><img src="old-shipping-4.jpg" alt=""></td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <img src="old-shipping-5.jpg" alt="">
+        </section>
+
+        <section>
+            <img src="cont-shipping-1.jpg" alt="">
+
+            <aside class="notes">Malcom McLean, 1957</aside>
+        </section>
+
+        <section>
+            <img src="cont-shipping-4.jpg" alt="">
+        </section>
+
+        <section>
+            <img src="cont-shipping-5.jpg" alt="">
+        </section>
+
+        <section>
+            <table>
+                <tr>
+                    <td width="50%"><img src="cont-shipping-2.jpg" alt=""></td>
+                    <td width="50%"><img src="cont-shipping-3.jpg" alt=""></td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <img src="docker-logo.png">
+        </section>
+
+        <section>
+            <h4>Let's start our first app</h4>
+        </section>
+
+        <section>
+            <h4>What happened?</h4>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">PHP image downloaded</li>
+                <li class="fragment" data-fragment-index="2">Container created</li>
+                <li class="fragment" data-fragment-index="3">php -v executed</li>
+                <li class="fragment" data-fragment-index="4">Container stopped and removed</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Virtualization</h3>
+            <h3>vs</h3>
+            <h3>Containerisation</h3>
+
+            <aside class="notes">
+                <ul>
+                    <li>Docker is smt about Virtual</li>
+                    <li>VMWare, VirtualBox, Parallels ≠ Docker</li>
+                    <li>Diff?</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+            <h3>Virtual Machine (VM)</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">Emulates everything around.</li>
+                <li class="fragment" data-fragment-index="2">Starts from a system image.</li>
+                <li class="fragment" data-fragment-index="3">Supports different Guest OS on same host.</li>
+                <li class="fragment" data-fragment-index="4">Takes time to boot.</li>
+                <li class="fragment" data-fragment-index="5">Guest OS is not as efficient is Host</li>
+            </ul>
+
+            <aside class="notes">
+                <ul>
+                    <li>Emulates CPU, RAM, HDD, Network, Video. Useful to dev/debug boot, kernel, low-level</li>
+                    <li>And continues to change it. More VMs → more space used</li>
+                    <li>Provides more resources that app needs</li>
+                    <li>Overhead if all you need is environment.</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+            <h4>Virtualization</h4>
+
+            <img src="host-hyp-1vm.png">
+        </section>
+
+        <section>
+            <img src="vm-contains.png">
+        </section>
+
+        <section>
+            <h4>Same OS, same env, different apps</h4>
+
+            <img src="host-hyp-3vm.png">
+        </section>
+
+        <section>
+            <h3>Virtual Environment (VE)</h3>
+
+            <ul>
+                <li class="fragment" data-fragment-index="1">No emulation – uses host kernel containerization.</li>
+                <li class="fragment" data-fragment-index="2">Fast start – only 50 ms</li>
+                <li class="fragment" data-fragment-index="3">Can use layered file systems (Overlay2, AuFS).</li>
+                <li class="fragment" data-fragment-index="4">Minimal performance impact.</li>
+            </ul>
+
+            <aside class="notes">
+                <ul>
+                    <li>Isolates containers, shares and limits resources</li>
+                    <li>For the OS, container is like an app → very fast start.</li>
+                    <li>Layered FS can save a lot of resources – we'll see how</li>
+                </ul>
+
+                13 minutes
+            </aside>
+        </section>
+
+        <section>
+            <h4>Docker is an interface for containers management</h4>
+
+            <img src="docker-arch.svg" alt="">
+        </section>
+
+        <section>
+            <h4>Docker</h4>
+
+            <img src="docker-layers.jpeg" alt="">
+        </section>
+
+        <section class="final-slide">
+            <h1>Questions?</h1>
+
+            <table>
+                <tr>
+                    <td style="width: 30%"></td>
+                    <td style="vertical-align: top;">
+                        <ul>
+                            <li><a href="https://github.com/SilverFire">SilverFire@GitHub</a></li>
+                            <li><a href="http://www.yiiframework.com/">Yii Framework</a></li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </section>
+    </div>
+
+</div>
+
+<script src="js/all.js"></script>
+
+<script>
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        margin: 0.1,
+        slideNumber: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            {
+                src: 'js/reveal/highlight/highlight.js',
+                async: true,
+                callback: function () {
+                    [].forEach.call(document.querySelectorAll('.highlight, code'), function (v, i) {
+                        hljs.highlightBlock(v);
+                    });
+                },
+            },
+            {src: 'js/reveal/notes/notes.js', async: true},
+        ],
+    });
+</script>
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter37501675 = new Ya.Metrika({
+                id: 37501675,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/watch.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/37501675" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript>
+</body>
+</html>
